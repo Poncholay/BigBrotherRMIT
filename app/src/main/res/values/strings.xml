@@ -1,0 +1,11 @@
+<resources>
+	<string name="app_name">BigBrother</string>
+
+	<string name="navigation_drawer_open">Open navigation drawer</string>
+	<string name="navigation_drawer_close">Close navigation drawer</string>
+
+	<string name="action_settings">Settings</string>
+	<string name="generic_firstname">John</string>
+	<string name="generic_lastname">Doe</string>
+	<string name="generic_email">JohnDoe@gmail.com</string>
+</resources>
