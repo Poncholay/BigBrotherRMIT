@@ -2,8 +2,10 @@ package com.poncholay.bigbrother.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,7 +17,7 @@ import android.view.MenuItem;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.fragments.FriendListFragment;
 import com.poncholay.bigbrother.activities.fragments.OnListFragmentInteractionListener;
-import com.poncholay.bigbrother.controllers.DynamicFragmentPagerAdapter;
+import com.poncholay.bigbrother.controllers.DynamicTitledFragmentPagerAdapter;
 import com.poncholay.bigbrother.model.Friend;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -23,6 +25,7 @@ import me.relex.circleindicator.CircleIndicator;
 public class BigBrotherActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener, OnListFragmentInteractionListener {
 
+	private DynamicTitledFragmentPagerAdapter mAdapter;
 	private Context mContext;
 
 	@Override
@@ -92,6 +95,12 @@ public class BigBrotherActivity extends AppCompatActivity
 		return true;
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putParcelable("pagerState", mAdapter.saveState());
+		super.onSaveInstanceState(outState);
+	}
+
 	private void setupMenu(Toolbar toolbar) {
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -104,21 +113,43 @@ public class BigBrotherActivity extends AppCompatActivity
 	}
 
 	private void setupPager(Bundle bundle) {
-//		ParallaxViewPager mParallaxViewPager = (ParallaxViewPager) findViewById(R.id.viewPager);
 		ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPager);
-		DynamicFragmentPagerAdapter adapter = new DynamicFragmentPagerAdapter(getSupportFragmentManager());
-		mViewPager.setAdapter(adapter);
-		mViewPager.setOffscreenPageLimit(3);
-//		mParallaxViewPager.setMode(Mode.LEFT_OVERLAY);
-		CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
+		mViewPager.setOffscreenPageLimit(1);
+
+		CircleIndicator indicator = (CircleIndicator) findViewById(R.id.pager_indicator);
+
+		PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_tabs);
+		pagerTabStrip.setDrawFullUnderline(false);
+		pagerTabStrip.setTabIndicatorColor(getColor(R.color.colorSplash));
+
+		mAdapter = new DynamicTitledFragmentPagerAdapter(getSupportFragmentManager());
+		mAdapter.registerDataSetObserver(indicator.getDataSetObserver());
+
+		if (bundle != null) {
+			Parcelable state = bundle.getParcelable("pagerState");
+			mAdapter.restoreState(state, DynamicTitledFragmentPagerAdapter.class.getClassLoader());
+		}
+
+		mViewPager.setAdapter(mAdapter);
 		indicator.setViewPager(mViewPager);
-		adapter.registerDataSetObserver(indicator.getDataSetObserver());
-		adapter.push(new FriendListFragment());
-		adapter.push(new FriendListFragment());
-		adapter.push(new FriendListFragment());
-		adapter.push(new FriendListFragment());
-		adapter.push(new FriendListFragment());
-		adapter.push(new FriendListFragment());
+
+		mAdapter.push(FriendListFragment.class);
+		mAdapter.push(MeetingListFragment.class);
+		mAdapter.push(LocalisationFragment.class);
+	}
+
+	//TODO : Implement real fragments
+	static public class MeetingListFragment extends FriendListFragment {
+		@Override
+		public String getTitle() {
+			return "Meetings";
+		}
+	}
+	static public class LocalisationFragment extends FriendListFragment {
+		@Override
+		public String getTitle() {
+			return "Localisation";
+		}
 	}
 
 	public void onListFragmentInteraction(Friend friend) {

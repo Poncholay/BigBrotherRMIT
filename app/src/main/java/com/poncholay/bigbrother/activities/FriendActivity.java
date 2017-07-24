@@ -14,8 +14,11 @@ import android.view.View;
 
 import com.poncholay.bigbrother.R;
 
-public class FriendActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener {
+public class FriendActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+	public static final int EDIT_MODE = 1;
+	public static final int CREATE_MODE = 2;
+	public static final int VIEW_MODE = 3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +26,6 @@ public class FriendActivity extends AppCompatActivity
 		setContentView(R.layout.activity_big_brother);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {}
-		});
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

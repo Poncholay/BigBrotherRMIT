@@ -8,4 +8,7 @@
 	<string name="generic_firstname">John</string>
 	<string name="generic_lastname">Doe</string>
 	<string name="generic_email">JohnDoe@gmail.com</string>
+	<string name="error_not_implemented">Not implemented</string>
+	<string name="error_not_available">This method is not available on your device</string>
+	<string name="error_generic">An error occured</string>
 </resources>
