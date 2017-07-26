@@ -50,6 +50,10 @@ dependencies {
     compile 'com.mikhaellopez:circularimageview:3.0.2'
     //TextDrawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    //Forms
+    compile 'com.wrapp.floatlabelededittext:library:0.0.6'
+    //DatePicker
+    compile 'com.wdullaer:materialdatetimepicker:3.2.2'
 
     testCompile 'junit:junit:4.12'
 }

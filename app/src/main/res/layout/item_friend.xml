@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
@@ -11,37 +12,64 @@
 
 	<com.mikhaellopez.circularimageview.CircularImageView
 		android:id="@+id/friend_icon"
-		android:layout_width="70dp"
-		android:layout_height="match_parent"
-		android:gravity="center"
-		android:layout_alignParentTop="true"
-		android:layout_alignParentStart="true"
-		android:layout_alignBottom="@+id/friend_lastname"/>
+		android:layout_width="@dimen/icon_width"
+		android:layout_height="@dimen/icon_height"
+		android:gravity="center|center_vertical"
+		app:layout_constraintLeft_toLeftOf="parent"/>
 
 	<TextView
 		android:id="@+id/friend_firstname"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:text="@string/generic_firstname"
-		android:textSize="20sp"
+		android:textSize="@dimen/firstname_size"
 		android:ellipsize="end"
 		android:maxLines="1"
-		android:layout_alignParentTop="true"
-		android:layout_alignParentEnd="true"
-		android:layout_toEndOf="@+id/friend_icon"
-		android:textColor="@color/colorPrimaryText"/>
+		android:textColor="@color/colorPrimaryText"
+		app:layout_constraintLeft_toRightOf="@+id/friend_icon"
+		app:layout_constraintRight_toLeftOf="@+id/friend_meetings_count"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
 		android:id="@+id/friend_lastname"
-		android:layout_width="wrap_content"
-		android:layout_height="20sp"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
 		android:text="@string/generic_lastname"
+		android:textSize="@dimen/lastname_size"
+		android:ellipsize="end"
+		android:maxLines="1"
+		android:textColor="@color/colorSecondaryText"
+		app:layout_constraintLeft_toRightOf="@+id/friend_icon"
+		app:layout_constraintRight_toLeftOf="@+id/friend_meetings_count"
+		app:layout_constraintTop_toBottomOf="@+id/friend_firstname"/>
+
+	<TextView
+		android:id="@+id/friend_meetings_count"
+		android:layout_width="wrap_content"
+		android:layout_height="20dp"
+		android:text="@string/_0"
 		android:textSize="15sp"
 		android:ellipsize="end"
 		android:maxLines="1"
-		android:layout_below="@+id/friend_firstname"
-		android:layout_alignParentEnd="true"
-		android:layout_toEndOf="@+id/friend_icon"
-		android:textColor="@color/colorSecondaryText"/>
+		android:paddingStart="10dp"
+		android:gravity="center|center_vertical"
+		android:layout_alignBottom="@+id/friend_lastname"
+		android:textColor="@color/colorSecondaryText"
+		app:layout_constraintLeft_toRightOf="@+id/friend_firstname"
+		app:layout_constraintRight_toLeftOf="@+id/friend_meetings_icon"
+		app:layout_constraintTop_toTopOf="@id/friend_firstname"
+		app:layout_constraintBottom_toBottomOf="@id/friend_lastname"/>
 
-</RelativeLayout>
+	<ImageView
+		android:id="@+id/friend_meetings_icon"
+		android:layout_width="wrap_content"
+		android:layout_height="20dp"
+		android:contentDescription="@string/hasIcon"
+		android:gravity="center|center_vertical"
+		app:srcCompat="@drawable/ic_icon_meeting"
+		app:layout_constraintLeft_toRightOf="@+id/friend_meetings_count"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toTopOf="@id/friend_firstname"
+		app:layout_constraintBottom_toBottomOf="@id/friend_lastname"/>
+
+</android.support.constraint.ConstraintLayout>

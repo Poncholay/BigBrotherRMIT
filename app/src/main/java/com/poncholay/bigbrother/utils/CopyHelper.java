@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class CopyHelper {
 
@@ -42,14 +41,10 @@ public class CopyHelper {
 
 	public File storeFile(Intent data, int type) {
 		String path = "";
-		try {
-			path = PathUtils.getPath(mContext, data.getData());
-			if (path == null) {
-				Toast.makeText(mContext, "Could not create file", Toast.LENGTH_SHORT).show();
-				return null;
-			}
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+		path = PathUtils.getPath(mContext, data.getData());
+		if (path == null) {
+			Toast.makeText(mContext, "Could not create file", Toast.LENGTH_SHORT).show();
+			return null;
 		}
 		return storeFile(path, type);
 	}

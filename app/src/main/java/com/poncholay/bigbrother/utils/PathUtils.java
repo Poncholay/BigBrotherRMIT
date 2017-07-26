@@ -5,22 +5,18 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
-import java.net.URISyntaxException;
-
 public class PathUtils {
 
 	@SuppressLint("NewApi")
-	public static String getPath(Context context, Uri uri) throws URISyntaxException {
-		final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
+	public static String getPath(Context context, Uri uri) {
 		String selection = null;
 		String[] selectionArgs = null;
 
-		if (needToCheckUri && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
+		if (DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
 			if (isExternalStorageDocument(uri)) {
 				final String docId = DocumentsContract.getDocumentId(uri);
 				final String[] split = docId.split(":");

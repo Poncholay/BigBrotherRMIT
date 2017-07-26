@@ -16,14 +16,12 @@ import android.view.MenuItem;
 
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.fragments.FriendListFragment;
-import com.poncholay.bigbrother.activities.fragments.OnListFragmentInteractionListener;
 import com.poncholay.bigbrother.controllers.DynamicTitledFragmentPagerAdapter;
-import com.poncholay.bigbrother.model.Friend;
 
 import me.relex.circleindicator.CircleIndicator;
 
 public class BigBrotherActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener, OnListFragmentInteractionListener {
+		implements NavigationView.OnNavigationItemSelectedListener {
 
 	private DynamicTitledFragmentPagerAdapter mAdapter;
 	private Context mContext;
@@ -35,7 +33,7 @@ public class BigBrotherActivity extends AppCompatActivity
 
 		mContext = this;
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_big_brother);
 		setSupportActionBar(toolbar);
 
 		setupMenu(toolbar);
@@ -54,7 +52,7 @@ public class BigBrotherActivity extends AppCompatActivity
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.big_brother, menu);
+		getMenuInflater().inflate(R.menu.bar_big_brother_activity, menu);
 		return true;
 	}
 
@@ -151,12 +149,4 @@ public class BigBrotherActivity extends AppCompatActivity
 			return "Localisation";
 		}
 	}
-
-	public void onListFragmentInteraction(Friend friend) {
-
-	}
-
-//	public void onListFragmentInteraction(Friend friend) {
-// TODO: for meetings
-//	}
 }

@@ -12,8 +12,8 @@ import android.util.Log;
  */
 public class ContactDataManager {
    private static final String LOG_TAG = ContactDataManager.class.getName();
-   private Context context;
-   private Intent intent;
+   final private Context context;
+   final private Intent intent;
 
    public class ContactQueryException extends Exception {
       public ContactQueryException(String message) {

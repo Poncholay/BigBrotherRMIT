@@ -1,12 +1,9 @@
 package com.poncholay.bigbrother.model;
 
-import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.orm.SugarRecord;
-import com.poncholay.bigbrother.BigBrotherApplication;
-import com.poncholay.bigbrother.R;
 
 import java.util.Date;
 import java.util.Objects;
@@ -17,19 +14,23 @@ public class Friend extends SugarRecord implements Parcelable {
 	private String lastname;
 	private String email;
 	private Date birthday;
-	private String icon;
+	private boolean hasIcon;
 
 	public Friend() {
-		this(null, null, null, null, null, null);
+		this(null, null, null, null, null, false);
 	}
 
-	public Friend(String uniqueId, String firstname, String lastname, String email, Date birthday, String icon) {
+	public Friend(String firstname, String lastname) {
+		this(null, firstname, lastname, null, null, false);
+	}
+
+	public Friend(String uniqueId, String firstname, String lastname, String email, Date birthday, boolean hasIcon) {
 		this.setUniqueId(uniqueId);
 		this.setFirstname(firstname);
 		this.setLastname(lastname);
 		this.setEmail(email);
 		this.setBirthday(birthday);
-		this.setIcon(icon);
+		this.setHasIcon(hasIcon);
 	}
 
 	public String getUniqueId() {
@@ -38,26 +39,27 @@ public class Friend extends SugarRecord implements Parcelable {
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId == null ? "" : uniqueId;
 	}
+	//TODO : randomId
 
 	public String getFirstname() {
 		return firstname;
 	}
 	public void setFirstname(String firstname) {
-		this.firstname = firstname == null ? BigBrotherApplication.getPrivateResources().getString(R.string.generic_firstname) : firstname;
+		this.firstname = firstname == null ? "" : firstname;
 	}
 
 	public String getLastname() {
 		return lastname;
 	}
 	public void setLastname(String lastname) {
-		this.lastname = lastname == null ? BigBrotherApplication.getPrivateResources().getString(R.string.generic_lastname) : lastname;
+		this.lastname = lastname == null ? "" : lastname;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 	public void setEmail(String email) {
-		this.email = email == null ? BigBrotherApplication.getPrivateResources().getString(R.string.generic_email) : email;
+		this.email = email == null ? "" : email;
 	}
 
 	public Date getBirthday() {
@@ -67,11 +69,11 @@ public class Friend extends SugarRecord implements Parcelable {
 		this.birthday = birthday == null ? new Date() : birthday;
 	}
 
-	public String getIcon() {
-		return icon;
+	public boolean getHasIcon() {
+		return hasIcon;
 	}
-	public void setIcon(String icon) {
-		this.icon = icon == null ? "" : icon;
+	public void setHasIcon(boolean hasIcon) {
+		this.hasIcon = hasIcon;
 	}
 
 	@Override
@@ -99,7 +101,7 @@ public class Friend extends SugarRecord implements Parcelable {
 		this.setLastname(in.readString());
 		this.setEmail(in.readString());
 		this.setBirthday((Date) in.readSerializable());
-		this.setIcon(in.readString());
+		this.setHasIcon(in.readByte() != 0);
 	}
 
 	@Override
@@ -110,7 +112,7 @@ public class Friend extends SugarRecord implements Parcelable {
 		dest.writeString(this.getLastname());
 		dest.writeString(this.getEmail());
 		dest.writeSerializable(this.getBirthday());
-		dest.writeString(this.getIcon());
+		dest.writeByte((byte) (this.getHasIcon() ? 1 : 0));
 	}
 
 	@Override

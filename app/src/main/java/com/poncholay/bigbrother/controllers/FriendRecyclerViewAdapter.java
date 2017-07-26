@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,27 +15,26 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.FriendActivity;
-import com.poncholay.bigbrother.activities.fragments.OnListFragmentInteractionListener;
+import com.poncholay.bigbrother.activities.EditFriendActivity;
 import com.poncholay.bigbrother.model.Friend;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 import static com.poncholay.bigbrother.utils.CopyHelper.getFile;
 
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecyclerViewAdapter.ViewHolder> {
 
 	private final List<Friend> mValues;
-	private final OnListFragmentInteractionListener mListener;
 	private Context mContext;
+	private Fragment mFragment;
 
-	public FriendRecyclerViewAdapter(List<Friend> items, OnListFragmentInteractionListener listener) {
+	public FriendRecyclerViewAdapter(List<Friend> items, Fragment fragment) {
 		mValues = items;
-		mListener = listener;
+		mFragment = fragment;
 	}
 
 	@Override
@@ -52,6 +52,9 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 		if (friend != null) {
 			holder.mItem = friend;
 
+			holder.mIconView.setBorderWidth(2);
+			holder.mIconView.setShadowRadius(2);
+
 			holder.mIconView.setImageDrawable(TextDrawable.builder()
 					.beginConfig()
 					.height(80)
@@ -60,15 +63,15 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 					.textColor(Color.BLACK)
 					.endConfig()
 					.buildRect(friend.getFirstname().equals("") ? "" : friend.getFirstname().substring(0, 1), Color.WHITE));
-			holder.mIconView.setBorderWidth(2);
-			holder.mIconView.setShadowRadius(2);
 
-			if (!Objects.equals(friend.getIcon(), "")) {
-				File iconFile = getFile(mContext, friend.getFirstname(), friend.getIcon());
-				Picasso.with(mContext)
-						.load(iconFile)
-						.resize(100, 100)
-						.into(holder.mIconView);
+			if (friend.getHasIcon()) {
+				File iconFile = getFile(mContext, friend.getFirstname() + " " + friend.getLastname(), Constants.ICON);
+				if (iconFile != null) {
+					Picasso.with(mContext)
+							.load(iconFile)
+							.resize(100, 100)
+							.into(holder.mIconView);
+				}
 			}
 
 			holder.mFirstNameView.setText(friend.getFirstname());
@@ -77,15 +80,10 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (null != mListener) {
-						// Notify the active callbacks interface (the activity, if the
-						// fragment is attached to one) that an item has been selected.
-						mListener.onListFragmentInteraction(holder.mItem);
-					}
-
-					Intent callFriendActivity = new Intent(mContext, FriendActivity.class);
+					Intent callFriendActivity = new Intent(mContext, EditFriendActivity.class);
 					callFriendActivity.putExtra("friend", friend);
-					mContext.startActivity(callFriendActivity);
+					callFriendActivity.putExtra("mode", Constants.EDIT_FRIEND);
+					mFragment.startActivityForResult(callFriendActivity, Constants.EDIT_FRIEND);
 				}
 			});
 			holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -99,7 +97,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 							switch (item.getTitle().toString()) {
 								case "Delete":
 									remove(friend);
-									//TODO : delete directory ?
+									//TODO : delete directory
 									friend.delete();
 									return true;
 								default:

@@ -20,7 +20,7 @@
 			android:value="bigbrother.db"/>
 		<meta-data
 			android:name="VERSION"
-			android:value="1"/>
+			android:value="2"/>
 		<meta-data
 			android:name="QUERY_LOG"
 			android:value="false"/>
@@ -44,7 +44,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".activities.FriendActivity"
+		<activity android:name=".activities.EditFriendActivity"
 				  android:label="@string/app_name"
 				  android:theme="@style/AppTheme.NoActionBar">
 		</activity>

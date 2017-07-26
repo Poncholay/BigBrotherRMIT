@@ -10,5 +10,16 @@
 	<string name="generic_email">JohnDoe@gmail.com</string>
 	<string name="error_not_implemented">Not implemented</string>
 	<string name="error_not_available">This method is not available on your device</string>
-	<string name="error_generic">An error occured</string>
+	<string name="error_generic">An error occurred</string>
+	<string name="hasIcon">hasIcon</string>
+	<string name="_0">0</string>
+	<string name="first_name_field">Firstname</string>
+	<string name="last_name_field">Lastname</string>
+	<string name="email_field">Email</string>
+	<string name="icon_field">Icon :</string>
+	<string name="date_field">Birthdate :</string>
+	<string name="action_validate">Validate</string>
+	<string name="error_name_already_used">Name \\\"%s\\\" already used</string>
+	<string name="error_empty_name">Firstname cannot be empty</string>
+	<string name="date_picker">Set Date</string>
 </resources>
