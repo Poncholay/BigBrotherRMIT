@@ -48,6 +48,10 @@
 				  android:label="@string/app_name"
 				  android:theme="@style/AppTheme.NoActionBar">
 		</activity>
+		<activity android:name=".activities.FriendActivity"
+				  android:label="@string/app_name"
+				  android:theme="@style/AppTheme.NoActionBar">
+		</activity>
 	</application>
 
 </manifest>

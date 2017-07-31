@@ -56,7 +56,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_friend);
+		setContentView(R.layout.activity_edit_friend);
 
 		mMode = retrieveMode(savedInstanceState);
 		if (mMode != Constants.EDIT_FRIEND && mMode != Constants.NEW_FRIEND) {
@@ -124,7 +124,6 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 				if (file != null) {
 					Picasso.with(activity)
 							.load(file)
-							.resize(100, 100)
 							.into(mIconView);
 					mIcon = file.getPath();
 					mIconChanged = true;
@@ -228,7 +227,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 	}
 
 	private void setupToolbar() {
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_friend);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit_friend);
 		if (mMode == Constants.NEW_FRIEND) {
 			toolbar.setTitle("New Friend");
 		} else {
@@ -292,15 +291,15 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 		if (mFriend.getHasIcon()) {
 			File iconFile = getFile(this, mFriend.getFirstname() + " " + mFriend.getLastname(), Constants.ICON);
 			if (iconFile != null) {
-				Picasso.with(this).load(iconFile).resize(100, 100).into(mIconView);
+				Picasso.with(this).load(iconFile).into(mIconView);
 				return;
 			}
 		}
 		mIconView.setImageDrawable(TextDrawable.builder()
 				.beginConfig()
-				.height(80)
-				.width(80)
-				.fontSize(50)
+				.height(100)
+				.width(100)
+				.fontSize(60)
 				.textColor(Color.BLACK)
 				.endConfig()
 				.buildRect("?", Color.WHITE));

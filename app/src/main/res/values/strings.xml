@@ -16,10 +16,12 @@
 	<string name="first_name_field">Firstname</string>
 	<string name="last_name_field">Lastname</string>
 	<string name="email_field">Email</string>
+	<string name="email_field_secondary">Email :</string>
 	<string name="icon_field">Icon :</string>
 	<string name="date_field">Birthdate :</string>
 	<string name="action_validate">Validate</string>
 	<string name="error_name_already_used">Name \\\"%s\\\" already used</string>
 	<string name="error_empty_name">Firstname cannot be empty</string>
 	<string name="date_picker">Set Date</string>
+	<string name="edit">title_edit</string>
 </resources>

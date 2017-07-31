@@ -93,19 +93,23 @@ public class FriendListFragment extends TitledFragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
 		switch (requestCode) {
 			case Constants.PICK_CONTACTS: {
 				if (resultCode == RESULT_OK) {
 					ContactDataManager contactsManager = new ContactDataManager(getActivity(), data);
-					String name;
+					String firstname;
+					String lastname;
 					String email;
 					try {
-						name = contactsManager.getContactName();
+						firstname = contactsManager.getContactFirstName();
+						lastname = contactsManager.getContactLastName();
 						email = contactsManager.getContactEmail();
 
 						Friend friend = new Friend();
-						friend.setFirstname(name);
-						friend.setLastname(name);
+						friend.setFirstname(firstname);
+						friend.setLastname(lastname);
 						friend.setEmail(email);
 						Intent intent = new Intent(getActivity(), EditFriendActivity.class);
 						intent.putExtra("friend", friend);

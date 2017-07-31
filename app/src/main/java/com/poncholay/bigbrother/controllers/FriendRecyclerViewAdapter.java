@@ -17,7 +17,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.EditFriendActivity;
+import com.poncholay.bigbrother.activities.FriendActivity;
 import com.poncholay.bigbrother.model.Friend;
 import com.squareup.picasso.Picasso;
 
@@ -44,6 +44,11 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 		return new ViewHolder(view);
 	}
 
+//	Intent callFriendActivity = new Intent(mContext, FriendActivity.class);
+//					callFriendActivity.putExtra("friend", friend);
+//					callFriendActivity.putExtra("mode", Constants.EDIT_FRIEND);
+//					mFragment.startActivityForResult(callFriendActivity, Constants.EDIT_FRIEND);
+
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, int position) {
 
@@ -57,19 +62,18 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
 			holder.mIconView.setImageDrawable(TextDrawable.builder()
 					.beginConfig()
-					.height(80)
-					.width(80)
-					.fontSize(50)
+					.height(100)
+					.width(100)
+					.fontSize(60)
 					.textColor(Color.BLACK)
 					.endConfig()
-					.buildRect(friend.getFirstname().equals("") ? "" : friend.getFirstname().substring(0, 1), Color.WHITE));
+					.buildRect(friend.getFirstname().equals("") ? "?" : friend.getFirstname().substring(0, 1), Color.WHITE));
 
 			if (friend.getHasIcon()) {
 				File iconFile = getFile(mContext, friend.getFirstname() + " " + friend.getLastname(), Constants.ICON);
 				if (iconFile != null) {
 					Picasso.with(mContext)
 							.load(iconFile)
-							.resize(100, 100)
 							.into(holder.mIconView);
 				}
 			}
@@ -80,9 +84,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent callFriendActivity = new Intent(mContext, EditFriendActivity.class);
+					Intent callFriendActivity = new Intent(mContext, FriendActivity.class);
 					callFriendActivity.putExtra("friend", friend);
-					callFriendActivity.putExtra("mode", Constants.EDIT_FRIEND);
 					mFragment.startActivityForResult(callFriendActivity, Constants.EDIT_FRIEND);
 				}
 			});
