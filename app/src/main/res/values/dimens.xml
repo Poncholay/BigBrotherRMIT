@@ -9,6 +9,7 @@
 	<dimen name="icon_width">70dp</dimen>
 	<dimen name="icon_height">50dp</dimen>
 	<dimen name="general_padding">8dp</dimen>
+	<dimen name="small_padding">2dp</dimen>
 	<dimen name="fullname_size">25sp</dimen>
 	<dimen name="firstname_size">20sp</dimen>
 	<dimen name="lastname_size">15sp</dimen>

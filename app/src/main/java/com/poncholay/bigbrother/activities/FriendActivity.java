@@ -2,7 +2,6 @@ package com.poncholay.bigbrother.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,17 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
+import com.poncholay.bigbrother.utils.BundleUtils;
 import com.poncholay.bigbrother.utils.DateUtils;
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
-
-import static com.poncholay.bigbrother.utils.CopyHelper.getFile;
+import com.poncholay.bigbrother.utils.IconUtils;
 
 public class FriendActivity extends AppCompatActivity {
 
@@ -38,7 +33,7 @@ public class FriendActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_friend);
 
-		mFriend = retrieveFriend(savedInstanceState);
+		mFriend = (Friend) BundleUtils.retrieveParcelable(savedInstanceState, getIntent().getExtras(), "friend");
 		if (mFriend == null) {
 			finish();
 			return;
@@ -46,7 +41,7 @@ public class FriendActivity extends AppCompatActivity {
 
 		setupToolbar();
 		setupFormListeners();
-		setupBaseIcon();
+		IconUtils.setupIconBig(mIconView, mFriend, this);
 	}
 
 	@Override
@@ -72,7 +67,7 @@ public class FriendActivity extends AppCompatActivity {
 						mFriend = friend;
 						mModified = true;
 						setupFormListeners();
-						setupBaseIcon();
+						IconUtils.setupIconBig(mIconView, mFriend, this);
 					}
 				}
 				break;
@@ -131,36 +126,5 @@ public class FriendActivity extends AppCompatActivity {
 		mDateView.setText(DateUtils.toFullString(mFriend.getBirthday()));
 
 		mIconView = (CircularImageView) findViewById(R.id.icon_field);
-	}
-
-	private void setupBaseIcon() {
-		mIconView.setBorderWidth(1);
-		mIconView.setBorderColor(Color.BLACK);
-		if (mFriend.getHasIcon()) {
-			File iconFile = getFile(this, mFriend.getFirstname() + " " + mFriend.getLastname(), Constants.ICON);
-			if (iconFile != null) {
-				Picasso.with(this).load(iconFile).into(mIconView);
-				return;
-			}
-		}
-		mIconView.setImageDrawable(TextDrawable.builder()
-				.beginConfig()
-				.height(250)
-				.width(250)
-				.fontSize(100)
-				.textColor(Color.BLACK)
-				.endConfig()
-				.buildRect(mFriend.getFirstname().equals("") ? "?" : mFriend.getFirstname().substring(0, 1), Color.WHITE));
-	}
-
-	private Friend retrieveFriend(Bundle bundle) {
-		Bundle extras = getIntent().getExtras();
-		if (extras == null) {
-			extras = bundle;
-		}
-		if (extras != null) {
-			return extras.getParcelable("friend");
-		}
-		return null;
 	}
 }

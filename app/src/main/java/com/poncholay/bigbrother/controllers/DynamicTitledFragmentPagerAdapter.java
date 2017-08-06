@@ -7,13 +7,11 @@ import android.support.v4.util.Pair;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.poncholay.bigbrother.activities.fragments.TitledFragment;
-
 public class DynamicTitledFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
 	private final String TAG = this.getClass().getName();
 
-	final private SparseArray<Pair<Class<? extends TitledFragment>, String>> registeredFragments = new SparseArray<>();
+	final private SparseArray<Pair<Class<? extends Fragment>, String>> registeredFragments = new SparseArray<>();
 
 	public DynamicTitledFragmentPagerAdapter(FragmentManager fragmentManager) {
 		super(fragmentManager);
@@ -44,12 +42,8 @@ public class DynamicTitledFragmentPagerAdapter extends FragmentStatePagerAdapter
 		}
 	}
 
-	public void push(Class<? extends TitledFragment> fragment) {
-		try {
-			registeredFragments.append(registeredFragments.size(), new Pair<Class<? extends TitledFragment>, String>(fragment, fragment.newInstance().getTitle()));
-		} catch (Exception e) {
-			registeredFragments.append(registeredFragments.size(), new Pair<Class<? extends TitledFragment>, String>(fragment, fragment.getName()));
-		}
+	public void push(Class<? extends Fragment> fragment, String title) {
+		registeredFragments.append(registeredFragments.size(), new Pair<Class<? extends Fragment>, String>(fragment, title));
 		notifyDataSetChanged();
 	}
 }

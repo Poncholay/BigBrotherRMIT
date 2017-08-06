@@ -11,6 +11,8 @@ import android.view.MenuItem;
 
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.fragments.FriendListFragment;
+import com.poncholay.bigbrother.activities.fragments.MapFragment;
+import com.poncholay.bigbrother.activities.fragments.MeetingListFragment;
 import com.poncholay.bigbrother.controllers.DynamicTitledFragmentPagerAdapter;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -56,7 +58,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 
 	private void setupPager(Bundle bundle) {
 		ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPager);
-		mViewPager.setOffscreenPageLimit(1);
+		mViewPager.setOffscreenPageLimit(2);
 
 		CircleIndicator indicator = (CircleIndicator) findViewById(R.id.pager_indicator);
 
@@ -75,22 +77,8 @@ public class BigBrotherActivity extends AppCompatActivity {
 		mViewPager.setAdapter(mAdapter);
 		indicator.setViewPager(mViewPager);
 
-		mAdapter.push(FriendListFragment.class);
-		mAdapter.push(MeetingListFragment.class);
-		mAdapter.push(LocalisationFragment.class);
-	}
-
-	//TODO : Implement real fragments
-	static public class MeetingListFragment extends FriendListFragment {
-		@Override
-		public String getTitle() {
-			return "Meetings";
-		}
-	}
-	static public class LocalisationFragment extends FriendListFragment {
-		@Override
-		public String getTitle() {
-			return "Localisation";
-		}
+		mAdapter.push(FriendListFragment.class, FriendListFragment.getTitle());
+		mAdapter.push(MeetingListFragment.class, MeetingListFragment.getTitle());
+		mAdapter.push(MapFragment.class, MapFragment.getTitle());
 	}
 }

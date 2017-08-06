@@ -2,7 +2,6 @@ package com.poncholay.bigbrother.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,13 +14,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
+import com.poncholay.bigbrother.utils.BundleUtils;
 import com.poncholay.bigbrother.utils.CopyHelper;
 import com.poncholay.bigbrother.utils.DateUtils;
+import com.poncholay.bigbrother.utils.IconUtils;
 import com.squareup.picasso.Picasso;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -58,20 +58,20 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_friend);
 
-		mMode = retrieveMode(savedInstanceState);
+		mMode = BundleUtils.retrieveMode(savedInstanceState, getIntent().getExtras());
 		if (mMode != Constants.EDIT_FRIEND && mMode != Constants.NEW_FRIEND) {
 			finish();
 			return;
 		}
 
-		mFriend = retrieveFriend(savedInstanceState);
+		mFriend = (Friend) BundleUtils.retrieveParcelable(savedInstanceState, getIntent().getExtras(), "friend");
 		if (mFriend == null) {
 			mFriend = new Friend();
 		}
 
 		setupToolbar();
 		setupFormListeners();
-		setupBaseIcon();
+		IconUtils.setupIcon(mIconView, mFriend, this);
 	}
 
 	@Override
@@ -283,47 +283,5 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 				EasyImage.openChooserWithGallery(activity, "Pick an icon", 0);
 			}
 		});
-	}
-
-	private void setupBaseIcon() {
-		mIconView.setBorderWidth(2);
-		mIconView.setShadowRadius(2);
-		if (mFriend.getHasIcon()) {
-			File iconFile = getFile(this, mFriend.getFirstname() + " " + mFriend.getLastname(), Constants.ICON);
-			if (iconFile != null) {
-				Picasso.with(this).load(iconFile).into(mIconView);
-				return;
-			}
-		}
-		mIconView.setImageDrawable(TextDrawable.builder()
-				.beginConfig()
-				.height(100)
-				.width(100)
-				.fontSize(60)
-				.textColor(Color.BLACK)
-				.endConfig()
-				.buildRect("?", Color.WHITE));
-	}
-
-	private Friend retrieveFriend(Bundle bundle) {
-		Bundle extras = getIntent().getExtras();
-		if (extras == null) {
-			extras = bundle;
-		}
-		if (extras != null) {
-			return extras.getParcelable("friend");
-		}
-		return null;
-	}
-
-	private int retrieveMode(Bundle bundle) {
-		Bundle extras = getIntent().getExtras();
-		if (extras == null) {
-			extras = bundle;
-		}
-		if (extras != null) {
-			return extras.getInt("mode", -1);
-		}
-		return -1;
 	}
 }

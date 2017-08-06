@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,7 +32,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class FriendListFragment extends TitledFragment {
+public class FriendListFragment extends Fragment {
 
 	private static final String LOG_TAG = ContactDataManager.class.getName();
 
@@ -67,23 +68,23 @@ public class FriendListFragment extends TitledFragment {
 			final Context context = recyclerView.getContext();
 			AnchoredFloatingActionButton anchoredFab = new AnchoredFloatingActionButton(context, (FloatingActionButton) fab);
 
-			final FloatingActionButton recordFab = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_contact);
-			recordFab.setOnClickListener(new View.OnClickListener() {
+			final FloatingActionButton fromContact = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_contact);
+			fromContact.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					tryReadContact();
 				}
 			});
-			anchoredFab.addChild(recordFab);
+			anchoredFab.addChild(fromContact);
 
-			final FloatingActionButton fromFileFab = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_scratch);
-			fromFileFab.setOnClickListener(new View.OnClickListener() {
+			final FloatingActionButton fromScratch = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_scratch);
+			fromScratch.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					startCreateContact();
 				}
 			});
-			anchoredFab.addChild(fromFileFab);
+			anchoredFab.addChild(fromScratch);
 
 			anchoredFab.setup();
 		}
@@ -200,11 +201,10 @@ public class FriendListFragment extends TitledFragment {
 	}
 
 	private List<Friend> retrieveFriends() {
-		return Lists.newArrayList(Friend.findAll(Friend.class)); //TODO : uncomment
-//		return Arrays.asList(new Friend("Guillaume", "Wilmot"), new Friend("Loic", "Hollevile"), new Friend("Gautier", "Laisné"), new Friend("Random", "Person"), new Friend("Pon", "Cholee"), new Friend("Super long first name with a ", "super long lastname"), new Friend("", "Djo", "Lopez", "DjoPeloz@gmail.com", new Date(), ""));
+		return Lists.newArrayList(Friend.findAll(Friend.class));
 	}
 
-	public String getTitle() {
+	public static String getTitle() {
 		return "Friends";
 	}
 }

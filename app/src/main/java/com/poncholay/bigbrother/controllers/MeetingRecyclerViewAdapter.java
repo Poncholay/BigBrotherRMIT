@@ -1,9 +1,9 @@
 package com.poncholay.bigbrother.controllers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,22 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.mikhaellopez.circularimageview.CircularImageView;
-import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.FriendActivity;
-import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.utils.IconUtils;
+import com.poncholay.bigbrother.model.Meeting;
+import com.poncholay.bigbrother.utils.DateUtils;
 
 import java.util.List;
 
-public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecyclerViewAdapter.ViewHolder> {
+public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecyclerViewAdapter.ViewHolder> {
 
-	private final List<Friend> mValues;
+	private final List<Meeting> mValues;
 	private Context mContext;
 	private Fragment mFragment;
 
-	public FriendRecyclerViewAdapter(List<Friend> items, Fragment fragment) {
+	public MeetingRecyclerViewAdapter(List<Meeting> items, Fragment fragment) {
 		mValues = items;
 		mFragment = fragment;
 	}
@@ -35,29 +32,42 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		mContext = parent.getContext();
-		View view = LayoutInflater.from(mContext).inflate(R.layout.item_friend, parent, false);
+		View view = LayoutInflater.from(mContext).inflate(R.layout.item_meeting, parent, false);
 		return new ViewHolder(view);
 	}
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, int position) {
 
-		final Friend friend = mValues.get(position);
+		final Meeting meeting = mValues.get(position);
 
-		if (friend != null) {
-			holder.mItem = friend;
+		if (meeting != null) {
+			holder.mItem = meeting;
 
-			IconUtils.setupIcon(holder.mIconView, friend, mContext);
+			holder.mDateView.setText(DateUtils.toLiteString(meeting.getStart()));
+			holder.mTitleView.setText(meeting.getTitle());
 
-			holder.mFirstNameView.setText(friend.getFirstname());
-			holder.mLastNameView.setText(friend.getLastname());
+			if (meeting.getFriends().size() == 0) {
+				ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.mPeopleView.getLayoutParams();
+				params.setMargins(0, 0, 0, 0);
+				params.height = 0;
+				holder.mPeopleView.setLayoutParams(params);
+			} else {
+				IconRecyclerViewAdapter adapter = new IconRecyclerViewAdapter(meeting.getFriends());
+				holder.mPeopleView.setAdapter(adapter);
+
+				final Context context = holder.mPeopleView.getContext();
+				LinearLayoutManager llm = new LinearLayoutManager(context);
+				llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+				holder.mPeopleView.setLayoutManager(llm);
+			}
 
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent callFriendActivity = new Intent(mContext, FriendActivity.class);
-					callFriendActivity.putExtra("friend", friend);
-					mFragment.startActivityForResult(callFriendActivity, Constants.EDIT_FRIEND);
+//					Intent callMeetingActivity = new Intent(mContext, MeetingActivity.class);
+//					callMeetingActivity.putExtra("Meeting", Meeting);
+//					mFragment.startActivityForResult(callMeetingActivity, Constants.EDIT_Meeting);
 				}
 			});
 			holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -70,9 +80,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 						public boolean onMenuItemClick(MenuItem item) {
 							switch (item.getTitle().toString()) {
 								case "Delete":
-									remove(friend);
-									//TODO : delete directory
-									friend.delete();
+									remove(meeting);
+									meeting.delete();
 									return true;
 								default:
 									return true;
@@ -91,26 +100,26 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 		return mValues.size();
 	}
 
-	public int getPosition(Friend object) {
+	public int getPosition(Meeting object) {
 		return mValues.indexOf(object);
 	}
 
-	public void add(@Nullable Friend object) {
+	public void add(@Nullable Meeting object) {
 		mValues.add(object);
 		notifyDataSetChanged();
 	}
 
-	public void insert(@Nullable Friend object, int pos) {
+	public void insert(@Nullable Meeting object, int pos) {
 		mValues.add(pos, object);
 		notifyDataSetChanged();
 	}
 
-	public void remove(@Nullable Friend object) {
+	public void remove(@Nullable Meeting object) {
 		mValues.remove(object);
 		notifyDataSetChanged();
 	}
 
-	public List<Friend> getlist() {
+	public List<Meeting> getlist() {
 		return mValues;
 	}
 
@@ -166,26 +175,18 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
-		final TextView mFirstNameView;
-		final TextView mLastNameView;
-		final CircularImageView mIconView;
+		final TextView mDateView;
+		final TextView mTitleView;
+		final RecyclerView mPeopleView;
 
-		Friend mItem;
+		Meeting mItem;
 
 		ViewHolder(View view) {
 			super(view);
 			mView = view;
-			mFirstNameView = (TextView) view.findViewById(R.id.friend_firstname);
-			mLastNameView = (TextView) view.findViewById(R.id.friend_lastname);
-			mIconView = (CircularImageView) view.findViewById(R.id.friend_icon);
-		}
-
-		@Override
-		public String toString() {
-			return super.toString() + " '" +
-					mItem.getId() + " " +
-					mItem.getFirstname() + " " +
-					mItem.getLastname() + "'";
+			mDateView = (TextView) view.findViewById(R.id.meeting_date);
+			mTitleView = (TextView) view.findViewById(R.id.meeting_title);
+			mPeopleView = (RecyclerView) view.findViewById(R.id.meeting_peoplelist);
 		}
 	}
 }

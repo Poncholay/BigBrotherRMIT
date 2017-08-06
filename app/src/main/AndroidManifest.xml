@@ -5,6 +5,7 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 	<application
 		android:name=".BigBrotherApplication"
@@ -14,13 +15,12 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme">
-
 		<meta-data
 			android:name="DATABASE"
 			android:value="bigbrother.db"/>
 		<meta-data
 			android:name="VERSION"
-			android:value="2"/>
+			android:value="3"/>
 		<meta-data
 			android:name="QUERY_LOG"
 			android:value="false"/>
@@ -28,30 +28,46 @@
 			android:name="DOMAIN_PACKAGE_NAME"
 			android:value="com.poncholay.bigbrother"/>
 
-		<activity android:name=".activities.SplashActivity"
-				  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-				  android:noHistory="true">
-			<!--<intent-filter>-->
-				<!--<action android:name="android.intent.action.MAIN" />-->
-				<!--<category android:name="android.intent.category.LAUNCHER" />-->
-			<!--</intent-filter>-->
+		<activity
+			android:name=".activities.SplashActivity"
+			android:noHistory="true"
+			android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+			<!-- <intent-filter> -->
+			<!-- <action android:name="android.intent.action.MAIN" /> -->
+			<!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+			<!-- </intent-filter> -->
 		</activity>
-		<activity android:name=".activities.BigBrotherActivity"
-				  android:label="@string/app_name"
-				  android:theme="@style/AppTheme.NoActionBar">
+		<activity
+			android:name=".activities.BigBrotherActivity"
+			android:label="@string/app_name"
+			android:theme="@style/AppTheme.NoActionBar">
 			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
+				<action android:name="android.intent.action.MAIN"/>
+
+				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".activities.EditFriendActivity"
-				  android:label="@string/app_name"
-				  android:theme="@style/AppTheme.NoActionBar">
+		<activity
+			android:name=".activities.EditFriendActivity"
+			android:label="@string/app_name"
+			android:theme="@style/AppTheme.NoActionBar">
 		</activity>
-		<activity android:name=".activities.FriendActivity"
-				  android:label="@string/app_name"
-				  android:theme="@style/AppTheme.NoActionBar">
+		<activity
+			android:name=".activities.FriendActivity"
+			android:label="@string/app_name"
+			android:theme="@style/AppTheme.NoActionBar">
 		</activity>
+		<activity
+			android:name=".activities.EditMeetingActivity"
+			android:label="@string/app_name"
+			android:theme="@style/AppTheme.NoActionBar">
+		</activity>
+
+		<meta-data
+			android:name="com.google.android.geo.API_KEY"
+			android:value="@string/google_maps_key"/>
+
 	</application>
 
 </manifest>

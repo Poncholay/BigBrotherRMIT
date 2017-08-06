@@ -12,21 +12,44 @@ public class DateUtils {
 		if (date == null) {
 			return null;
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
 		return format.format(date);
 	}
 
 	public static String toFullString(Date date) {
 		String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-		return toStringBody(date, months);
+		return toStringDate(date, months);
 	}
 
 	public static String toLiteString(Date date) {
 		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-		return toStringBody(date, months);
+		return toStringDate(date, months);
 	}
 
-	private static String toStringBody(Date date, String[] months) {
+	public static String toLiteStringTime(Date date) {
+		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+		String ret = toStringDate(date, months);
+		ret += ", ";
+		ret += toStringTime(date);
+		return ret;
+	}
+
+	private static String toStringTime(Date date) {
+		String dateStr = DateUtils.toString(date);
+		try {
+			System.out.println(dateStr);
+			String[] segments = dateStr.split("T");
+			segments = segments[1].split(":");
+			int h = Integer.parseInt(segments[0]);
+			int m = Integer.parseInt(segments[1]);
+			String suffix = h > 12 ? "PM" : "AM";
+			return (h % 12 >= 10 ? "" : "0") + h % 12 + ":" + (m >= 10 ? "" : "0") + m + suffix;
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	private static String toStringDate(Date date, String[] months) {
 		String dateStr = DateUtils.toString(date);
 		try {
 			String[] suffix = {"st", "nd", "rt"};
