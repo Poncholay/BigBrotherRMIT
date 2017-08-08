@@ -27,11 +27,29 @@ public class DateUtils {
 	}
 
 	public static String toLiteStringTime(Date date) {
-		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-		String ret = toStringDate(date, months);
+		String ret = toLiteString(date);
 		ret += ", ";
 		ret += toStringTime(date);
 		return ret;
+	}
+
+	public static String toNumberString(Date date) {
+		String dateStr = DateUtils.toString(date);
+		try {
+			String[] segments = dateStr.split("-");
+			int y = Integer.parseInt(segments[0]);
+			int m = Integer.parseInt(segments[1]);
+			int d = Integer.parseInt(segments[2].split("T")[0]);
+
+			return String.format(Locale.US, "%02d", d) + "/" + String.format(Locale.US, "%02d", m) + "/" + String.format(Locale.US, "%02d", y);
+		} catch (Exception e) {
+			Log.e("Date", e.getMessage());
+			return "Anytime";
+		}
+	}
+
+	public static String toNumberStringTime(Date date) {
+		return DateUtils.toNumberString(date) + "\n" + DateUtils.toStringTime(date);
 	}
 
 	private static String toStringTime(Date date) {
@@ -43,7 +61,7 @@ public class DateUtils {
 			int h = Integer.parseInt(segments[0]);
 			int m = Integer.parseInt(segments[1]);
 			String suffix = h > 12 ? "PM" : "AM";
-			return (h % 12 >= 10 ? "" : "0") + h % 12 + ":" + (m >= 10 ? "" : "0") + m + suffix;
+			return String.format(Locale.US, "%02d", h % 12) + ":" + String.format(Locale.US, "%02d", m) + suffix;
 		} catch (Exception e) {
 			return "";
 		}
@@ -52,7 +70,7 @@ public class DateUtils {
 	private static String toStringDate(Date date, String[] months) {
 		String dateStr = DateUtils.toString(date);
 		try {
-			String[] suffix = {"st", "nd", "rt"};
+			String[] suffix = {"", "st", "nd", "rt"};
 			String[] segments = dateStr.split("-");
 			int y = Integer.parseInt(segments[0]);
 			int m = Integer.parseInt(segments[1]);

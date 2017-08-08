@@ -49,8 +49,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
 			IconUtils.setupIcon(holder.mIconView, friend, mContext);
 
-			holder.mFirstNameView.setText(friend.getFirstname());
-			holder.mLastNameView.setText(friend.getLastname());
+			holder.mNameView.setText(friend.getFirstname() + " " + friend.getLastname());
 
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -166,7 +165,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
-		final TextView mFirstNameView;
+		final TextView mNameView;
 		final TextView mLastNameView;
 		final CircularImageView mIconView;
 
@@ -175,8 +174,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 		ViewHolder(View view) {
 			super(view);
 			mView = view;
-			mFirstNameView = (TextView) view.findViewById(R.id.friend_firstname);
-			mLastNameView = (TextView) view.findViewById(R.id.friend_lastname);
+			mNameView = (TextView) view.findViewById(R.id.friend_name);
+			mLastNameView = (TextView) view.findViewById(R.id.friend_hint);
 			mIconView = (CircularImageView) view.findViewById(R.id.friend_icon);
 		}
 

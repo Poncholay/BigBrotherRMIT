@@ -2,16 +2,24 @@ package com.poncholay.bigbrother.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Meeting;
@@ -22,7 +30,6 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class EditMeetingActivity extends AppCompatActivity
 		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -60,8 +67,10 @@ public class EditMeetingActivity extends AppCompatActivity
 
 	@Override
 	public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-		Calendar calendar = new GregorianCalendar();
-		calendar.set(year, monthOfYear, dayOfMonth);
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, monthOfYear);
+		calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 		if (mEditStart) {
 			mDateStartView.setText(DateUtils.toLiteString(calendar.getTime()));
 			mDateStart = calendar.getTime();
@@ -77,9 +86,10 @@ public class EditMeetingActivity extends AppCompatActivity
 
 	@Override
 	public void onTimeSet(TimePickerDialog view, int hour, int minute, int second) {
-		Calendar calendar = new GregorianCalendar();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(mEditStart ? mDateStart : mDateEnd);
-		calendar.set(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, hour, minute, second);
+		calendar.set(Calendar.HOUR_OF_DAY, hour);
+		calendar.set(Calendar.MINUTE, minute);
 		if (mEditStart) {
 			mDateStartView.setText(DateUtils.toLiteStringTime(calendar.getTime()));
 			mDateStart = calendar.getTime();
@@ -174,17 +184,39 @@ public class EditMeetingActivity extends AppCompatActivity
 			}
 		});
 
-		Button addPeople = (Button) findViewById(R.id.add_people_button);
+		final Button addPeople = (Button) findViewById(R.id.add_people_button);
 		addPeople.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+				showSelectableFriendList();
 			}
 		});
 	}
 
+	private void showSelectableFriendList() {
+		new MaterialDialog.Builder(this)
+				.title(R.string.select_friends)
+//				.customView(R.layout.select_list, true)
+				.negativeText(R.string.action_cancel)
+				.onNegative(new MaterialDialog.SingleButtonCallback() {
+					@Override
+					public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+					}
+				})
+				.positiveText(R.string.action_validate)
+				.onPositive(new MaterialDialog.SingleButtonCallback() {
+					@Override
+					public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+					}
+				})
+//				.build() //TODO : remove
+				.show();
+	}
+
 	private void displayDatePicker(DatePickerDialog.OnDateSetListener callback, Date date) {
-		Calendar calendar = new GregorianCalendar();
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		DatePickerDialog dpd = DatePickerDialog.newInstance(
 				callback,

@@ -44,7 +44,7 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		if (meeting != null) {
 			holder.mItem = meeting;
 
-			holder.mDateView.setText(DateUtils.toLiteString(meeting.getStart()));
+			holder.mDateView.setText(DateUtils.toNumberStringTime(meeting.getStart()));
 			holder.mTitleView.setText(meeting.getTitle());
 
 			if (meeting.getFriends().size() == 0) {

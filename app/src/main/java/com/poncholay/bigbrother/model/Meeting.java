@@ -93,7 +93,10 @@ public class Meeting extends SugarRecord implements Parcelable {
 		this.setTitle(in.readString());
 		this.setStart((Date) in.readSerializable());
 		this.setEnd((Date) in.readSerializable());
-		this.setFriends(Arrays.asList((Friend[]) in.readParcelableArray(Friend.class.getClassLoader())));
+		Parcelable[] ps = in.readParcelableArray(Friend.class.getClassLoader());
+		Friend[] friends = new Friend[ps.length];
+		System.arraycopy(ps, 0, friends, 0, ps.length);
+		this.setFriends(Arrays.asList(friends));
 		this.setLocation((LatLng) in.readParcelable(LatLng.class.getClassLoader()));
 	}
 

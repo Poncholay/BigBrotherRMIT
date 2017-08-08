@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
@@ -77,7 +78,9 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 	@Override
 	public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(year, monthOfYear, dayOfMonth);
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, monthOfYear);
+		calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 		mDateView.setText(DateUtils.toLiteString(calendar.getTime()));
 		mDate = calendar.getTime();
 	}
@@ -263,7 +266,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 		datePicker.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Calendar calendar = new GregorianCalendar();
+				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(mDate);
 				DatePickerDialog dpd = DatePickerDialog.newInstance(
 						callback,

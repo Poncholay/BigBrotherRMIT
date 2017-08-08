@@ -12,5 +12,5 @@
 	<dimen name="small_padding">2dp</dimen>
 	<dimen name="fullname_size">25sp</dimen>
 	<dimen name="firstname_size">20sp</dimen>
-	<dimen name="lastname_size">15sp</dimen>
+	<dimen name="lastname_size">16sp</dimen>
 </resources>
