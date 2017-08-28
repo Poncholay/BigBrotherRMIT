@@ -8,25 +8,37 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.IconUtils;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 public class IconRecyclerViewAdapter extends RecyclerView.Adapter<IconRecyclerViewAdapter.ViewHolder> {
 
-	private final List<Friend> mValues;
+	private List<Friend> mValues;
 	private Context mContext;
+	private int mOrientation;
 
-	public IconRecyclerViewAdapter(List<Friend> items) {
+	public IconRecyclerViewAdapter(List<Friend> items, int orientation) {
+		if (orientation != Constants.VERTICAL && orientation != Constants.HORIZONTAL) {
+			throw new InvalidParameterException("Invalid orientation");
+		}
 		mValues = items;
+		mOrientation = orientation;
 	}
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		mContext = parent.getContext();
-		View view = LayoutInflater.from(mContext).inflate(R.layout.item_icon, parent, false);
+		View view = null;
+		if (mOrientation == Constants.VERTICAL) {
+			view = LayoutInflater.from(mContext).inflate(R.layout.item_icon_vertical, parent, false);
+		} else  if (mOrientation == Constants.HORIZONTAL) {
+			view = LayoutInflater.from(mContext).inflate(R.layout.item_icon_horizontal, parent, false);
+		}
 		return new ViewHolder(view);
 	}
 
@@ -62,6 +74,11 @@ public class IconRecyclerViewAdapter extends RecyclerView.Adapter<IconRecyclerVi
 
 	public void remove(@Nullable Friend object) {
 		mValues.remove(object);
+		notifyDataSetChanged();
+	}
+
+	public void setList(List<Friend> friends) {
+		mValues = friends;
 		notifyDataSetChanged();
 	}
 

@@ -94,6 +94,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.clear();
 		getMenuInflater().inflate(R.menu.bar_edit_friend_activity, menu);
 		return true;
 	}

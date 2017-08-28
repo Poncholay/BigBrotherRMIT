@@ -19,10 +19,8 @@
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
 		android:layout_gravity="center_vertical"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent">
+		android:focusable="true"
+		android:focusableInTouchMode="true">
 
 		<com.wrapp.floatlabelededittext.FloatLabeledEditText
 			android:id="@+id/title_parent"
@@ -43,7 +41,7 @@
 			android:orientation="horizontal">
 			<LinearLayout
 				android:layout_width="0dp"
-				android:layout_weight="25"
+				android:layout_weight="22"
 				android:layout_height="match_parent"
 				android:orientation="vertical">
 				<TextView
@@ -74,7 +72,7 @@
 			<LinearLayout
 				android:id="@+id/values"
 				android:layout_width="0dp"
-				android:layout_weight="75"
+				android:layout_weight="78"
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
 				<android.support.constraint.ConstraintLayout
@@ -139,14 +137,39 @@
 			android:id="@+id/add_people_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/small_padding"
+			android:layout_marginTop="@dimen/general_padding"
 			android:layout_gravity="center"
 			android:text="@string/select_friends"
 			android:minWidth="0dp"/>
 
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/meeting_peoplelist"
+		<LinearLayout
+			android:id="@+id/meeting_friendlist_container"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginTop="@dimen/general_padding">
+			<TextView
+				android:id="@+id/meeting_people_number"
+				android:layout_width="0dp"
+				android:layout_weight="10"
+				android:layout_height="match_parent"
+				android:gravity="center|center_vertical"
+				android:text="@string/_0"/>
+			<android.support.v7.widget.RecyclerView
+				android:id="@+id/meeting_peoplelist"
+				android:layout_width="0dp"
+				android:layout_weight="90"
+				android:layout_height="50dp"/>
+		</LinearLayout>
+
+		<android.support.v7.widget.AppCompatButton
+			android:id="@+id/pick_location_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/general_padding"
+			android:layout_gravity="center"
+			android:text="@string/pick_location"
+			android:minWidth="0dp"/>
+
 	</LinearLayout>
 </RelativeLayout>

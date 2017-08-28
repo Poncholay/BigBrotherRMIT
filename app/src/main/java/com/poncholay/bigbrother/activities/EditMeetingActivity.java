@@ -1,11 +1,15 @@
 package com.poncholay.bigbrother.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -17,11 +21,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.common.collect.Lists;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.controllers.FriendRecyclerViewAdapter;
+import com.poncholay.bigbrother.controllers.IconRecyclerViewAdapter;
+import com.poncholay.bigbrother.controllers.SelectFriendRecyclerViewAdapter;
+import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.BundleUtils;
 import com.poncholay.bigbrother.utils.DateUtils;
@@ -30,6 +44,8 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class EditMeetingActivity extends AppCompatActivity
 		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -40,6 +56,10 @@ public class EditMeetingActivity extends AppCompatActivity
 	private EditText mTitleView;
 	private TextView mDateStartView;
 	private TextView mDateEndView;
+	private TextView mNbFriends;
+	private RecyclerView mFriendsView;
+
+	private IconRecyclerViewAdapter mIconAdapter;
 
 	private boolean mEditStart = true;
 	private Date mDateStart = null;
@@ -71,6 +91,8 @@ public class EditMeetingActivity extends AppCompatActivity
 		calendar.set(Calendar.YEAR, year);
 		calendar.set(Calendar.MONTH, monthOfYear);
 		calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
 		if (mEditStart) {
 			mDateStartView.setText(DateUtils.toLiteString(calendar.getTime()));
 			mDateStart = calendar.getTime();
@@ -108,6 +130,7 @@ public class EditMeetingActivity extends AppCompatActivity
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.clear();
 		getMenuInflater().inflate(R.menu.bar_edit_friend_activity, menu);
 		return true;
 	}
@@ -125,6 +148,11 @@ public class EditMeetingActivity extends AppCompatActivity
 
 	private void validate() {
 		String title = mTitleView.getText().toString();
+
+		if (title.trim().equals("")) {
+			Toast.makeText(this, getString(R.string.error_empty_title), Toast.LENGTH_SHORT).show();
+			return;
+		}
 
 		mMeeting.setTitle(title);
 		mMeeting.setStart(mDateStart);
@@ -157,13 +185,23 @@ public class EditMeetingActivity extends AppCompatActivity
 		mTitleView = (EditText) findViewById(R.id.title_field);
 		mDateStartView = (TextView) findViewById(R.id.start_date_field);
 		mDateEndView =  (TextView) findViewById(R.id.end_date_field);
+		mNbFriends = (TextView) findViewById(R.id.meeting_people_number);
+		mFriendsView = (RecyclerView) findViewById(R.id.meeting_peoplelist);
 
 		mTitleView.setText(mMeeting.getTitle());
-		mDateStartView.setText(DateUtils.toLiteString(mMeeting.getStart()));
-		mDateEndView.setText(DateUtils.toLiteString(mMeeting.getEnd()));
+		mDateStartView.setText(DateUtils.toLiteStringTime(mMeeting.getStart()));
+		mDateEndView.setText(DateUtils.toLiteStringTime(mMeeting.getEnd()));
 
 		mDateStart = mMeeting.getStart();
 		mDateEnd = mMeeting.getEnd();
+
+		mNbFriends.setText(String.format(Locale.US, "%d", mMeeting.getFriends().size()));
+
+		mIconAdapter = new IconRecyclerViewAdapter(mMeeting.getFriends(), Constants.HORIZONTAL);
+		mFriendsView.setAdapter(mIconAdapter);
+		LinearLayoutManager llm = new LinearLayoutManager(mFriendsView.getContext());
+		llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+		mFriendsView.setLayoutManager(llm);
 
 		final DatePickerDialog.OnDateSetListener callback = this;
 
@@ -191,12 +229,31 @@ public class EditMeetingActivity extends AppCompatActivity
 				showSelectableFriendList();
 			}
 		});
+
+		final Button pickLocation = (Button) findViewById(R.id.pick_location_button);
+		pickLocation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				displayPlacePicker();
+			}
+		});
 	}
 
 	private void showSelectableFriendList() {
+		View selectListView = getLayoutInflater().inflate(R.layout.fragment_select_list, null);
+		final RecyclerView recyclerView = (RecyclerView) selectListView.findViewById(R.id.friendlist_recycler_view);
+
+		final Context context = recyclerView.getContext();
+		final SelectFriendRecyclerViewAdapter adapter = new SelectFriendRecyclerViewAdapter(Lists.newArrayList(Friend.findAll(Friend.class)), mMeeting.getFriends());
+		recyclerView.setAdapter(adapter);
+		LinearLayoutManager llm = new LinearLayoutManager(context);
+		llm.setOrientation(LinearLayoutManager.VERTICAL);
+		recyclerView.setLayoutManager(llm);
+		recyclerView.addItemDecoration(new DividerItemDecoration(context, llm.getOrientation()));
+
 		new MaterialDialog.Builder(this)
 				.title(R.string.select_friends)
-//				.customView(R.layout.select_list, true)
+				.customView(selectListView, true)
 				.negativeText(R.string.action_cancel)
 				.onNegative(new MaterialDialog.SingleButtonCallback() {
 					@Override
@@ -208,11 +265,33 @@ public class EditMeetingActivity extends AppCompatActivity
 				.onPositive(new MaterialDialog.SingleButtonCallback() {
 					@Override
 					public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-
+						mMeeting.setFriends(adapter.getSelected());
+						mIconAdapter.setList(adapter.getSelected());
+						mNbFriends.setText(String.format(Locale.US, "%d", adapter.getSelected().size()));
 					}
 				})
-//				.build() //TODO : remove
 				.show();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Constants.REQUEST_PLACE_PICKER) {
+			if (resultCode == RESULT_OK) {
+				Place place = PlacePicker.getPlace(this, data);
+				String toastMsg = String.format("Place: %s", place.getName());
+				Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	private void displayPlacePicker() {
+		PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+		try {
+			startActivityForResult(builder.build(this), Constants.REQUEST_PLACE_PICKER);
+		} catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+			Toast.makeText(this, getString(R.string.error_not_available), Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void displayDatePicker(DatePickerDialog.OnDateSetListener callback, Date date) {

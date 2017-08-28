@@ -3,6 +3,7 @@ package com.poncholay.bigbrother.activities.fragments;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -14,6 +15,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -38,6 +42,7 @@ public class FriendListFragment extends Fragment {
 
 	private FriendRecyclerViewAdapter mAdapter;
 	private RecyclerView mRecyclerView;
+	private int mSort = Constants.BY_NAME;
 
 	public FriendListFragment() {}
 
@@ -46,50 +51,38 @@ public class FriendListFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_friendlist, container, false);
 
 		View recyclerView = view.findViewById(R.id.friendlist_recycler_view);
-		if (recyclerView instanceof RecyclerView) {
-			final Context context = recyclerView.getContext();
-			mRecyclerView = (RecyclerView) recyclerView;
-			List<Friend> friends = savedInstanceState == null ? retrieveFriends() : retrieveFriends(savedInstanceState);
-			mAdapter = new FriendRecyclerViewAdapter(friends, this);
-			mRecyclerView.setAdapter(mAdapter);
-			LinearLayoutManager llm = new LinearLayoutManager(context);
-			llm.setOrientation(LinearLayoutManager.VERTICAL);
-			if (savedInstanceState != null) {
-				int positionIndex = savedInstanceState.getInt("pos", 0);
-				int offset = savedInstanceState.getInt("offset", 0);
-				llm.scrollToPositionWithOffset(positionIndex, offset);
-			}
-			mRecyclerView.setLayoutManager(llm);
-			mRecyclerView.addItemDecoration(new DividerItemDecoration(context, llm.getOrientation()));
-		}
+		setupRecyclerView(recyclerView, savedInstanceState);
 
 		View fab = view.findViewById(R.id.friendlist_fab_add);
-		if (fab instanceof FloatingActionButton) {
-			final Context context = recyclerView.getContext();
-			AnchoredFloatingActionButton anchoredFab = new AnchoredFloatingActionButton(context, (FloatingActionButton) fab);
+		setupFab(fab, view, recyclerView.getContext());
 
-			final FloatingActionButton fromContact = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_contact);
-			fromContact.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					tryReadContact();
-				}
-			});
-			anchoredFab.addChild(fromContact);
+		setHasOptionsMenu(true);
 
-			final FloatingActionButton fromScratch = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_scratch);
-			fromScratch.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					startCreateContact();
-				}
-			});
-			anchoredFab.addChild(fromScratch);
-
-			anchoredFab.setup();
-		}
+		mSort = getActivity().getPreferences(Context.MODE_PRIVATE).getInt("sortFriends", Constants.BY_NAME);
+		sort(false);
 
 		return view;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.bar_friend_list_fragment, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		if (id == R.id.action_sort) {
+			sort(true);
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -170,6 +163,62 @@ public class FriendListFragment extends Fragment {
 					startReadContact();
 				}
 			}
+		}
+	}
+
+	private void sort(boolean change) {
+		SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		if (change) {
+			mSort = mSort == Constants.BY_NAME ? Constants.BY_NAME_INV : Constants.BY_NAME;
+		}
+		editor.putInt("sortFriends", mSort);
+		editor.apply();
+		mAdapter.sort(mSort);
+	}
+
+	private void setupRecyclerView(View recyclerView, Bundle savedInstanceState) {
+		if (recyclerView instanceof RecyclerView) {
+			final Context context = recyclerView.getContext();
+			mRecyclerView = (RecyclerView) recyclerView;
+			List<Friend> friends = savedInstanceState == null ? retrieveFriends() : retrieveFriends(savedInstanceState);
+			mAdapter = new FriendRecyclerViewAdapter(friends, this);
+			mRecyclerView.setAdapter(mAdapter);
+			LinearLayoutManager llm = new LinearLayoutManager(context);
+			llm.setOrientation(LinearLayoutManager.VERTICAL);
+			if (savedInstanceState != null) {
+				int positionIndex = savedInstanceState.getInt("pos", 0);
+				int offset = savedInstanceState.getInt("offset", 0);
+				llm.scrollToPositionWithOffset(positionIndex, offset);
+			}
+			mRecyclerView.setLayoutManager(llm);
+			mRecyclerView.addItemDecoration(new DividerItemDecoration(context, llm.getOrientation()));
+		}
+	}
+
+	private void setupFab(View fab, View view, Context context) {
+		if (fab instanceof FloatingActionButton) {
+			AnchoredFloatingActionButton anchoredFab = new AnchoredFloatingActionButton(context, (FloatingActionButton) fab);
+
+			final FloatingActionButton fromContact = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_contact);
+			fromContact.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					tryReadContact();
+				}
+			});
+			anchoredFab.addChild(fromContact);
+
+			final FloatingActionButton fromScratch = (FloatingActionButton) view.findViewById(R.id.friendlist_fab_from_scratch);
+			fromScratch.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					startCreateContact();
+				}
+			});
+			anchoredFab.addChild(fromScratch);
+
+			anchoredFab.setup();
 		}
 	}
 

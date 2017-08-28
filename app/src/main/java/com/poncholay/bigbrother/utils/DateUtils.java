@@ -26,6 +26,13 @@ public class DateUtils {
 		return toStringDate(date, months);
 	}
 
+	public static String toFullStringTime(Date date) {
+		String ret = toFullString(date);
+		ret += ", ";
+		ret += toStringTime(date);
+		return ret;
+	}
+
 	public static String toLiteStringTime(Date date) {
 		String ret = toLiteString(date);
 		ret += ", ";
@@ -37,7 +44,7 @@ public class DateUtils {
 		String dateStr = DateUtils.toString(date);
 		try {
 			String[] segments = dateStr.split("-");
-			int y = Integer.parseInt(segments[0]);
+			int y = Integer.parseInt(segments[0]) % 100;
 			int m = Integer.parseInt(segments[1]);
 			int d = Integer.parseInt(segments[2].split("T")[0]);
 
@@ -48,14 +55,13 @@ public class DateUtils {
 		}
 	}
 
-	public static String toNumberStringTime(Date date) {
-		return DateUtils.toNumberString(date) + "\n" + DateUtils.toStringTime(date);
+	public static String toNumberStringTime(Date date, boolean newLine) {
+		return DateUtils.toNumberString(date) + (newLine ? "\n" : " ") + DateUtils.toStringTime(date);
 	}
 
 	private static String toStringTime(Date date) {
 		String dateStr = DateUtils.toString(date);
 		try {
-			System.out.println(dateStr);
 			String[] segments = dateStr.split("T");
 			segments = segments[1].split(":");
 			int h = Integer.parseInt(segments[0]);

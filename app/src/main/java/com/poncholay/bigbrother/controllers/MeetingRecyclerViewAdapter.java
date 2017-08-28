@@ -1,6 +1,7 @@
 package com.poncholay.bigbrother.controllers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,11 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.DateUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecyclerViewAdapter.ViewHolder> {
 
@@ -44,20 +50,19 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		if (meeting != null) {
 			holder.mItem = meeting;
 
-			holder.mDateView.setText(DateUtils.toNumberStringTime(meeting.getStart()));
+			holder.mDateBeginView.setText(DateUtils.toNumberStringTime(meeting.getStart(), false));
+			holder.mDateEndView.setText(DateUtils.toNumberStringTime(meeting.getEnd(), false));
 			holder.mTitleView.setText(meeting.getTitle());
+			holder.mNbFriends.setText(String.format(Locale.US, "%d", meeting.getFriends().size()));
 
 			if (meeting.getFriends().size() == 0) {
-				ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.mPeopleView.getLayoutParams();
-				params.setMargins(0, 0, 0, 0);
-				params.height = 0;
-				holder.mPeopleView.setLayoutParams(params);
+				holder.mFriendsContainer.setVisibility(View.GONE);
+				holder.mLine.setVisibility(View.GONE);
 			} else {
-				IconRecyclerViewAdapter adapter = new IconRecyclerViewAdapter(meeting.getFriends());
+				IconRecyclerViewAdapter adapter = new IconRecyclerViewAdapter(meeting.getFriends(), Constants.HORIZONTAL);
 				holder.mPeopleView.setAdapter(adapter);
 
-				final Context context = holder.mPeopleView.getContext();
-				LinearLayoutManager llm = new LinearLayoutManager(context);
+				LinearLayoutManager llm = new LinearLayoutManager(holder.mPeopleView.getContext());
 				llm.setOrientation(LinearLayoutManager.HORIZONTAL);
 				holder.mPeopleView.setLayoutManager(llm);
 			}
@@ -65,9 +70,10 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					Intent callMeetingActivity = new Intent(mContext, MeetingActivity.class);
-//					callMeetingActivity.putExtra("Meeting", Meeting);
-//					mFragment.startActivityForResult(callMeetingActivity, Constants.EDIT_Meeting);
+					Intent callMeetingActivity = new Intent(mContext, EditMeetingActivity.class);
+					callMeetingActivity.putExtra("meeting", meeting);
+					callMeetingActivity.putExtra("mode", Constants.EDIT_MEETING);
+					mFragment.startActivityForResult(callMeetingActivity, Constants.EDIT_MEETING);
 				}
 			});
 			holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -123,70 +129,82 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		return mValues;
 	}
 
-//	public void sortTasks(int index) {
-//		switch (index) {
-//			case S_TITLE:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? 1 : -1;
-//						}
-//						return l.getName().compareToIgnoreCase(r.getName());
-//					}
-//				});
-//				break;
-//			case -S_TITLE:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? -1 : 1;
-//						}
-//						return r.getName().compareToIgnoreCase(l.getName());
-//					}
-//				});
-//				break;
-//			case S_SOUND:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? -1 : 1;
-//						}
-//						return l.getCount() > r.getCount() ? 1 : -1;
-//					}
-//				});
-//			case -S_SOUND:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? -1 : 1;
-//						}
-//						return r.getCount() > l.getCount() ? 1 : -1;
-//					}
-//				});
-//			default:
-//				break;
-//		}
-//		notifyDataSetChanged();
-//	}
+	public void sort(int index) {
+		switch (index) {
+			case Constants.BY_DATE:
+				Collections.sort(mValues, new Comparator<Meeting>() {
+					@Override
+					public int compare(Meeting l, Meeting r) {
+						if (l == null || r == null) {
+							return l == null ? -1 : 1;
+						}
+						return l.getStart().before(r.getStart()) ? 1 : -1;
+					}
+				});
+				break;
+			case Constants.BY_DATE_INV:
+				Collections.sort(mValues, new Comparator<Meeting>() {
+					@Override
+					public int compare(Meeting l, Meeting r) {
+						if (l == null || r == null) {
+							return l == null ? -1 : 1;
+						}
+						return l.getStart().after(r.getStart()) ? 1 : -1;
+					}
+				});
+				break;
+			case Constants.BY_NAME:
+				Collections.sort(mValues, new Comparator<Meeting>() {
+					@Override
+					public int compare(Meeting l, Meeting r) {
+						if (l == null || r == null) {
+							return l == null ? -1 : 1;
+						}
+						return l.getTitle().compareToIgnoreCase(r.getTitle());
+					}
+				});
+				break;
+			case Constants.BY_NAME_INV:
+				Collections.sort(mValues, new Comparator<Meeting>() {
+					@Override
+					public int compare(Meeting l, Meeting r) {
+						if (l == null || r == null) {
+							return l == null ? -1 : 1;
+						}
+						return r.getTitle().compareToIgnoreCase(l.getTitle());
+					}
+				});
+				break;
+			default:
+				break;
+		}
+		notifyDataSetChanged();
+	}
 
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
-		final TextView mDateView;
+		final TextView mDateBeginView;
+		final TextView mDateEndView;
 		final TextView mTitleView;
+		final TextView mNbFriends;
 		final RecyclerView mPeopleView;
+
+		final View mFriendsContainer;
+		final View mLine;
 
 		Meeting mItem;
 
 		ViewHolder(View view) {
 			super(view);
 			mView = view;
-			mDateView = (TextView) view.findViewById(R.id.meeting_date);
+			mDateBeginView = (TextView) view.findViewById(R.id.meeting_begin);
+			mDateEndView = (TextView) view.findViewById(R.id.meeting_end);
 			mTitleView = (TextView) view.findViewById(R.id.meeting_title);
+			mNbFriends = (TextView) view.findViewById(R.id.meeting_people_number);
 			mPeopleView = (RecyclerView) view.findViewById(R.id.meeting_peoplelist);
+
+			mFriendsContainer = view.findViewById(R.id.meeting_friendlist_container);
+			mLine = view.findViewById(R.id.line4);
 		}
 	}
 }

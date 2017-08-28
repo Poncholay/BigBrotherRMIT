@@ -1,7 +1,11 @@
 package com.poncholay.bigbrother.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -47,5 +51,24 @@ public class IconUtils {
 				.textColor(Color.BLACK)
 				.endConfig()
 				.buildRect(friend.getFirstname().equals("") ? "?" : friend.getFirstname().substring(0, 1), Color.WHITE));
+	}
+
+	public static String getIconPath(Friend friend, Context context) {
+		try {
+			return getFile(context, friend.getFirstname() + " " + friend.getLastname(), Constants.ICON).getPath();
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	public static Drawable getIconTextDrawable(Friend friend) {
+		return TextDrawable.builder()
+				.beginConfig()
+				.height(100)
+				.width(100)
+				.fontSize(60)
+				.textColor(Color.BLACK)
+				.endConfig()
+				.buildRect(friend.getFirstname().equals("") ? "?" : friend.getFirstname().substring(0, 1), Color.WHITE);
 	}
 }

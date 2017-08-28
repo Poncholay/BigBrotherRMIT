@@ -2,12 +2,17 @@ package com.poncholay.bigbrother.activities.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +35,7 @@ public class MeetingListFragment extends Fragment {
 
 	private MeetingRecyclerViewAdapter mAdapter;
 	private RecyclerView mRecyclerView;
+	private int mSort;
 
 	public MeetingListFragment() {}
 
@@ -42,7 +48,33 @@ public class MeetingListFragment extends Fragment {
 		View fab = view.findViewById(R.id.meetinglist_fab_add);
 		setupFab(fab);
 
+		setHasOptionsMenu(true);
+
+		int index = getActivity().getPreferences(Context.MODE_PRIVATE).getInt("sortMeetings", Constants.BY_NAME);
+		mAdapter.sort(index);
+
 		return view;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.bar_meeting_list_fragment, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		if (id == R.id.action_sort) {
+			sort();
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -88,6 +120,43 @@ public class MeetingListFragment extends Fragment {
 		outState.putInt("pos", ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstVisibleItemPosition());
 		outState.putInt("offset", (mRecyclerView.getChildAt(0) == null) ? 0 : (mRecyclerView.getChildAt(0).getTop() - mRecyclerView.getPaddingTop()));
 		super.onSaveInstanceState(outState);
+	}
+
+	private void sort() {
+		PopupMenu menu = new PopupMenu(getContext(), getActivity().findViewById(R.id.action_sort));
+		menu.getMenu().add("Date");
+		menu.getMenu().add("Date reverse");
+		menu.getMenu().add("Title");
+		menu.getMenu().add("Title reverse");
+		menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				int index = -1;
+				switch (item.getTitle().toString()) {
+					case "Date":
+						index = Constants.BY_DATE;
+						break;
+					case "Date reverse":
+						index = Constants.BY_DATE_INV;
+						break;
+					case "Title":
+						index = Constants.BY_NAME;
+						break;
+					case "Title reverse":
+						index = Constants.BY_NAME_INV;
+						break;
+					default:
+						break;
+				}
+				SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putInt("sortMeetings", index);
+				editor.apply();
+				mAdapter.sort(index);
+				return true;
+			}
+		});
+		menu.show();
 	}
 
 	private void setupRecyclerView(View recyclerView, Bundle savedInstanceState) {

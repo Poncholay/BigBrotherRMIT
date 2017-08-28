@@ -3,11 +3,10 @@ package com.poncholay.bigbrother.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.orm.SugarRecord;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -17,8 +16,12 @@ public class Meeting extends SugarRecord implements Parcelable {
 	private String title;
 	private Date start;
 	private Date end;
+
+	private String friendsIds;
 	private List<Friend> friends;
-	private LatLng location;
+
+	private double latitude;
+	private double longitude;
 
 	public Meeting() {}
 
@@ -55,18 +58,56 @@ public class Meeting extends SugarRecord implements Parcelable {
 		this.end = end;
 	}
 
+	private String getFriendsIds() {
+		return friendsIds == null ? "" : friendsIds;
+	}
+	private void setFriendsIds(String friendsIds) {
+		this.friendsIds = friendsIds;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	private void updateListIds() {
+		StringBuilder where = new StringBuilder();
+		for (Friend friend : friends) {
+			where.append(friend.getId()).append(",");
+		}
+		friendsIds = where.toString();
+	}
+	private List<Friend> retrieveFriends() {
+		StringBuilder where = new StringBuilder();
+		if (!getFriendsIds().equals("")) {
+			String[] ids = getFriendsIds().split(",");
+			for (int i = 0; i < ids.length; i++) {
+				where.append("id = ").append(ids[i]);
+				if (i < ids.length - 1) {
+					where.append(" OR ");
+				}
+			}
+			friends = Friend.find(Friend.class, where.toString());
+			return friends;
+		}
+		return new ArrayList<>();
+	}
+
 	public List<Friend> getFriends() {
-		return friends == null ? new ArrayList<Friend>() : friends;
+		return friends == null ? retrieveFriends() : friends;
 	}
 	public void setFriends(List<Friend> friends) {
 		this.friends = friends;
-	}
-
-	public LatLng getLocation() {
-		return location == null ? new LatLng(1, 2) : location;
-	}
-	public void setLocation(LatLng location) {
-		this.location = location;
+		updateListIds();
 	}
 
 	@Override
@@ -93,11 +134,17 @@ public class Meeting extends SugarRecord implements Parcelable {
 		this.setTitle(in.readString());
 		this.setStart((Date) in.readSerializable());
 		this.setEnd((Date) in.readSerializable());
+		this.setFriendsIds(in.readString());
 		Parcelable[] ps = in.readParcelableArray(Friend.class.getClassLoader());
 		Friend[] friends = new Friend[ps.length];
-		System.arraycopy(ps, 0, friends, 0, ps.length);
-		this.setFriends(Arrays.asList(friends));
-		this.setLocation((LatLng) in.readParcelable(LatLng.class.getClassLoader()));
+		try {
+			System.arraycopy(ps, 0, friends, 0, ps.length);
+		} catch (Exception ignored) {}
+		List<Friend> list = new ArrayList<>();
+		Collections.addAll(list, friends);
+		this.setFriends(list);
+		this.setLatitude(in.readLong());
+		this.setLongitude(in.readLong());
 	}
 
 	@Override
@@ -107,8 +154,10 @@ public class Meeting extends SugarRecord implements Parcelable {
 		dest.writeString(this.getTitle());
 		dest.writeSerializable(this.getStart());
 		dest.writeSerializable(this.getEnd());
+		dest.writeString(this.getFriendsIds());
 		dest.writeParcelableArray(this.getFriends().toArray(new Friend[this.getFriends().size()]), 0);
-		dest.writeParcelable(this.getLocation(), 0);
+		dest.writeDouble(this.getLatitude());
+		dest.writeDouble(this.getLongitude());
 	}
 
 	@Override

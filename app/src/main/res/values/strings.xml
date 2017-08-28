@@ -22,6 +22,7 @@
 	<string name="action_validate">Validate</string>
 	<string name="error_name_already_used">Name \\\"%s\\\" already used</string>
 	<string name="error_empty_name">Firstname cannot be empty</string>
+	<string name="error_empty_title">Title cannot be empty</string>
 	<string name="date_picker">Set</string>
 	<string name="edit">title_edit</string>
 	<string name="title_activity_maps">Map</string>
@@ -32,4 +33,8 @@
 	<string name="title_field">Title</string>
 	<string name="select_friends">Select friends</string>
 	<string name="action_cancel">Cancel</string>
+	<string name="location">Location</string>
+	<string name="dash">-</string>
+	<string name="action_sort">Sort</string>
+	<string name="pick_location">Pick location</string>
 </resources>

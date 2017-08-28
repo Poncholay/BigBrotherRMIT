@@ -3,85 +3,165 @@
 	xmlns:card_view="http://schemas.android.com/apk/res-auto"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/meeting"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:layout_marginStart="@dimen/general_padding"
-	android:layout_marginTop="@dimen/general_padding"
-	android:layout_marginEnd="@dimen/general_padding"
-	android:layout_marginBottom="@dimen/small_padding"
-	card_view:cardCornerRadius="2dp">
+	android:layout_margin="@dimen/general_padding"
+	card_view:cardCornerRadius="2dp"
+	android:background="?android:attr/selectableItemBackground">
 
 	<android.support.constraint.ConstraintLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:padding="@dimen/general_padding">
 
-		<LinearLayout
-			android:id="@+id/meeting_info_container"
+		<TextView
+			android:id="@+id/meeting_title"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:padding="@dimen/general_padding"
-			android:background="?android:attr/selectableItemBackground"
+			android:gravity="center_vertical"
+			android:text="@string/generic_title"
+			android:textSize="@dimen/firstname_size"
+			android:ellipsize="end"
+			android:maxLines="1"
+			android:textColor="@color/colorPrimaryText"
 			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
+			tools:layout_editor_absoluteX="16dp"/>
 
-			<TextView
-				android:id="@+id/meeting_date"
-				android:layout_width="0dp"
-				android:layout_weight="25"
-				android:layout_height="match_parent"
-				android:padding="@dimen/small_padding"
-				android:gravity="center"
-				android:text="@string/date"
-				android:textSize="15sp"
-				android:ellipsize="end"
-				android:maxLines="2"
-				android:background="@drawable/item_meeting_border"
-				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toTopOf="parent"
-				app:layout_constraintBottom_toBottomOf="parent"/>
-
-			<TextView
-				android:id="@+id/meeting_title"
-				android:layout_width="0dp"
-				android:layout_weight="75"
-				android:layout_height="match_parent"
-				android:gravity="center_vertical"
-				android:text="@string/generic_title"
-				android:textSize="@dimen/firstname_size"
-				android:ellipsize="end"
-				android:maxLines="1"
-				android:textColor="@color/colorPrimaryText"
-				android:paddingStart="10dp"
-				app:layout_constraintStart_toEndOf="@+id/meeting_date"
-				app:layout_constraintTop_toTopOf="parent"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"/>
-		</LinearLayout>
+		<View
+			android:id="@+id/line1"
+			android:layout_width="wrap_content"
+			android:layout_height="1dp"
+			android:layout_marginTop="@dimen/general_padding"
+			android:background="#d3d3d3"
+			app:layout_constraintTop_toBottomOf="@id/meeting_title"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"/>
 
 		<LinearLayout
-			android:id="@+id/meeting_people_container"
+			android:id="@+id/meeting_date_container"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/general_padding"
+			app:layout_constraintTop_toBottomOf="@id/line1"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<ImageView
+				android:id="@+id/meeting_begin_icon"
+				android:layout_width="0dp"
+				android:layout_weight="10"
+				android:layout_height="match_parent"
+				android:gravity="center|center_vertical"
+				android:src="@drawable/ic_meeting_date"/>
+
+			<TextView
+				android:id="@+id/meeting_begin"
+				android:layout_width="0dp"
+				android:layout_weight="43"
+				android:layout_height="wrap_content"
+				android:text="@string/date"
+				android:textSize="@dimen/lastname_size"
+				android:ellipsize="end"
+				android:maxLines="1"
+				android:gravity="center_vertical"/>
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_weight="4"
+				android:layout_height="wrap_content"
+				android:text="@string/dash"
+				android:textSize="@dimen/lastname_size"
+				android:maxLines="1"
+				android:gravity="center_vertical"/>
+
+			<TextView
+				android:id="@+id/meeting_end"
+				android:layout_width="0dp"
+				android:layout_weight="43"
+				android:layout_height="wrap_content"
+				android:text="@string/date"
+				android:textSize="@dimen/lastname_size"
+				android:ellipsize="end"
+				android:maxLines="1"
+				android:gravity="center_vertical"/>
+
+		</LinearLayout>
+
+		<View
+			android:id="@+id/line2"
+			android:layout_width="wrap_content"
+			android:layout_height="1dp"
+			android:layout_marginTop="@dimen/general_padding"
+			android:background="#d3d3d3"
+			app:layout_constraintTop_toBottomOf="@id/meeting_date_container"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"/>
+
+		<LinearLayout
+			android:id="@+id/meeting_location_container"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/general_padding"
+			app:layout_constraintTop_toBottomOf="@id/line2"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<ImageView
+				android:id="@+id/meeting_location_icon"
+				android:layout_width="0dp"
+				android:layout_weight="10"
+				android:layout_height="match_parent"
+				android:gravity="center|center_vertical"
+				android:src="@drawable/ic_meeting_location"/>
+
+			<TextView
+				android:id="@+id/meeting_location"
+				android:layout_width="0dp"
+				android:layout_weight="90"
+				android:layout_height="wrap_content"
+				android:text="@string/location"
+				android:textSize="@dimen/lastname_size"
+				android:ellipsize="end"
+				android:maxLines="1"
+				android:gravity="center_vertical"/>
+		</LinearLayout>
+
+		<View
+			android:id="@+id/line3"
+			android:layout_width="wrap_content"
+			android:layout_height="1dp"
+			android:layout_marginTop="@dimen/general_padding"
+			android:background="#d3d3d3"
+			app:layout_constraintTop_toBottomOf="@id/meeting_location_container"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"/>
+
+		<LinearLayout
+			android:id="@+id/meeting_friendlist_container"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal"
-			app:layout_constraintTop_toBottomOf="@id/meeting_info_container"
+			android:layout_marginTop="@dimen/general_padding"
+			app:layout_constraintTop_toBottomOf="@id/line3"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent">
 			<TextView
-				android:layout_width="wrap_content"
+				android:id="@+id/meeting_people_number"
+				android:layout_width="0dp"
+				android:layout_weight="10"
 				android:layout_height="match_parent"
-				android:gravity="center_vertical"
-				android:layout_marginStart="@dimen/general_padding"
+				android:gravity="center|center_vertical"
 				android:text="@string/_0"/>
 			<android.support.v7.widget.RecyclerView
 				android:id="@+id/meeting_peoplelist"
-				android:layout_width="match_parent"
-				android:layout_height="@dimen/icon_height"
-				android:layout_marginEnd="@dimen/general_padding"
-				android:layout_marginStart="@dimen/general_padding"
-				android:layout_marginBottom="@dimen/general_padding"/>
+				android:layout_width="0dp"
+				android:layout_weight="90"
+				android:layout_height="50dp"/>
 		</LinearLayout>
 	</android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

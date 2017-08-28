@@ -34,6 +34,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.clear();
 		getMenuInflater().inflate(R.menu.bar_big_brother_activity, menu);
 		return true;
 	}

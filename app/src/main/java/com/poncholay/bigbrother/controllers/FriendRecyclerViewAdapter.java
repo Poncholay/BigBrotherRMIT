@@ -19,12 +19,14 @@ import com.poncholay.bigbrother.activities.FriendActivity;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.IconUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecyclerViewAdapter.ViewHolder> {
 
-	private final List<Friend> mValues;
-	private Context mContext;
+	protected final List<Friend> mValues;
+	protected Context mContext;
 	private Fragment mFragment;
 
 	public FriendRecyclerViewAdapter(List<Friend> items, Fragment fragment) {
@@ -113,55 +115,35 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 		return mValues;
 	}
 
-//	public void sortTasks(int index) {
-//		switch (index) {
-//			case S_TITLE:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? 1 : -1;
-//						}
-//						return l.getName().compareToIgnoreCase(r.getName());
-//					}
-//				});
-//				break;
-//			case -S_TITLE:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? -1 : 1;
-//						}
-//						return r.getName().compareToIgnoreCase(l.getName());
-//					}
-//				});
-//				break;
-//			case S_SOUND:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? -1 : 1;
-//						}
-//						return l.getCount() > r.getCount() ? 1 : -1;
-//					}
-//				});
-//			case -S_SOUND:
-//				Collections.sort(mList, new Comparator<Board>() {
-//					@Override
-//					public int compare(Board l, Board r) {
-//						if (l == null || r == null) {
-//							return l == null ? -1 : 1;
-//						}
-//						return r.getCount() > l.getCount() ? 1 : -1;
-//					}
-//				});
-//			default:
-//				break;
-//		}
-//		notifyDataSetChanged();
-//	}
+	public void sort(int index) {
+		switch (index) {
+			case Constants.BY_NAME:
+				Collections.sort(mValues, new Comparator<Friend>() {
+					@Override
+					public int compare(Friend l, Friend r) {
+						if (l == null || r == null) {
+							return l == null ? 1 : -1;
+						}
+						return l.getFirstname().compareToIgnoreCase(r.getFirstname());
+					}
+				});
+				break;
+			case Constants.BY_NAME_INV:
+				Collections.sort(mValues, new Comparator<Friend>() {
+					@Override
+					public int compare(Friend l, Friend r) {
+						if (l == null || r == null) {
+							return l == null ? -1 : 1;
+						}
+						return -l.getFirstname().compareToIgnoreCase(r.getFirstname());
+					}
+				});
+				break;
+			default:
+				break;
+		}
+		notifyDataSetChanged();
+	}
 
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
