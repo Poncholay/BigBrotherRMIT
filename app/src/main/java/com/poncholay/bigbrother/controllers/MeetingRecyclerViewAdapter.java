@@ -210,7 +210,7 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 			mPeopleView = (RecyclerView) view.findViewById(R.id.meeting_peoplelist);
 
 			mFriendsContainer = view.findViewById(R.id.meeting_friendlist_container);
-			mLine = view.findViewById(R.id.line4);
+			mLine = view.findViewById(R.id.line3);
 		}
 	}
 }
