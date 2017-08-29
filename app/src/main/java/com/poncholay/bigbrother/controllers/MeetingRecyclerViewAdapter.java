@@ -19,6 +19,8 @@ import com.poncholay.bigbrother.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.DateUtils;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -53,6 +55,8 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 			holder.mDateBeginView.setText(DateUtils.toNumberStringTime(meeting.getStart(), false));
 			holder.mDateEndView.setText(DateUtils.toNumberStringTime(meeting.getEnd(), false));
 			holder.mTitleView.setText(meeting.getTitle());
+			DecimalFormat decimalFormat = new DecimalFormat("#.0###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+			holder.mLocationView.setText(decimalFormat.format(meeting.getLatitude()) + " " + decimalFormat.format(meeting.getLongitude()));
 			holder.mNbFriends.setText(String.format(Locale.US, "%d", meeting.getFriends().size()));
 
 			if (meeting.getFriends().size() == 0) {
@@ -186,6 +190,7 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		final TextView mDateBeginView;
 		final TextView mDateEndView;
 		final TextView mTitleView;
+		final TextView mLocationView;
 		final TextView mNbFriends;
 		final RecyclerView mPeopleView;
 
@@ -200,6 +205,7 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 			mDateBeginView = (TextView) view.findViewById(R.id.meeting_begin);
 			mDateEndView = (TextView) view.findViewById(R.id.meeting_end);
 			mTitleView = (TextView) view.findViewById(R.id.meeting_title);
+			mLocationView = (TextView) view.findViewById(R.id.meeting_location);
 			mNbFriends = (TextView) view.findViewById(R.id.meeting_people_number);
 			mPeopleView = (RecyclerView) view.findViewById(R.id.meeting_peoplelist);
 

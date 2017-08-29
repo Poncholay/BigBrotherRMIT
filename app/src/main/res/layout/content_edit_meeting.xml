@@ -171,5 +171,29 @@
 			android:text="@string/pick_location"
 			android:minWidth="0dp"/>
 
+		<LinearLayout
+			android:id="@+id/meeting_location_container"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/general_padding">
+
+			<ImageView
+				android:id="@+id/meeting_location_icon"
+				android:layout_width="0dp"
+				android:layout_weight="10"
+				android:layout_height="match_parent"
+				android:gravity="center|center_vertical"
+				android:src="@drawable/ic_meeting_location"/>
+
+			<TextView
+				android:id="@+id/meeting_localisation"
+				android:layout_marginTop="@dimen/general_padding"
+				android:layout_width="0dp"
+				android:layout_weight="90"
+				android:layout_height="match_parent"
+				android:gravity="center_vertical"
+				android:text="@string/_0"/>
+
+		</LinearLayout>
 	</LinearLayout>
 </RelativeLayout>

@@ -166,11 +166,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 		if (mMap != null) {
 			List<Meeting> meetings = Lists.newArrayList(Meeting.findAll(Meeting.class));
 			for (Meeting meeting : meetings) {
-				mPos = new LatLng(meeting.getLatitude(), meeting.getLongitude());
-				mMap.addMarker(new MarkerOptions()
-						.position(mPos)
-						.title(meeting.getTitle())
-				);
+				if (meeting.getLatitude() != -1 && meeting.getLongitude() != -1) {
+					mPos = new LatLng(meeting.getLatitude(), meeting.getLongitude());
+					mMap.addMarker(new MarkerOptions()
+							.position(mPos)
+							.title(meeting.getTitle())
+					);
+				}
 			}
 		}
 	}
@@ -200,7 +202,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 						cal.get(Calendar.SECOND) + " " +
 						(cal.get(Calendar.HOUR_OF_DAY) > 11 ? "PM" : "AM")
 				);
-				List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), date, 20, 20);
+				List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), date, 10, 10);
 				List<Friend> friends = findCurrentFriends(matched);
 				for (Friend friend : friends) {
 					for (DummyLocationService.FriendLocation friendLocation : matched) {

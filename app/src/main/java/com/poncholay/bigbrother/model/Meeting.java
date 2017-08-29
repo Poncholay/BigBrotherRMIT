@@ -23,10 +23,14 @@ public class Meeting extends SugarRecord implements Parcelable {
 	private double latitude;
 	private double longitude;
 
-	public Meeting() {}
+	public Meeting() {
+		this("");
+	}
 
 	public Meeting(String title) {
 		this.title = title;
+		this.latitude = -1;
+		this.longitude = -1;
 	}
 
 	public String getUniqueId() {
@@ -143,8 +147,8 @@ public class Meeting extends SugarRecord implements Parcelable {
 		List<Friend> list = new ArrayList<>();
 		Collections.addAll(list, friends);
 		this.setFriends(list);
-		this.setLatitude(in.readLong());
-		this.setLongitude(in.readLong());
+		this.setLatitude(in.readDouble());
+		this.setLongitude(in.readDouble());
 	}
 
 	@Override

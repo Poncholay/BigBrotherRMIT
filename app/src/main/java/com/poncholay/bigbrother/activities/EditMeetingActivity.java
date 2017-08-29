@@ -36,6 +36,8 @@ import com.poncholay.bigbrother.utils.DateUtils;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -51,6 +53,7 @@ public class EditMeetingActivity extends AppCompatActivity
 	private TextView mDateEndView;
 	private TextView mNbFriends;
 	private RecyclerView mFriendsView;
+	private TextView mLocalisationView;
 
 	private IconRecyclerViewAdapter mIconAdapter;
 
@@ -180,10 +183,13 @@ public class EditMeetingActivity extends AppCompatActivity
 		mDateEndView =  (TextView) findViewById(R.id.end_date_field);
 		mNbFriends = (TextView) findViewById(R.id.meeting_people_number);
 		mFriendsView = (RecyclerView) findViewById(R.id.meeting_peoplelist);
+		mLocalisationView = (TextView) findViewById(R.id.meeting_localisation);
 
 		mTitleView.setText(mMeeting.getTitle());
 		mDateStartView.setText(DateUtils.toLiteStringTime(mMeeting.getStart()));
 		mDateEndView.setText(DateUtils.toLiteStringTime(mMeeting.getEnd()));
+		DecimalFormat decimalFormat = new DecimalFormat("#.0###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		mLocalisationView.setText(decimalFormat.format(mMeeting.getLatitude()) + " " + decimalFormat.format(mMeeting.getLongitude()));
 
 		mDateStart = mMeeting.getStart();
 		mDateEnd = mMeeting.getEnd();
@@ -271,8 +277,10 @@ public class EditMeetingActivity extends AppCompatActivity
 		if (requestCode == Constants.REQUEST_PLACE_PICKER) {
 			if (resultCode == RESULT_OK) {
 				Place place = PlacePicker.getPlace(this, data);
-				String toastMsg = String.format("Place: %s", place.getName());
-				Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+				mMeeting.setLatitude(place.getLatLng().latitude);
+				mMeeting.setLongitude(place.getLatLng().longitude);
+				DecimalFormat decimalFormat = new DecimalFormat("#.0###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+				mLocalisationView.setText(decimalFormat.format(mMeeting.getLatitude()) + " " + decimalFormat.format(mMeeting.getLongitude()));
 			}
 		}
 	}
