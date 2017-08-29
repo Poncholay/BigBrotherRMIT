@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,10 +28,15 @@ import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.BitmapUtils;
 import com.poncholay.bigbrother.utils.ContactDataManager;
+import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 	private static final String LOG_TAG = ContactDataManager.class.getName();
@@ -55,7 +63,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 		mMapView.getMapAsync(this);
 
+		setHasOptionsMenu(true);
+
 		return view;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.bar_map_fragment, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		if (id == R.id.action_refresh) {
+			refresh();
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 //	@Override
@@ -84,18 +115,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if (isVisibleToUser) {
-			if (mPos != null) {
-				CameraPosition cameraPosition = new CameraPosition.Builder().target(mPos).zoom(10).build();
-				mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-			}
+			recenter();
 		}
 	}
 
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 		mMap = googleMap;
-		setupMeetings();
-		setupFriends();
+		refresh();
 	}
 
 	@Override
@@ -122,6 +149,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 		mMapView.onLowMemory();
 	}
 
+	private void recenter() {
+		if (mPos != null) {
+			CameraPosition cameraPosition = new CameraPosition.Builder().target(mPos).zoom(10).build();
+			mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+		}
+	}
+
+	private void refresh() {
+		mMap.clear();
+		setupMeetings();
+		setupFriends();
+	}
+
 	private void setupMeetings() {
 		if (mMap != null) {
 			List<Meeting> meetings = Lists.newArrayList(Meeting.findAll(Meeting.class));
@@ -135,28 +175,59 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 		}
 	}
 
+	private List<Friend> findCurrentFriends(List<DummyLocationService.FriendLocation> matched) {
+		StringBuilder query = new StringBuilder();
+
+		Iterator<DummyLocationService.FriendLocation> it = matched.iterator();
+		while (it.hasNext()) {
+			DummyLocationService.FriendLocation friendLocation = it.next();
+			query.append("id = ").append(friendLocation.id);
+			if (it.hasNext()) {
+				query.append(" OR ");
+			}
+		}
+		return Friend.find(Friend.class, query.toString());
+	}
+
 	private void setupFriends() {
 		if (mMap != null) {
-			List<Friend> friends = Lists.newArrayList(Friend.findAll(Friend.class));
-			for (Friend friend : friends) {
-//				mPos = new LatLng(friend.getLatitude(), friend.getLongitude());
-				mPos = new LatLng(-37.813 + new Random().nextFloat() % 0.2, 144.962 + new Random().nextFloat() % 0.2);
-				MarkerOptions markerOptions = new MarkerOptions();
-				markerOptions.position(mPos).title(friend.getFirstname() + " " + friend.getLastname());
-				Bitmap bitmap;
-				if (friend.getHasIcon()) {
-					BitmapFactory.Options options = new BitmapFactory.Options();
-					options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-					bitmap = BitmapFactory.decodeFile(IconUtils.getIconPath(friend, getContext()), options);
-				} else {
-					bitmap = BitmapUtils.drawableToBitmap(IconUtils.getIconTextDrawable(friend));
-				}
-				bitmap = BitmapUtils.getCircularBitmap(bitmap);
-				bitmap = BitmapUtils.getResizedBitmap(bitmap, 100, 100);
-				bitmap = BitmapUtils.addBorder(bitmap, Color.BLACK);
-				markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+			try {
+				DummyLocationService DLS = DummyLocationService.getSingletonInstance();
+				Calendar cal = Calendar.getInstance();
+				Date date = DateFormat.getTimeInstance(DateFormat.MEDIUM).parse(
+						cal.get(Calendar.HOUR) + ":" +
+						cal.get(Calendar.MINUTE) + ":" +
+						cal.get(Calendar.SECOND) + " " +
+						(cal.get(Calendar.HOUR_OF_DAY) > 11 ? "PM" : "AM")
+				);
+				List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), date, 20, 20);
+				List<Friend> friends = findCurrentFriends(matched);
+				for (Friend friend : friends) {
+					for (DummyLocationService.FriendLocation friendLocation : matched) {
+						if (friendLocation.id.equals(friend.getId().toString())) {
+							mPos = new LatLng(friendLocation.latitude, friendLocation.longitude);
 
-				mMap.addMarker(markerOptions);
+							MarkerOptions markerOptions = new MarkerOptions();
+							markerOptions.position(mPos).title(friend.getFirstname() + " " + friend.getLastname());
+							Bitmap bitmap;
+							if (friend.getHasIcon()) {
+								BitmapFactory.Options options = new BitmapFactory.Options();
+								options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+								bitmap = BitmapFactory.decodeFile(IconUtils.getIconPath(friend, getContext()), options);
+							} else {
+								bitmap = BitmapUtils.drawableToBitmap(IconUtils.getIconTextDrawable(friend));
+							}
+							bitmap = BitmapUtils.getCircularBitmap(bitmap);
+							bitmap = BitmapUtils.getResizedBitmap(bitmap, 100, 100);
+							bitmap = BitmapUtils.addBorder(bitmap, Color.BLACK);
+							markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+
+							mMap.addMarker(markerOptions);
+						}
+					}
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		}
 	}

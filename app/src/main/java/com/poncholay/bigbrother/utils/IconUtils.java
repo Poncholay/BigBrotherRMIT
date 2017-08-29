@@ -1,10 +1,7 @@
 package com.poncholay.bigbrother.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import com.amulyakhare.textdrawable.TextDrawable;

@@ -3,7 +3,6 @@ package com.poncholay.bigbrother.activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -11,15 +10,11 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +27,6 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.common.collect.Lists;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.controllers.FriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.controllers.IconRecyclerViewAdapter;
 import com.poncholay.bigbrother.controllers.SelectFriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.Friend;
@@ -44,7 +38,6 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class EditMeetingActivity extends AppCompatActivity

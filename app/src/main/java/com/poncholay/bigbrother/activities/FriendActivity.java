@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,13 +16,7 @@ import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.BundleUtils;
 import com.poncholay.bigbrother.utils.DateUtils;
-import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
 
 public class FriendActivity extends AppCompatActivity {
 
@@ -49,7 +42,6 @@ public class FriendActivity extends AppCompatActivity {
 		setupToolbar();
 		setupFormListeners();
 		IconUtils.setupIconBig(mIconView, mFriend, this);
-		setupLocation();
 	}
 
 	@Override
@@ -135,17 +127,5 @@ public class FriendActivity extends AppCompatActivity {
 		mDateView.setText(DateUtils.toFullString(mFriend.getBirthday()));
 
 		mIconView = (CircularImageView) findViewById(R.id.icon_field);
-	}
-
-	//TODO : implement friend location
-	private void setupLocation() {
-		DummyLocationService DLS = DummyLocationService.getSingletonInstance();
-
-		try {
-			Date dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM).parse("9:46:30 AM");
-			List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this, dateFormat, 2, 0);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 	}
 }
