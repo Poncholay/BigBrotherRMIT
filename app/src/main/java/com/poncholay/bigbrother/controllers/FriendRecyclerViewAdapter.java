@@ -17,8 +17,12 @@ import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.FriendActivity;
 import com.poncholay.bigbrother.model.Friend;
+import com.poncholay.bigbrother.utils.CopyHelper;
 import com.poncholay.bigbrother.utils.IconUtils;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -72,7 +76,8 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 							switch (item.getTitle().toString()) {
 								case "Delete":
 									remove(friend);
-									//TODO : delete directory
+									File dir = CopyHelper.getDirectory(mContext, friend.getFirstname() + " " + friend.getLastname());
+									dir.delete();
 									friend.delete();
 									return true;
 								default:

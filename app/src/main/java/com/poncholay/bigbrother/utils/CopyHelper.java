@@ -79,20 +79,26 @@ public class CopyHelper {
 			return null;
 		}
 
-		Toast.makeText(mContext, "New file : " + to.getPath(), Toast.LENGTH_SHORT).show(); //TODO : remove
-
 		return to;
 	}
 
-	static public File getFile(Context context, String boardTitle, String fileTitle) {
+	static public File getFile(Context context, String dirTitle, String fileTitle) {
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			File root = new File(context.getExternalFilesDir(null), boardTitle);
+			File root = new File(context.getExternalFilesDir(null), dirTitle);
 			if (!root.exists()) {
 				if (!root.mkdirs()) {
 					return null;
 				}
 			}
 			return new File(root, fileTitle);
+		}
+		return null;
+	}
+
+	static public File getDirectory(Context context, String dirTitle) {
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			File root = new File(context.getExternalFilesDir(null), dirTitle);
+			return !root.exists() ? root : null;
 		}
 		return null;
 	}
