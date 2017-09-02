@@ -12,7 +12,7 @@ public class SplashActivity extends AwesomeSplash {
 
 	@Override
 	public void initSplash(ConfigSplash configSplash) {
-		configSplash.setBackgroundColor(R.color.colorPrimary);
+		configSplash.setBackgroundColor(R.color.colorAccent);
 		configSplash.setAnimCircularRevealDuration(1000);
 		configSplash.setRevealFlagX(Flags.REVEAL_RIGHT);
 		configSplash.setRevealFlagY(Flags.REVEAL_BOTTOM);
