@@ -1,5 +1,8 @@
 package com.poncholay.bigbrother;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class Constants {
 	public static final int VERTICAL = 1;
 	public static final int HORIZONTAL = 2;
@@ -15,4 +18,8 @@ public class Constants {
 	public static final int BY_NAME = 12;
 	public static final int BY_NAME_INV = 13;
 	public static final String ICON = "icon.jpg";
+
+	static final public SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault());
+	static final public SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+	static final public SimpleDateFormat fullFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 }

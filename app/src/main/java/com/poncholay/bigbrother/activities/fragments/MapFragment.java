@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.common.collect.Lists;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.Meeting;
@@ -31,9 +30,6 @@ import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -115,6 +111,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if (isVisibleToUser) {
+			refresh();
 			recenter();
 		}
 	}
@@ -164,7 +161,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 	private void setupMeetings() {
 		if (mMap != null) {
-			List<Meeting> meetings = Lists.newArrayList(Meeting.findAll(Meeting.class));
+			List<Meeting> meetings = Meeting.getAll(Meeting.class);
 			for (Meeting meeting : meetings) {
 				if (meeting.getLatitude() != -1 && meeting.getLongitude() != -1) {
 					mPos = new LatLng(meeting.getLatitude(), meeting.getLongitude());
@@ -188,48 +185,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 				query.append(" OR ");
 			}
 		}
-		return Friend.find(Friend.class, query.toString());
+		return Friend.getAll(Friend.class, query.toString());
 	}
 
 	private void setupFriends() {
 		if (mMap != null) {
-			try {
-				DummyLocationService DLS = DummyLocationService.getSingletonInstance();
-				Calendar cal = Calendar.getInstance();
-				Date date = DateFormat.getTimeInstance(DateFormat.MEDIUM).parse(
-						cal.get(Calendar.HOUR) + ":" +
-						cal.get(Calendar.MINUTE) + ":" +
-						cal.get(Calendar.SECOND) + " " +
-						(cal.get(Calendar.HOUR_OF_DAY) > 11 ? "PM" : "AM")
-				);
-				List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), date, 10, 10);
-				List<Friend> friends = findCurrentFriends(matched);
-				for (Friend friend : friends) {
-					for (DummyLocationService.FriendLocation friendLocation : matched) {
-						if (friendLocation.id.equals(friend.getId().toString())) {
-							mPos = new LatLng(friendLocation.latitude, friendLocation.longitude);
+			DummyLocationService DLS = DummyLocationService.getSingletonInstance();
+			List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), new Date(), 10, 10);
+			List<Friend> friends = findCurrentFriends(matched);
+			for (Friend friend : friends) {
+				for (DummyLocationService.FriendLocation friendLocation : matched) {
+					if (friendLocation.id.equals(friend.getId().toString())) {
+						mPos = new LatLng(friendLocation.latitude, friendLocation.longitude);
 
-							MarkerOptions markerOptions = new MarkerOptions();
-							markerOptions.position(mPos).title(friend.getFirstname() + " " + friend.getLastname());
-							Bitmap bitmap;
-							if (friend.getHasIcon()) {
-								BitmapFactory.Options options = new BitmapFactory.Options();
-								options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-								bitmap = BitmapFactory.decodeFile(IconUtils.getIconPath(friend, getContext()), options);
-							} else {
-								bitmap = BitmapUtils.drawableToBitmap(IconUtils.getIconTextDrawable(friend));
-							}
-							bitmap = BitmapUtils.getCircularBitmap(bitmap);
-							bitmap = BitmapUtils.getResizedBitmap(bitmap, 100, 100);
-							bitmap = BitmapUtils.addBorder(bitmap, Color.BLACK);
-							markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-
-							mMap.addMarker(markerOptions);
+						MarkerOptions markerOptions = new MarkerOptions();
+						markerOptions.position(mPos).title(friend.getFirstname() + " " + friend.getLastname());
+						Bitmap bitmap;
+						if (friend.getHasIcon()) {
+							BitmapFactory.Options options = new BitmapFactory.Options();
+							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+							bitmap = BitmapFactory.decodeFile(IconUtils.getIconPath(friend, getContext()), options);
+						} else {
+							bitmap = BitmapUtils.drawableToBitmap(IconUtils.getIconTextDrawable(friend));
 						}
+						bitmap = BitmapUtils.getCircularBitmap(bitmap);
+						bitmap = BitmapUtils.getResizedBitmap(bitmap, 100, 100);
+						bitmap = BitmapUtils.addBorder(bitmap, Color.BLACK);
+						markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+
+						mMap.addMarker(markerOptions);
 					}
 				}
-			} catch (ParseException e) {
-				e.printStackTrace();
 			}
 		}
 	}

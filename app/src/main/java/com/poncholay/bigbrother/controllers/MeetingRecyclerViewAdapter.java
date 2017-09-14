@@ -17,7 +17,6 @@ import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.model.Meeting;
-import com.poncholay.bigbrother.utils.DateUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

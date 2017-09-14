@@ -1,15 +1,23 @@
 package com.poncholay.bigbrother.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.orm.SugarRecord;
+import com.poncholay.bigbrother.utils.database.DatabaseContract;
+import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
 import java.util.Date;
 import java.util.Objects;
 
-public class Friend extends SugarRecord implements Parcelable {
-	private String uniqueId;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_BIRTHDAY;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_EMAIL;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_FIRSTNAME;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_HAS_ICON;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_LASTNAME;
+
+public class Friend extends SQLiteObject implements Parcelable {
 	private String firstname;
 	private String lastname;
 	private String email;
@@ -24,22 +32,15 @@ public class Friend extends SugarRecord implements Parcelable {
 		this(null, firstname, lastname, null, null, false);
 	}
 
-	public Friend(String uniqueId, String firstname, String lastname, String email, Date birthday, boolean hasIcon) {
-		this.setUniqueId(uniqueId);
+	public Friend(Long id, String firstname, String lastname, String email, Date birthday, boolean hasIcon) {
+		super(DatabaseContract.FriendEntry.FRIEND_TABLE);
+		this.setId(id);
 		this.setFirstname(firstname);
 		this.setLastname(lastname);
 		this.setEmail(email);
 		this.setBirthday(birthday);
 		this.setHasIcon(hasIcon);
 	}
-
-	public String getUniqueId() {
-		return uniqueId;
-	}
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId == null ? "" : uniqueId;
-	}
-	//TODO : randomId
 
 	public String getFirstname() {
 		return firstname;
@@ -94,9 +95,9 @@ public class Friend extends SugarRecord implements Parcelable {
 	//Parcelable
 
 	public Friend(Parcel in) {
+		super(DatabaseContract.FriendEntry.FRIEND_TABLE);
 		Long id = in.readLong();
 		this.setId(id == -1 ? null : id);
-		this.setUniqueId(in.readString());
 		this.setFirstname(in.readString());
 		this.setLastname(in.readString());
 		this.setEmail(in.readString());
@@ -107,7 +108,6 @@ public class Friend extends SugarRecord implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.getId() == null ? -1 : this.getId());
-		dest.writeString(this.getUniqueId());
 		dest.writeString(this.getFirstname());
 		dest.writeString(this.getLastname());
 		dest.writeString(this.getEmail());
@@ -129,4 +129,50 @@ public class Friend extends SugarRecord implements Parcelable {
 			return new Friend[size];
 		}
 	};
+
+	//________
+	//Database
+
+	public ContentValues getValues() {
+		ContentValues values = new ContentValues();
+		values.put(COL_FRIEND_FIRSTNAME, getFirstname());
+		values.put(COL_FRIEND_LASTNAME, getLastname());
+		values.put(COL_FRIEND_EMAIL, getEmail());
+		values.put(COL_FRIEND_BIRTHDAY, getBirthday().getTime());
+		values.put(COL_FRIEND_HAS_ICON, getHasIcon() ? 1 : 0);
+		return values;
+	}
+
+	@Override
+	public boolean fromCursor(Cursor cursor) {
+		int idx = cursor.getColumnIndex(DatabaseContract.FriendEntry._ID);
+		if (idx != - 1) {
+			setId(cursor.getLong(idx));
+		} else {
+			return false;
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_FIRSTNAME);
+		if (idx != - 1) {
+			setFirstname(cursor.getString(idx));
+		} else {
+			return false;
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_LASTNAME);
+		if (idx != - 1) {
+			setLastname(cursor.getString(idx));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_EMAIL);
+		if (idx != - 1) {
+			setEmail(cursor.getString(idx));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_BIRTHDAY);
+		if (idx != - 1) {
+			setBirthday(new Date(cursor.getLong(idx)));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_HAS_ICON);
+		if (idx != - 1) {
+			setHasIcon(cursor.getInt(idx) == 1);
+		}
+		return true;
+	}
 }

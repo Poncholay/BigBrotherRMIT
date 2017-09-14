@@ -24,7 +24,6 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.common.collect.Lists;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.controllers.IconRecyclerViewAdapter;
@@ -42,8 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class EditMeetingActivity extends AppCompatActivity
-		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class EditMeetingActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
 	private Meeting mMeeting;
 	private int mMode;
@@ -243,7 +241,7 @@ public class EditMeetingActivity extends AppCompatActivity
 		final RecyclerView recyclerView = (RecyclerView) selectListView.findViewById(R.id.friendlist_recycler_view);
 
 		final Context context = recyclerView.getContext();
-		final SelectFriendRecyclerViewAdapter adapter = new SelectFriendRecyclerViewAdapter(Lists.newArrayList(Friend.findAll(Friend.class)), mMeeting.getFriends());
+		final SelectFriendRecyclerViewAdapter adapter = new SelectFriendRecyclerViewAdapter(Friend.getAll(Friend.class), mMeeting.getFriends());
 		recyclerView.setAdapter(adapter);
 		LinearLayoutManager llm = new LinearLayoutManager(context);
 		llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -277,6 +275,7 @@ public class EditMeetingActivity extends AppCompatActivity
 		if (requestCode == Constants.REQUEST_PLACE_PICKER) {
 			if (resultCode == RESULT_OK) {
 				Place place = PlacePicker.getPlace(this, data);
+				place.getName();
 				mMeeting.setLatitude(place.getLatLng().latitude);
 				mMeeting.setLongitude(place.getLatLng().longitude);
 				mMeeting.setLocationName(place.getName().toString());

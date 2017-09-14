@@ -57,16 +57,20 @@ public class DummyLocationService {
     */
    private boolean timeInRange(Date source, Date target, int periodMinutes, int periodSeconds) {
       Calendar sourceCal = Calendar.getInstance();
-      sourceCal.setTime(source);
-
-      // set up start and end range match
-      // +/- period minutes/seconds to check
       Calendar targetCalStart = Calendar.getInstance();
+      Calendar targetCalEnd = Calendar.getInstance();
+
+      sourceCal.setTime(source);
       targetCalStart.setTime(target);
+      targetCalEnd.setTime(target);
+
+      sourceCal.set(Calendar.DAY_OF_MONTH, targetCalStart.get(Calendar.DAY_OF_MONTH));
+      sourceCal.set(Calendar.MONTH, targetCalStart.get(Calendar.MONTH));
+      sourceCal.set(Calendar.YEAR, targetCalStart.get(Calendar.YEAR));
+
       targetCalStart.set(Calendar.MINUTE, targetCalStart.get(Calendar.MINUTE) - periodMinutes);
       targetCalStart.set(Calendar.SECOND, targetCalStart.get(Calendar.SECOND) - periodSeconds);
-      Calendar targetCalEnd = Calendar.getInstance();
-      targetCalEnd.setTime(target);
+
       targetCalEnd.set(Calendar.MINUTE, targetCalEnd.get(Calendar.MINUTE) + periodMinutes);
       targetCalEnd.set(Calendar.SECOND, targetCalEnd.get(Calendar.SECOND) + periodMinutes);
 

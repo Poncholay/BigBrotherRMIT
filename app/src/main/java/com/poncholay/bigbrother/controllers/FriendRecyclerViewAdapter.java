@@ -54,7 +54,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 			IconUtils.setupIcon(holder.mIconView, friend, mContext);
 
 			holder.mNameView.setText(friend.getFirstname() + " " + friend.getLastname());
-			holder.mEmailView.setText(friend.getEmail());
+			holder.mEmailView.setText(friend.getEmail().equals("") ? "No email" : friend.getEmail());
 
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override

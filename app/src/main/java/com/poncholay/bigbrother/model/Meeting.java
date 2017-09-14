@@ -1,9 +1,12 @@
 package com.poncholay.bigbrother.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.orm.SugarRecord;
+import com.poncholay.bigbrother.utils.database.DatabaseContract;
+import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +14,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class Meeting extends SugarRecord implements Parcelable {
-	private String uniqueId;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_END_DATE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_FRIENDS;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_LATITUDE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_LONGITUDE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_START_DATE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_TITLE;
+
+public class Meeting extends SQLiteObject implements Parcelable {
 	private String title;
 	private Date start;
 	private Date end;
@@ -29,19 +38,13 @@ public class Meeting extends SugarRecord implements Parcelable {
 	}
 
 	public Meeting(String title) {
+		super(DatabaseContract.MeetingEntry.MEETING_TABLE);
 		this.title = title;
 		this.latitude = -1;
 		this.longitude = -1;
+		this.id = null;
 	}
 
-	public String getUniqueId() {
-		return uniqueId == null ? "" : uniqueId;
-	}
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
-	//TODO : randomId
-	
 	public String getTitle() {
 		return title == null ? "" : title;
 	}
@@ -94,24 +97,25 @@ public class Meeting extends SugarRecord implements Parcelable {
 		}
 		friendsIds = where.toString();
 	}
-	private List<Friend> retrieveFriends() {
+
+	private List<Friend> retrieveMeetings() {
 		StringBuilder where = new StringBuilder();
 		if (!getFriendsIds().equals("")) {
 			String[] ids = getFriendsIds().split(",");
 			for (int i = 0; i < ids.length; i++) {
-				where.append("id = ").append(ids[i]);
+				where.append(DatabaseContract.FriendEntry._ID + " = ").append(ids[i]);
 				if (i < ids.length - 1) {
 					where.append(" OR ");
 				}
 			}
-			friends = Friend.find(Friend.class, where.toString());
+			friends = Friend.getAll(Friend.class, where.toString());
 			return friends;
 		}
 		return new ArrayList<>();
 	}
 
 	public List<Friend> getFriends() {
-		return friends == null ? retrieveFriends() : friends;
+		return friends == null ? retrieveMeetings() : friends;
 	}
 	public void setFriends(List<Friend> friends) {
 		this.friends = friends;
@@ -136,14 +140,14 @@ public class Meeting extends SugarRecord implements Parcelable {
 	//Parcelable
 
 	public Meeting(Parcel in) {
+		super(DatabaseContract.MeetingEntry.MEETING_TABLE);
 		Long id = in.readLong();
 		this.setId(id == -1 ? null : id);
-		this.setUniqueId(in.readString());
 		this.setTitle(in.readString());
 		this.setStart((Date) in.readSerializable());
 		this.setEnd((Date) in.readSerializable());
 		this.setFriendsIds(in.readString());
-		Parcelable[] ps = in.readParcelableArray(Friend.class.getClassLoader());
+		Parcelable[] ps = in.readParcelableArray(Meeting.class.getClassLoader());
 		Friend[] friends = new Friend[ps.length];
 		try {
 			System.arraycopy(ps, 0, friends, 0, ps.length);
@@ -159,7 +163,6 @@ public class Meeting extends SugarRecord implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.getId() == null ? -1 : this.getId());
-		dest.writeString(this.getUniqueId());
 		dest.writeString(this.getTitle());
 		dest.writeSerializable(this.getStart());
 		dest.writeSerializable(this.getEnd());
@@ -184,4 +187,56 @@ public class Meeting extends SugarRecord implements Parcelable {
 			return new Meeting[size];
 		}
 	};
+
+	//________
+	//Database
+
+	@Override
+	public ContentValues getValues() {
+		ContentValues values = new ContentValues();
+		values.put(COL_MEETING_TITLE, getTitle());
+		values.put(COL_MEETING_START_DATE, getStart().getTime());
+		values.put(COL_MEETING_END_DATE, getEnd().getTime());
+		values.put(COL_MEETING_FRIENDS, getFriendsIds());
+		values.put(COL_MEETING_LATITUDE, getLatitude());
+		values.put(COL_MEETING_LONGITUDE, getLongitude());
+		return values;
+	}
+
+	@Override
+	public boolean fromCursor(Cursor cursor) {
+		int idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry._ID);
+		if (idx != - 1) {
+			setId(cursor.getLong(idx));
+		} else {
+			return false;
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_TITLE);
+		if (idx != - 1) {
+			setTitle(cursor.getString(idx));
+		} else {
+			return false;
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_START_DATE);
+		if (idx != - 1) {
+			setStart(new Date(cursor.getLong(idx)));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_END_DATE);
+		if (idx != - 1) {
+			setEnd(new Date(cursor.getLong(idx)));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_FRIENDS);
+		if (idx != - 1) {
+			setFriendsIds(cursor.getString(idx));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_LATITUDE);
+		if (idx != - 1) {
+			setLatitude(cursor.getDouble(idx));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_LONGITUDE);
+		if (idx != - 1) {
+			setLongitude(cursor.getDouble(idx));
+		}
+		return true;
+	}
 }
