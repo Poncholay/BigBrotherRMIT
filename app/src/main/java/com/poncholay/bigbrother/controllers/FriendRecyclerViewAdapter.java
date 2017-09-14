@@ -20,8 +20,6 @@ import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.CopyHelper;
 import com.poncholay.bigbrother.utils.IconUtils;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,6 +54,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 			IconUtils.setupIcon(holder.mIconView, friend, mContext);
 
 			holder.mNameView.setText(friend.getFirstname() + " " + friend.getLastname());
+			holder.mEmailView.setText(friend.getEmail());
 
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -77,7 +76,9 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 								case "Delete":
 									remove(friend);
 									File dir = CopyHelper.getDirectory(mContext, friend.getFirstname() + " " + friend.getLastname());
-									dir.delete();
+									if (dir != null) {
+										dir.delete();
+									}
 									friend.delete();
 									return true;
 								default:
@@ -153,7 +154,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 	class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
 		final TextView mNameView;
-		final TextView mLastNameView;
+		final TextView mEmailView;
 		final CircularImageView mIconView;
 
 		Friend mItem;
@@ -162,7 +163,7 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 			super(view);
 			mView = view;
 			mNameView = (TextView) view.findViewById(R.id.friend_name);
-			mLastNameView = (TextView) view.findViewById(R.id.friend_hint);
+			mEmailView = (TextView) view.findViewById(R.id.friend_hint);
 			mIconView = (CircularImageView) view.findViewById(R.id.friend_icon);
 		}
 
