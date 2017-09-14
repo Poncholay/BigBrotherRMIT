@@ -7,6 +7,8 @@
 	<string name="action_settings">Settings</string>
 	<string name="generic_firstname">John</string>
 	<string name="generic_lastname">Doe</string>
+	<string name="generic_date">Septembre 14 2017</string>
+	<string name="generic_time">14:30</string>
 	<string name="generic_email">JohnDoe@gmail.com</string>
 	<string name="error_not_implemented">Not implemented</string>
 	<string name="error_not_available">This method is not available on your device</string>

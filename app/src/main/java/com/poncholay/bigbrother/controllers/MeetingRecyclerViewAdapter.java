@@ -21,12 +21,16 @@ import com.poncholay.bigbrother.utils.DateUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecyclerViewAdapter.ViewHolder> {
+
+	static final private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy", Locale.ENGLISH);
+	static final private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
 
 	private final List<Meeting> mValues;
 	private Context mContext;
@@ -52,11 +56,13 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		if (meeting != null) {
 			holder.mItem = meeting;
 
-			holder.mDateBeginView.setText(DateUtils.toNumberStringTime(meeting.getStart(), false));
-			holder.mDateEndView.setText(DateUtils.toNumberStringTime(meeting.getEnd(), false));
+			holder.mDateBeginView.setText(dateFormat.format(meeting.getStart()));
+			holder.mDateEndView.setText(dateFormat.format(meeting.getEnd()));
+			holder.mTimeBeginView.setText(timeFormat.format(meeting.getStart()));
+			holder.mTimeEndView.setText(timeFormat.format(meeting.getEnd()));
 			holder.mTitleView.setText(meeting.getTitle());
 			DecimalFormat decimalFormat = new DecimalFormat("#.0###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-			holder.mLocationView.setText(decimalFormat.format(meeting.getLatitude()) + " " + decimalFormat.format(meeting.getLongitude()));
+			holder.mLocationView.setText(meeting.getLocationName());
 			holder.mNbFriends.setText(String.format(Locale.US, "%d", meeting.getFriends().size()));
 
 			if (meeting.getFriends().size() == 0) {
@@ -189,6 +195,8 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		final View mView;
 		final TextView mDateBeginView;
 		final TextView mDateEndView;
+		final TextView mTimeBeginView;
+		final TextView mTimeEndView;
 		final TextView mTitleView;
 		final TextView mLocationView;
 		final TextView mNbFriends;
@@ -202,12 +210,14 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 		ViewHolder(View view) {
 			super(view);
 			mView = view;
-			mDateBeginView = (TextView) view.findViewById(R.id.meeting_begin);
-			mDateEndView = (TextView) view.findViewById(R.id.meeting_end);
-			mTitleView = (TextView) view.findViewById(R.id.meeting_title);
-			mLocationView = (TextView) view.findViewById(R.id.meeting_location);
-			mNbFriends = (TextView) view.findViewById(R.id.meeting_people_number);
-			mPeopleView = (RecyclerView) view.findViewById(R.id.meeting_peoplelist);
+			mDateBeginView	= (TextView) view.findViewById(R.id.meeting_start_date);
+			mDateEndView 	= (TextView) view.findViewById(R.id.meeting_end_date);
+			mTimeBeginView 	= (TextView) view.findViewById(R.id.meeting_start_time);
+			mTimeEndView 	= (TextView) view.findViewById(R.id.meeting_end_time);
+			mTitleView 		= (TextView) view.findViewById(R.id.meeting_title);
+			mLocationView 	= (TextView) view.findViewById(R.id.meeting_location);
+			mNbFriends 		= (TextView) view.findViewById(R.id.meeting_people_number);
+			mPeopleView 	= (RecyclerView) view.findViewById(R.id.meeting_peoplelist);
 
 			mFriendsContainer = view.findViewById(R.id.meeting_friendlist_container);
 			mLine = view.findViewById(R.id.line3);
