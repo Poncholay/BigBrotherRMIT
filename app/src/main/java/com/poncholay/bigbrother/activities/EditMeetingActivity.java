@@ -241,7 +241,7 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 		final RecyclerView recyclerView = (RecyclerView) selectListView.findViewById(R.id.friendlist_recycler_view);
 
 		final Context context = recyclerView.getContext();
-		final SelectFriendRecyclerViewAdapter adapter = new SelectFriendRecyclerViewAdapter(Friend.getAll(), mMeeting.getFriends());
+		final SelectFriendRecyclerViewAdapter adapter = new SelectFriendRecyclerViewAdapter(Friend.getAll(Friend.class), mMeeting.getFriends());
 		recyclerView.setAdapter(adapter);
 		LinearLayoutManager llm = new LinearLayoutManager(context);
 		llm.setOrientation(LinearLayoutManager.VERTICAL);

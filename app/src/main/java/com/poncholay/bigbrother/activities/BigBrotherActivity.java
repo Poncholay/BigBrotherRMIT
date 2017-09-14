@@ -1,5 +1,6 @@
 package com.poncholay.bigbrother.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerTabStrip;
@@ -41,13 +42,10 @@ public class BigBrotherActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
+		if (item.getItemId() == R.id.action_settings) {
+			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 

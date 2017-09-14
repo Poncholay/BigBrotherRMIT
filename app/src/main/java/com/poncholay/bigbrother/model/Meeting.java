@@ -2,12 +2,10 @@ package com.poncholay.bigbrother.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
-import com.poncholay.bigbrother.utils.database.DatabaseHelper;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
 import java.util.ArrayList;
@@ -40,6 +38,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 	}
 
 	public Meeting(String title) {
+		super(DatabaseContract.MeetingEntry.MEETING_TABLE);
 		this.title = title;
 		this.latitude = -1;
 		this.longitude = -1;
@@ -104,12 +103,12 @@ public class Meeting extends SQLiteObject implements Parcelable {
 		if (!getFriendsIds().equals("")) {
 			String[] ids = getFriendsIds().split(",");
 			for (int i = 0; i < ids.length; i++) {
-				where.append("id = ").append(ids[i]);
+				where.append(DatabaseContract.FriendEntry._ID + " = ").append(ids[i]);
 				if (i < ids.length - 1) {
 					where.append(" OR ");
 				}
 			}
-			friends = Friend.getAll(where.toString());
+			friends = Friend.getAll(Friend.class, where.toString());
 			return friends;
 		}
 		return new ArrayList<>();
@@ -141,6 +140,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 	//Parcelable
 
 	public Meeting(Parcel in) {
+		super(DatabaseContract.MeetingEntry.MEETING_TABLE);
 		Long id = in.readLong();
 		this.setId(id == -1 ? null : id);
 		this.setTitle(in.readString());
@@ -191,7 +191,8 @@ public class Meeting extends SQLiteObject implements Parcelable {
 	//________
 	//Database
 
-	private ContentValues getValues() {
+	@Override
+	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
 		values.put(COL_MEETING_TITLE, getTitle());
 		values.put(COL_MEETING_START_DATE, getStart().getTime());
@@ -202,138 +203,40 @@ public class Meeting extends SQLiteObject implements Parcelable {
 		return values;
 	}
 
-	private static Meeting fromCursor(Cursor cursor) {
-		Meeting meeting = new Meeting();
+	@Override
+	public boolean fromCursor(Cursor cursor) {
 		int idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry._ID);
 		if (idx != - 1) {
-			meeting.setId(cursor.getLong(idx));
+			setId(cursor.getLong(idx));
 		} else {
-			return null;
+			return false;
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_TITLE);
 		if (idx != - 1) {
-			meeting.setTitle(cursor.getString(idx));
+			setTitle(cursor.getString(idx));
 		} else {
-			return null;
+			return false;
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_START_DATE);
 		if (idx != - 1) {
-			meeting.setStart(new Date(cursor.getLong(idx)));
+			setStart(new Date(cursor.getLong(idx)));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_END_DATE);
 		if (idx != - 1) {
-			meeting.setEnd(new Date(cursor.getLong(idx)));
+			setEnd(new Date(cursor.getLong(idx)));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_FRIENDS);
 		if (idx != - 1) {
-			meeting.setFriendsIds(cursor.getString(idx));
+			setFriendsIds(cursor.getString(idx));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_LATITUDE);
 		if (idx != - 1) {
-			meeting.setLatitude(cursor.getDouble(idx));
+			setLatitude(cursor.getDouble(idx));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_LONGITUDE);
 		if (idx != - 1) {
-			meeting.setLongitude(cursor.getDouble(idx));
+			setLongitude(cursor.getDouble(idx));
 		}
-		return meeting;
-	}
-
-	private static Meeting getOne(Cursor cursor) {
-		Meeting meeting = null;
-		if (cursor.moveToNext()) {
-			meeting = fromCursor(cursor);
-			cursor.close();
-		}
-		return meeting;
-	}
-
-	public static Meeting getOne(int id) {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.MeetingEntry.MEETING_TABLE + " WHERE _ID = " + id, null);
-		Meeting meeting = getOne(cursor);
-		db.close();
-		return meeting;
-	}
-
-	public static Meeting getOne(String where) {
-		if (where.equals("")) {
-			return null;
-		}
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.MeetingEntry.MEETING_TABLE + " WHERE " + where, null);
-		Meeting meeting = getOne(cursor);
-		db.close();
-		return meeting;
-	}
-
-	public static List<Meeting> getAll() {
-		ArrayList<Meeting> friendList = new ArrayList<>();
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.MeetingEntry.MEETING_TABLE, null);
-		while (cursor.moveToNext()) {
-			Meeting friend = fromCursor(cursor);
-			if (friend != null) {
-				friendList.add(friend);
-			}
-		}
-		cursor.close();
-		db.close();
-		return friendList;
-	}
-
-	public void save() {
-		if (id != null && id != -1) {
-			update();
-			return;
-		}
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		ContentValues values = getValues();
-		long id = db.insertWithOnConflict(
-				DatabaseContract.MeetingEntry.MEETING_TABLE,
-				null,
-				values,
-				SQLiteDatabase.CONFLICT_REPLACE);
-		db.close();
-		if (id != -1) {
-			this.setId(id);
-		}
-	}
-
-	private void update() {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		ContentValues values = getValues();
-		long id = db.updateWithOnConflict(
-				DatabaseContract.MeetingEntry.MEETING_TABLE,
-				values,
-				DatabaseContract.MeetingEntry._ID + " = ?",
-				new String[]{getId().toString()},
-				SQLiteDatabase.CONFLICT_REPLACE
-		);
-		if (id != -1) {
-			setId(id);
-		}
-		db.close();
-	}
-
-	public void delete() {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		db.delete(
-				DatabaseContract.MeetingEntry.MEETING_TABLE,
-				DatabaseContract.MeetingEntry._ID + " = ?",
-				new String[]{getId().toString()}
-		);
-		db.close();
+		return true;
 	}
 }
-
-//		Cursor cursor = db.query(DatabaseContract.MeetingEntry.MEETING_TABLE,
-//				new String[]{
-//						DatabaseContract.MeetingEntry._ID,
-//						COL_MEETING_FIRSTNAME,
-//						COL_MEETING_LASTNAME,
-//						COL_MEETING_EMAIL,
-//						COL_MEETING_BIRTHDAY,
-//						COL_MEETING_HAS_ICON
-//				}, null, null, null, null, null, null);
-//TODO : Remove that

@@ -193,7 +193,7 @@ public class MeetingListFragment extends Fragment {
 	}
 
 	private List<Meeting> retrieveMeetings() {
-		return Meeting.getAll();
+		return Meeting.getAll(Meeting.class);
 	}
 
 	public static String getTitle() {

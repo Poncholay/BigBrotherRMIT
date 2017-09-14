@@ -2,17 +2,13 @@ package com.poncholay.bigbrother.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
-import com.poncholay.bigbrother.utils.database.DatabaseHelper;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_BIRTHDAY;
@@ -37,6 +33,7 @@ public class Friend extends SQLiteObject implements Parcelable {
 	}
 
 	public Friend(Long id, String firstname, String lastname, String email, Date birthday, boolean hasIcon) {
+		super(DatabaseContract.FriendEntry.FRIEND_TABLE);
 		this.setId(id);
 		this.setFirstname(firstname);
 		this.setLastname(lastname);
@@ -98,6 +95,7 @@ public class Friend extends SQLiteObject implements Parcelable {
 	//Parcelable
 
 	public Friend(Parcel in) {
+		super(DatabaseContract.FriendEntry.FRIEND_TABLE);
 		Long id = in.readLong();
 		this.setId(id == -1 ? null : id);
 		this.setFirstname(in.readString());
@@ -135,7 +133,7 @@ public class Friend extends SQLiteObject implements Parcelable {
 	//________
 	//Database
 
-	private ContentValues getValues() {
+	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
 		values.put(COL_FRIEND_FIRSTNAME, getFirstname());
 		values.put(COL_FRIEND_LASTNAME, getLastname());
@@ -145,139 +143,36 @@ public class Friend extends SQLiteObject implements Parcelable {
 		return values;
 	}
 
-	private static Friend fromCursor(Cursor cursor) {
-		Friend friend = new Friend();
+	@Override
+	public boolean fromCursor(Cursor cursor) {
 		int idx = cursor.getColumnIndex(DatabaseContract.FriendEntry._ID);
 		if (idx != - 1) {
-			friend.setId(cursor.getLong(idx));
+			setId(cursor.getLong(idx));
 		} else {
-			return null;
+			return false;
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_FIRSTNAME);
 		if (idx != - 1) {
-			friend.setFirstname(cursor.getString(idx));
+			setFirstname(cursor.getString(idx));
 		} else {
-			return null;
+			return false;
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_LASTNAME);
 		if (idx != - 1) {
-			friend.setLastname(cursor.getString(idx));
+			setLastname(cursor.getString(idx));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_EMAIL);
 		if (idx != - 1) {
-			friend.setEmail(cursor.getString(idx));
+			setEmail(cursor.getString(idx));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_BIRTHDAY);
 		if (idx != - 1) {
-			friend.setBirthday(new Date(cursor.getLong(idx)));
+			setBirthday(new Date(cursor.getLong(idx)));
 		}
 		idx = cursor.getColumnIndex(DatabaseContract.FriendEntry.COL_FRIEND_HAS_ICON);
 		if (idx != - 1) {
-			friend.setHasIcon(cursor.getInt(idx) == 1);
+			setHasIcon(cursor.getInt(idx) == 1);
 		}
-		return friend;
-	}
-
-	private static Friend getOne(Cursor cursor) {
-		Friend friend = null;
-		if (cursor.moveToNext()) {
-			friend = fromCursor(cursor);
-			cursor.close();
-		}
-		return friend;
-	}
-
-	public static Friend getOne(int id) {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.FriendEntry.FRIEND_TABLE + " WHERE _ID = " + id, null);
-		Friend friend = getOne(cursor);
-		db.close();
-		return friend;
-	}
-
-	public static Friend getOne(String where) {
-		if (where.equals("")) {
-			return null;
-		}
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.FriendEntry.FRIEND_TABLE + " WHERE " + where, null);
-		Friend friend = getOne(cursor);
-		db.close();
-		return friend;
-	}
-
-	private static List<Friend> getAll(Cursor cursor) {
-		ArrayList<Friend> friendList = new ArrayList<>();
-		while (cursor.moveToNext()) {
-			Friend friend = fromCursor(cursor);
-			if (friend != null) {
-				friendList.add(friend);
-			}
-		}
-		cursor.close();
-		return friendList;
-	}
-
-	public static List<Friend> getAll(String where) {
-		if (where.equals("")) {
-			return new ArrayList<>();
-		}
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.FriendEntry.FRIEND_TABLE + " WHERE " + where, null);
-		List<Friend> friends = getAll(cursor);
-		db.close();
-		return friends;
-	}
-
-	public static List<Friend> getAll() {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.FriendEntry.FRIEND_TABLE, null);
-		List<Friend> friends = getAll(cursor);
-		db.close();
-		return friends;
-	}
-
-	public void save() {
-		if (id != null && id != -1) {
-			update();
-			return;
-		}
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		ContentValues values = getValues();
-		long id = db.insertWithOnConflict(
-				DatabaseContract.FriendEntry.FRIEND_TABLE,
-				null,
-				values,
-				SQLiteDatabase.CONFLICT_REPLACE);
-		db.close();
-		if (id != -1) {
-			this.setId(id);
-		}
-	}
-
-	private void update() {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		ContentValues values = getValues();
-		long id = db.updateWithOnConflict(
-				DatabaseContract.FriendEntry.FRIEND_TABLE,
-				values,
-				DatabaseContract.FriendEntry._ID + " = ?",
-				new String[]{getId().toString()},
-				SQLiteDatabase.CONFLICT_REPLACE
-		);
-		if (id != -1) {
-			setId(id);
-		}
-		db.close();
-	}
-
-	public void delete() {
-		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
-		db.delete(
-				DatabaseContract.FriendEntry.FRIEND_TABLE,
-				DatabaseContract.FriendEntry._ID + " = ?",
-				new String[]{getId().toString()}
-		);
-		db.close();
+		return true;
 	}
 }

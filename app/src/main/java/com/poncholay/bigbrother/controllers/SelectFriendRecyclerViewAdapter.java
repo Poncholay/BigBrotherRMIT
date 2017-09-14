@@ -31,6 +31,7 @@ public class SelectFriendRecyclerViewAdapter extends FriendRecyclerViewAdapter {
 
 			IconUtils.setupIcon(holder.mIconView, friend, mContext);
 			holder.mNameView.setText(friend.getFirstname() + " " + friend.getLastname());
+			holder.mEmailView.setText(friend.getEmail().equals("") ? "No email" : friend.getEmail());
 
 			if (mSelectedValues.contains(friend)) {
 				holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.fillColor, null));

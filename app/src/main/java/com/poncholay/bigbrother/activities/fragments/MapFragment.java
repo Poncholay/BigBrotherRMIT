@@ -111,6 +111,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if (isVisibleToUser) {
+			refresh();
 			recenter();
 		}
 	}
@@ -160,7 +161,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 	private void setupMeetings() {
 		if (mMap != null) {
-			List<Meeting> meetings = Meeting.getAll();
+			List<Meeting> meetings = Meeting.getAll(Meeting.class);
 			for (Meeting meeting : meetings) {
 				if (meeting.getLatitude() != -1 && meeting.getLongitude() != -1) {
 					mPos = new LatLng(meeting.getLatitude(), meeting.getLongitude());
@@ -184,7 +185,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 				query.append(" OR ");
 			}
 		}
-		return Friend.getAll(query.toString());
+		return Friend.getAll(Friend.class, query.toString());
 	}
 
 	private void setupFriends() {

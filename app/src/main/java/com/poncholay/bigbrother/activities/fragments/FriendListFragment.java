@@ -249,7 +249,7 @@ public class FriendListFragment extends Fragment {
 	}
 
 	private List<Friend> retrieveFriends() {
-		return Friend.getAll();
+		return Friend.getAll(Friend.class);
 	}
 
 	public static String getTitle() {
