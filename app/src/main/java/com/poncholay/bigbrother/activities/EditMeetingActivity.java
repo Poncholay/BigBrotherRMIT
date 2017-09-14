@@ -279,6 +279,7 @@ public class EditMeetingActivity extends AppCompatActivity
 				Place place = PlacePicker.getPlace(this, data);
 				mMeeting.setLatitude(place.getLatLng().latitude);
 				mMeeting.setLongitude(place.getLatLng().longitude);
+				mMeeting.setLocationName(place.getName().toString());
 				DecimalFormat decimalFormat = new DecimalFormat("#.0###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 				mLocalisationView.setText(decimalFormat.format(mMeeting.getLatitude()) + " " + decimalFormat.format(mMeeting.getLongitude()));
 			}
