@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.common.collect.Lists;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.EditMeetingActivity;
@@ -86,7 +85,7 @@ public class MeetingListFragment extends Fragment {
 				if (resultCode == RESULT_OK) {
 					Meeting meeting = data.getParcelableExtra("meeting");
 					if (meeting != null) {
-						meeting.setId(meeting.save());
+						meeting.save();
 						if (mAdapter != null) {
 							mAdapter.add(meeting);
 						}
@@ -98,7 +97,7 @@ public class MeetingListFragment extends Fragment {
 				if (resultCode == RESULT_OK) {
 					Meeting meeting = data.getParcelableExtra("meeting");
 					if (meeting != null) {
-						meeting.setId(meeting.save());
+						meeting.save();
 						if (mAdapter != null) {
 							int pos = mAdapter.getPosition(meeting);
 							mAdapter.remove(meeting);
@@ -112,7 +111,6 @@ public class MeetingListFragment extends Fragment {
 				break;
 		}
 	}
-
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -195,7 +193,7 @@ public class MeetingListFragment extends Fragment {
 	}
 
 	private List<Meeting> retrieveMeetings() {
-		return Lists.newArrayList(Meeting.findAll(Meeting.class));
+		return Meeting.getAll();
 	}
 
 	public static String getTitle() {

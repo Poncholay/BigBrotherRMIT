@@ -2,15 +2,16 @@ package com.poncholay.bigbrother;
 
 import android.app.Application;
 
-import com.orm.SugarContext;
+import com.poncholay.bigbrother.utils.database.DatabaseHelper;
 
 import pl.aprilapps.easyphotopicker.EasyImage;
 
-public class BigBrotherApplication extends Application {
+public class
+BigBrotherApplication extends Application {
 
 	@Override
 	public void onCreate() {
-		SugarContext.init(this);
+		DatabaseHelper.DatabaseContext.context = this;
 		EasyImage.configuration(this)
 				.setAllowMultiplePickInGallery(false)
 				.setCopyPickedImagesToPublicGalleryAppFolder(false)
@@ -20,7 +21,6 @@ public class BigBrotherApplication extends Application {
 
 	@Override
 	public void onTerminate() {
-		SugarContext.terminate();
 		super.onTerminate();
 	}
 }

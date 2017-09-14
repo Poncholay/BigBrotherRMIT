@@ -154,7 +154,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 
 	private boolean checkDuplicates(String firstname, String lastname) {
 		if (mMode != Constants.EDIT_FRIEND || !firstname.equals(mFriend.getFirstname()) || !lastname.equals(mFriend.getLastname())) {
-			List<Friend> boards = Friend.find(Friend.class,	"firstname = ? AND lastname = ?", firstname, lastname);
+			List<Friend> boards = Friend.getAll("firstname = " + firstname + " AND lastname = " + lastname);
 			if (boards.size() != 0) {
 				Toast.makeText(this,
 						String.format(Locale.US,

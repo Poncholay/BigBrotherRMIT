@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.common.collect.Lists;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.EditFriendActivity;
@@ -120,7 +119,7 @@ public class FriendListFragment extends Fragment {
 				if (resultCode == RESULT_OK) {
 					Friend friend = data.getParcelableExtra("friend");
 					if (friend != null) {
-						friend.setId(friend.save());
+						friend.save();
 						if (mAdapter != null) {
 							mAdapter.add(friend);
 						}
@@ -132,7 +131,7 @@ public class FriendListFragment extends Fragment {
 				if (resultCode == RESULT_OK) {
 					Friend friend = data.getParcelableExtra("friend");
 					if (friend != null) {
-						friend.setId(friend.save());
+						friend.save();
 						if (mAdapter != null) {
 							int pos = mAdapter.getPosition(friend);
 							mAdapter.remove(friend);
@@ -250,7 +249,7 @@ public class FriendListFragment extends Fragment {
 	}
 
 	private List<Friend> retrieveFriends() {
-		return Lists.newArrayList(Friend.findAll(Friend.class));
+		return Friend.getAll();
 	}
 
 	public static String getTitle() {

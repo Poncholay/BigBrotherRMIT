@@ -1,9 +1,14 @@
 package com.poncholay.bigbrother.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.orm.SugarRecord;
+import com.poncholay.bigbrother.utils.database.DatabaseContract;
+import com.poncholay.bigbrother.utils.database.DatabaseHelper;
+import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +16,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class Meeting extends SugarRecord implements Parcelable {
-	private String uniqueId;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_END_DATE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_FRIENDS;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_LATITUDE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_LONGITUDE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_START_DATE;
+import static com.poncholay.bigbrother.utils.database.DatabaseContract.MeetingEntry.COL_MEETING_TITLE;
+
+public class Meeting extends SQLiteObject implements Parcelable {
 	private String title;
 	private Date start;
 	private Date end;
@@ -31,16 +42,9 @@ public class Meeting extends SugarRecord implements Parcelable {
 		this.title = title;
 		this.latitude = -1;
 		this.longitude = -1;
+		this.id = null;
 	}
 
-	public String getUniqueId() {
-		return uniqueId == null ? "" : uniqueId;
-	}
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
-	//TODO : randomId
-	
 	public String getTitle() {
 		return title == null ? "" : title;
 	}
@@ -90,7 +94,8 @@ public class Meeting extends SugarRecord implements Parcelable {
 		}
 		friendsIds = where.toString();
 	}
-	private List<Friend> retrieveFriends() {
+
+	private List<Friend> retrieveMeetings() {
 		StringBuilder where = new StringBuilder();
 		if (!getFriendsIds().equals("")) {
 			String[] ids = getFriendsIds().split(",");
@@ -100,14 +105,14 @@ public class Meeting extends SugarRecord implements Parcelable {
 					where.append(" OR ");
 				}
 			}
-			friends = Friend.find(Friend.class, where.toString());
+			friends = Friend.getAll(where.toString());
 			return friends;
 		}
 		return new ArrayList<>();
 	}
 
 	public List<Friend> getFriends() {
-		return friends == null ? retrieveFriends() : friends;
+		return friends == null ? retrieveMeetings() : friends;
 	}
 	public void setFriends(List<Friend> friends) {
 		this.friends = friends;
@@ -134,12 +139,11 @@ public class Meeting extends SugarRecord implements Parcelable {
 	public Meeting(Parcel in) {
 		Long id = in.readLong();
 		this.setId(id == -1 ? null : id);
-		this.setUniqueId(in.readString());
 		this.setTitle(in.readString());
 		this.setStart((Date) in.readSerializable());
 		this.setEnd((Date) in.readSerializable());
 		this.setFriendsIds(in.readString());
-		Parcelable[] ps = in.readParcelableArray(Friend.class.getClassLoader());
+		Parcelable[] ps = in.readParcelableArray(Meeting.class.getClassLoader());
 		Friend[] friends = new Friend[ps.length];
 		try {
 			System.arraycopy(ps, 0, friends, 0, ps.length);
@@ -154,7 +158,6 @@ public class Meeting extends SugarRecord implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.getId() == null ? -1 : this.getId());
-		dest.writeString(this.getUniqueId());
 		dest.writeString(this.getTitle());
 		dest.writeSerializable(this.getStart());
 		dest.writeSerializable(this.getEnd());
@@ -178,4 +181,153 @@ public class Meeting extends SugarRecord implements Parcelable {
 			return new Meeting[size];
 		}
 	};
+
+	//________
+	//Database
+
+	private ContentValues getValues() {
+		ContentValues values = new ContentValues();
+		values.put(COL_MEETING_TITLE, getTitle());
+		values.put(COL_MEETING_START_DATE, getStart().getTime());
+		values.put(COL_MEETING_END_DATE, getEnd().getTime());
+		values.put(COL_MEETING_FRIENDS, getFriendsIds());
+		values.put(COL_MEETING_LATITUDE, getLatitude());
+		values.put(COL_MEETING_LONGITUDE, getLongitude());
+		return values;
+	}
+
+	private static Meeting fromCursor(Cursor cursor) {
+		Meeting meeting = new Meeting();
+		int idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry._ID);
+		if (idx != - 1) {
+			meeting.setId(cursor.getLong(idx));
+		} else {
+			return null;
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_TITLE);
+		if (idx != - 1) {
+			meeting.setTitle(cursor.getString(idx));
+		} else {
+			return null;
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_START_DATE);
+		if (idx != - 1) {
+			meeting.setStart(new Date(cursor.getLong(idx)));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_END_DATE);
+		if (idx != - 1) {
+			meeting.setEnd(new Date(cursor.getLong(idx)));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_FRIENDS);
+		if (idx != - 1) {
+			meeting.setFriendsIds(cursor.getString(idx));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_LATITUDE);
+		if (idx != - 1) {
+			meeting.setLatitude(cursor.getDouble(idx));
+		}
+		idx = cursor.getColumnIndex(DatabaseContract.MeetingEntry.COL_MEETING_LONGITUDE);
+		if (idx != - 1) {
+			meeting.setLongitude(cursor.getDouble(idx));
+		}
+		return meeting;
+	}
+
+	private static Meeting getOne(Cursor cursor) {
+		Meeting meeting = null;
+		if (cursor.moveToNext()) {
+			meeting = fromCursor(cursor);
+			cursor.close();
+		}
+		return meeting;
+	}
+
+	public static Meeting getOne(int id) {
+		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
+		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.MeetingEntry.MEETING_TABLE + " WHERE _ID = " + id, null);
+		Meeting meeting = getOne(cursor);
+		db.close();
+		return meeting;
+	}
+
+	public static Meeting getOne(String where) {
+		if (where.equals("")) {
+			return null;
+		}
+		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
+		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.MeetingEntry.MEETING_TABLE + " WHERE " + where, null);
+		Meeting meeting = getOne(cursor);
+		db.close();
+		return meeting;
+	}
+
+	public static List<Meeting> getAll() {
+		ArrayList<Meeting> friendList = new ArrayList<>();
+		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
+		Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.MeetingEntry.MEETING_TABLE, null);
+		while (cursor.moveToNext()) {
+			Meeting friend = fromCursor(cursor);
+			if (friend != null) {
+				friendList.add(friend);
+			}
+		}
+		cursor.close();
+		db.close();
+		return friendList;
+	}
+
+	public void save() {
+		if (id != null && id != -1) {
+			update();
+			return;
+		}
+		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
+		ContentValues values = getValues();
+		long id = db.insertWithOnConflict(
+				DatabaseContract.MeetingEntry.MEETING_TABLE,
+				null,
+				values,
+				SQLiteDatabase.CONFLICT_REPLACE);
+		db.close();
+		if (id != -1) {
+			this.setId(id);
+		}
+	}
+
+	private void update() {
+		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
+		ContentValues values = getValues();
+		long id = db.updateWithOnConflict(
+				DatabaseContract.MeetingEntry.MEETING_TABLE,
+				values,
+				DatabaseContract.MeetingEntry._ID + " = ?",
+				new String[]{getId().toString()},
+				SQLiteDatabase.CONFLICT_REPLACE
+		);
+		if (id != -1) {
+			setId(id);
+		}
+		db.close();
+	}
+
+	public void delete() {
+		SQLiteDatabase db = DatabaseHelper.getInstance().getDatabase();
+		db.delete(
+				DatabaseContract.MeetingEntry.MEETING_TABLE,
+				DatabaseContract.MeetingEntry._ID + " = ?",
+				new String[]{getId().toString()}
+		);
+		db.close();
+	}
 }
+
+//		Cursor cursor = db.query(DatabaseContract.MeetingEntry.MEETING_TABLE,
+//				new String[]{
+//						DatabaseContract.MeetingEntry._ID,
+//						COL_MEETING_FIRSTNAME,
+//						COL_MEETING_LASTNAME,
+//						COL_MEETING_EMAIL,
+//						COL_MEETING_BIRTHDAY,
+//						COL_MEETING_HAS_ICON
+//				}, null, null, null, null, null, null);
+//TODO : Remove that
