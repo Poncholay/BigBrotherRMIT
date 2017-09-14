@@ -1,8 +1,10 @@
 package com.poncholay.bigbrother;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.orm.SugarContext;
+import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 
 import pl.aprilapps.easyphotopicker.EasyImage;
 
@@ -16,6 +18,10 @@ public class BigBrotherApplication extends Application {
 				.setCopyPickedImagesToPublicGalleryAppFolder(false)
 				.setCopyTakenPhotosToPublicGalleryAppFolder(false);
 		super.onCreate();
+
+		Intent intent = new Intent(this, MeetingSuggestionsService.class);
+		stopService(intent);
+		startService(intent);
 	}
 
 	@Override
