@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,12 +26,17 @@ import android.widget.Toast;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.activities.EditFriendActivity;
+import com.poncholay.bigbrother.activities.FriendActivity;
 import com.poncholay.bigbrother.controllers.FriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.AnchoredFloatingActionButton;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.ContactDataManager;
+import com.poncholay.bigbrother.utils.CopyHelper;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -176,12 +182,78 @@ public class FriendListFragment extends Fragment {
 		mAdapter.sort(mSort);
 	}
 
+	private FriendRecyclerViewAdapter createAdapter(List<Friend> friends) {
+		return new FriendRecyclerViewAdapter(friends, new FriendRecyclerViewAdapter.OnFriendClickListener() {
+			@Override
+			public void onFriendClick(final Friend friend, View v) {
+				Intent callFriendActivity = new Intent(getActivity(), FriendActivity.class);
+				callFriendActivity.putExtra("friend", friend);
+				startActivityForResult(callFriendActivity, Constants.EDIT_FRIEND);
+			}
+
+			@Override
+			public boolean onFriendLongClick(final Friend friend, View v) {
+				PopupMenu menu = new PopupMenu(getActivity(), v);
+				menu.getMenu().add("Delete");
+				menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						switch (item.getTitle().toString()) {
+							case "Delete":
+								mAdapter.remove(friend);
+								File dir = CopyHelper.getDirectory(getActivity(), friend.getFirstname() + " " + friend.getLastname());
+								if (dir != null) {
+									dir.delete();
+								}
+								friend.delete();
+								return true;
+							default:
+								return true;
+						}
+					}
+				});
+				menu.show();
+				return true;
+			}
+		}, new FriendRecyclerViewAdapter.OnSortFriend() {
+			@Override
+			public void sort(int index, List<Friend> values) {
+				switch (index) {
+					case Constants.BY_NAME:
+						Collections.sort(values, new Comparator<Friend>() {
+							@Override
+							public int compare(Friend l, Friend r) {
+								if (l == null || r == null) {
+									return l == null ? 1 : -1;
+								}
+								return l.getFirstname().compareToIgnoreCase(r.getFirstname());
+							}
+						});
+						break;
+					case Constants.BY_NAME_INV:
+						Collections.sort(values, new Comparator<Friend>() {
+							@Override
+							public int compare(Friend l, Friend r) {
+								if (l == null || r == null) {
+									return l == null ? -1 : 1;
+								}
+								return -l.getFirstname().compareToIgnoreCase(r.getFirstname());
+							}
+						});
+						break;
+					default:
+						break;
+				}
+				mAdapter.notifyDataSetChanged();
+			}
+		});
+	}
+
 	private void setupRecyclerView(View recyclerView, Bundle savedInstanceState) {
 		if (recyclerView instanceof RecyclerView) {
 			final Context context = recyclerView.getContext();
 			mRecyclerView = (RecyclerView) recyclerView;
-			List<Friend> friends = savedInstanceState == null ? retrieveFriends() : retrieveFriends(savedInstanceState);
-			mAdapter = new FriendRecyclerViewAdapter(friends, this);
+			mAdapter = createAdapter(savedInstanceState == null ? retrieveFriends() : retrieveFriends(savedInstanceState));
 			mRecyclerView.setAdapter(mAdapter);
 			LinearLayoutManager llm = new LinearLayoutManager(context);
 			llm.setOrientation(LinearLayoutManager.VERTICAL);

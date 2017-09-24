@@ -24,6 +24,8 @@ import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -157,12 +159,98 @@ public class MeetingListFragment extends Fragment {
 		menu.show();
 	}
 
+	private MeetingRecyclerViewAdapter createAdapter(List<Meeting> meetings) {
+		return new MeetingRecyclerViewAdapter(meetings, new MeetingRecyclerViewAdapter.OnMeetingClickListener() {
+			@Override
+			public void onMeetingClick(Meeting meeting, View v) {
+				Intent callMeetingActivity = new Intent(getActivity(), EditMeetingActivity.class);
+				callMeetingActivity.putExtra("meeting", meeting);
+				callMeetingActivity.putExtra("mode", Constants.EDIT_MEETING);
+				startActivityForResult(callMeetingActivity, Constants.EDIT_MEETING);
+			}
+
+			@Override
+			public boolean onMeetingLongClick(final Meeting meeting, View v) {
+				PopupMenu menu = new PopupMenu(getActivity(), v);
+				menu.getMenu().add("Delete");
+				menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						switch (item.getTitle().toString()) {
+							case "Delete":
+								mAdapter.remove(meeting);
+								meeting.delete();
+								return true;
+							default:
+								return true;
+						}
+					}
+				});
+				menu.show();
+				return true;
+			}
+		}, new MeetingRecyclerViewAdapter.OnSortMeeting() {
+			@Override
+			public void sort(int index, List<Meeting> values) {
+				switch (index) {
+					case Constants.BY_DATE:
+						Collections.sort(values, new Comparator<Meeting>() {
+							@Override
+							public int compare(Meeting l, Meeting r) {
+								if (l == null || r == null) {
+									return l == null ? -1 : 1;
+								}
+								return l.getStart().before(r.getStart()) ? 1 : -1;
+							}
+						});
+						break;
+					case Constants.BY_DATE_INV:
+						Collections.sort(values, new Comparator<Meeting>() {
+							@Override
+							public int compare(Meeting l, Meeting r) {
+								if (l == null || r == null) {
+									return l == null ? -1 : 1;
+								}
+								return l.getStart().after(r.getStart()) ? 1 : -1;
+							}
+						});
+						break;
+					case Constants.BY_NAME:
+						Collections.sort(values, new Comparator<Meeting>() {
+							@Override
+							public int compare(Meeting l, Meeting r) {
+								if (l == null || r == null) {
+									return l == null ? -1 : 1;
+								}
+								return l.getTitle().compareToIgnoreCase(r.getTitle());
+							}
+						});
+						break;
+					case Constants.BY_NAME_INV:
+						Collections.sort(values, new Comparator<Meeting>() {
+							@Override
+							public int compare(Meeting l, Meeting r) {
+								if (l == null || r == null) {
+									return l == null ? -1 : 1;
+								}
+								return r.getTitle().compareToIgnoreCase(l.getTitle());
+							}
+						});
+						break;
+					default:
+						break;
+				}
+				mAdapter.notifyDataSetChanged();
+			}
+		});
+	}
+
 	private void setupRecyclerView(View recyclerView, Bundle savedInstanceState) {
 		if (recyclerView instanceof RecyclerView) {
 			final Context context = recyclerView.getContext();
 			mRecyclerView = (RecyclerView) recyclerView;
 			List<Meeting> meetings = savedInstanceState == null ? retrieveMeetings() : retrieveMeetings(savedInstanceState);
-			mAdapter = new MeetingRecyclerViewAdapter(meetings, this);
+			mAdapter = createAdapter(meetings);
 			mRecyclerView.setAdapter(mAdapter);
 			LinearLayoutManager llm = new LinearLayoutManager(context);
 			llm.setOrientation(LinearLayoutManager.VERTICAL);
