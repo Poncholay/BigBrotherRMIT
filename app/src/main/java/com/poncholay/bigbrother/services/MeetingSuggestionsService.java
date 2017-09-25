@@ -112,29 +112,10 @@ public class MeetingSuggestionsService extends Service implements LocationListen
     private double getDistanceInfo(LatLng from, LatLng to) {
         StringBuilder stringBuilder = new StringBuilder();
         Double dist = 0.0;
-        try {
 
-            String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" +
-                    from.latitude + "," + from.longitude + "&destination=" +
-                    to.latitude + "," + to.longitude + "&mode=walking&sensor=false";
-
-            HttpPost httppost = new HttpPost(url);
-
-            HttpClient client = new DefaultHttpClient();
-            HttpResponse response;
-            stringBuilder = new StringBuilder();
-
-
-            response = client.execute(httppost);
-            HttpEntity entity = response.getEntity();
-            InputStream stream = entity.getContent();
-            int b;
-            while ((b = stream.read()) != -1) {
-                stringBuilder.append((char) b);
-            }
-        } catch (ClientProtocolException e) {
-        } catch (IOException e) {
-        }
+        String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" +
+                from.latitude + "," + from.longitude + "&destination=" +
+                to.latitude + "," + to.longitude + "&mode=walking&sensor=false";
 
         JSONObject jsonObject = new JSONObject();
         try {
