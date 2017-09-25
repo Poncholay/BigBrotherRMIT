@@ -1,39 +1,40 @@
 package com.poncholay.bigbrother.controllers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.FriendActivity;
 import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.utils.CopyHelper;
 import com.poncholay.bigbrother.utils.IconUtils;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecyclerViewAdapter.ViewHolder> {
 
 	protected final List<Friend> mValues;
 	protected Context mContext;
-	private Fragment mFragment;
+	protected OnFriendClickListener mListener;
+	protected OnSortFriend mSorter;
 
-	public FriendRecyclerViewAdapter(List<Friend> items, Fragment fragment) {
+	public interface OnFriendClickListener {
+		void onFriendClick(Friend friend, View v);
+		boolean onFriendLongClick(Friend friend, View v);
+	}
+
+	public interface OnSortFriend {
+		void sort(int index, List<Friend> values);
+	}
+
+	public FriendRecyclerViewAdapter(List<Friend> items, OnFriendClickListener listener, OnSortFriend sorter) {
 		mValues = items;
-		mFragment = fragment;
+		mListener = listener;
+		mSorter = sorter;
 	}
 
 	@Override
@@ -45,7 +46,6 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, int position) {
-
 		final Friend friend = mValues.get(position);
 
 		if (friend != null) {
@@ -59,35 +59,15 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent callFriendActivity = new Intent(mContext, FriendActivity.class);
-					callFriendActivity.putExtra("friend", friend);
-					mFragment.startActivityForResult(callFriendActivity, Constants.EDIT_FRIEND);
+					if (mListener != null) {
+						mListener.onFriendClick(friend, v);
+					}
 				}
 			});
 			holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					PopupMenu menu = new PopupMenu(mContext, v);
-					menu.getMenu().add("Delete");
-					menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							switch (item.getTitle().toString()) {
-								case "Delete":
-									remove(friend);
-									File dir = CopyHelper.getDirectory(mContext, friend.getFirstname() + " " + friend.getLastname());
-									if (dir != null) {
-										dir.delete();
-									}
-									friend.delete();
-									return true;
-								default:
-									return true;
-							}
-						}
-					});
-					menu.show();
-					return true;
+					return mListener != null && mListener.onFriendLongClick(friend, v);
 				}
 			});
 		}
@@ -122,33 +102,9 @@ public class FriendRecyclerViewAdapter extends RecyclerView.Adapter<FriendRecycl
 	}
 
 	public void sort(int index) {
-		switch (index) {
-			case Constants.BY_NAME:
-				Collections.sort(mValues, new Comparator<Friend>() {
-					@Override
-					public int compare(Friend l, Friend r) {
-						if (l == null || r == null) {
-							return l == null ? 1 : -1;
-						}
-						return l.getFirstname().compareToIgnoreCase(r.getFirstname());
-					}
-				});
-				break;
-			case Constants.BY_NAME_INV:
-				Collections.sort(mValues, new Comparator<Friend>() {
-					@Override
-					public int compare(Friend l, Friend r) {
-						if (l == null || r == null) {
-							return l == null ? -1 : 1;
-						}
-						return -l.getFirstname().compareToIgnoreCase(r.getFirstname());
-					}
-				});
-				break;
-			default:
-				break;
+		if (mSorter != null) {
+			mSorter.sort(index, mValues);
 		}
-		notifyDataSetChanged();
 	}
 
 	class ViewHolder extends RecyclerView.ViewHolder {

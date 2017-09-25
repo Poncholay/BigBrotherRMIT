@@ -1,28 +1,20 @@
 package com.poncholay.bigbrother.controllers;
 
-import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.model.Meeting;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,18 +24,27 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 	static final private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
 
 	private final List<Meeting> mValues;
-	private Context mContext;
-	private Fragment mFragment;
+	private OnMeetingClickListener mListener;
+	private OnSortMeeting mSorter;
 
-	public MeetingRecyclerViewAdapter(List<Meeting> items, Fragment fragment) {
+	public interface OnMeetingClickListener {
+		void onMeetingClick(Meeting meeting, View v);
+		boolean onMeetingLongClick(Meeting meeting, View v);
+	}
+
+	public interface OnSortMeeting {
+		void sort(int index, List<Meeting> values);
+	}
+
+	public MeetingRecyclerViewAdapter(List<Meeting> items, OnMeetingClickListener listener, OnSortMeeting sorter) {
 		mValues = items;
-		mFragment = fragment;
+		mListener = listener;
+		mSorter = sorter;
 	}
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		mContext = parent.getContext();
-		View view = LayoutInflater.from(mContext).inflate(R.layout.item_meeting, parent, false);
+		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_meeting, parent, false);
 		return new ViewHolder(view);
 	}
 
@@ -79,32 +80,15 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 			holder.mView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent callMeetingActivity = new Intent(mContext, EditMeetingActivity.class);
-					callMeetingActivity.putExtra("meeting", meeting);
-					callMeetingActivity.putExtra("mode", Constants.EDIT_MEETING);
-					mFragment.startActivityForResult(callMeetingActivity, Constants.EDIT_MEETING);
+					if (mListener != null) {
+						mListener.onMeetingClick(meeting, v);
+					}
 				}
 			});
 			holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					PopupMenu menu = new PopupMenu(mContext, v);
-					menu.getMenu().add("Delete");
-					menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							switch (item.getTitle().toString()) {
-								case "Delete":
-									remove(meeting);
-									meeting.delete();
-									return true;
-								default:
-									return true;
-							}
-						}
-					});
-					menu.show();
-					return true;
+					return mListener != null && mListener.onMeetingLongClick(meeting, v);
 				}
 			});
 		}
@@ -139,55 +123,9 @@ public class MeetingRecyclerViewAdapter extends RecyclerView.Adapter<MeetingRecy
 	}
 
 	public void sort(int index) {
-		switch (index) {
-			case Constants.BY_DATE:
-				Collections.sort(mValues, new Comparator<Meeting>() {
-					@Override
-					public int compare(Meeting l, Meeting r) {
-						if (l == null || r == null) {
-							return l == null ? -1 : 1;
-						}
-						return l.getStart().before(r.getStart()) ? 1 : -1;
-					}
-				});
-				break;
-			case Constants.BY_DATE_INV:
-				Collections.sort(mValues, new Comparator<Meeting>() {
-					@Override
-					public int compare(Meeting l, Meeting r) {
-						if (l == null || r == null) {
-							return l == null ? -1 : 1;
-						}
-						return l.getStart().after(r.getStart()) ? 1 : -1;
-					}
-				});
-				break;
-			case Constants.BY_NAME:
-				Collections.sort(mValues, new Comparator<Meeting>() {
-					@Override
-					public int compare(Meeting l, Meeting r) {
-						if (l == null || r == null) {
-							return l == null ? -1 : 1;
-						}
-						return l.getTitle().compareToIgnoreCase(r.getTitle());
-					}
-				});
-				break;
-			case Constants.BY_NAME_INV:
-				Collections.sort(mValues, new Comparator<Meeting>() {
-					@Override
-					public int compare(Meeting l, Meeting r) {
-						if (l == null || r == null) {
-							return l == null ? -1 : 1;
-						}
-						return r.getTitle().compareToIgnoreCase(l.getTitle());
-					}
-				});
-				break;
-			default:
-				break;
+		if (mSorter != null) {
+			mSorter.sort(index, mValues);
 		}
-		notifyDataSetChanged();
 	}
 
 	class ViewHolder extends RecyclerView.ViewHolder {

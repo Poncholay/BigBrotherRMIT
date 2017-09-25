@@ -26,6 +26,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.controllers.FriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.controllers.IconRecyclerViewAdapter;
 import com.poncholay.bigbrother.controllers.SelectFriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.Friend;
@@ -54,6 +55,7 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 	private TextView mLocalisationView;
 
 	private IconRecyclerViewAdapter mIconAdapter;
+	private SelectFriendRecyclerViewAdapter mAdapter;
 
 	private boolean mEditStart = true;
 	private Date mDateStart = null;
@@ -145,6 +147,10 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 
 		if (title.trim().equals("")) {
 			Toast.makeText(this, getString(R.string.error_empty_title), Toast.LENGTH_SHORT).show();
+			return;
+		}
+		if (mDateStart.after(mDateEnd)) {
+			Toast.makeText(this, getString(R.string.error_invalid_date), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -241,8 +247,24 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 		final RecyclerView recyclerView = (RecyclerView) selectListView.findViewById(R.id.friendlist_recycler_view);
 
 		final Context context = recyclerView.getContext();
-		final SelectFriendRecyclerViewAdapter adapter = new SelectFriendRecyclerViewAdapter(Friend.getAll(Friend.class), mMeeting.getFriends());
-		recyclerView.setAdapter(adapter);
+		mAdapter = new SelectFriendRecyclerViewAdapter(Friend.getAll(Friend.class), mMeeting.getFriends(), new FriendRecyclerViewAdapter.OnFriendClickListener() {
+			@Override
+			public void onFriendClick(Friend friend, View v) {
+				if (!mAdapter.getSelected().contains(friend)) {
+					mAdapter.getSelected().add(friend);
+					v.setBackgroundColor(getResources().getColor(R.color.fillColor, null));
+				} else {
+					mAdapter.getSelected().remove(friend);
+					v.setBackgroundColor(getResources().getColor(R.color.colorSplash, null));
+				}
+			}
+
+			@Override
+			public boolean onFriendLongClick(Friend friend, View v) {
+				return false;
+			}
+		});
+		recyclerView.setAdapter(mAdapter);
 		LinearLayoutManager llm = new LinearLayoutManager(context);
 		llm.setOrientation(LinearLayoutManager.VERTICAL);
 		recyclerView.setLayoutManager(llm);
@@ -262,9 +284,9 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 				.onPositive(new MaterialDialog.SingleButtonCallback() {
 					@Override
 					public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-						mMeeting.setFriends(adapter.getSelected());
-						mIconAdapter.setList(adapter.getSelected());
-						mNbFriends.setText(String.format(Locale.US, "%d", adapter.getSelected().size()));
+						mMeeting.setFriends(mAdapter.getSelected());
+						mIconAdapter.setList(mAdapter.getSelected());
+						mNbFriends.setText(String.format(Locale.US, "%d", mAdapter.getSelected().size()));
 					}
 				})
 				.show();

@@ -29,6 +29,7 @@ import com.poncholay.bigbrother.utils.BitmapUtils;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
+import com.poncholay.bigbrother.utils.database.DatabaseContract;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -180,7 +181,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 		Iterator<DummyLocationService.FriendLocation> it = matched.iterator();
 		while (it.hasNext()) {
 			DummyLocationService.FriendLocation friendLocation = it.next();
-			query.append("id = ").append(friendLocation.id);
+			query.append(DatabaseContract.FriendEntry._ID + " = ").append(friendLocation.id);
 			if (it.hasNext()) {
 				query.append(" OR ");
 			}
