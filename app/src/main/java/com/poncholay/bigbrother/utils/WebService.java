@@ -94,6 +94,7 @@ public class WebService {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
+
 			String postData = null;
 			if (params.length == 2) {
 				postData = params[1];
@@ -112,28 +113,24 @@ public class WebService {
 					case TYPE_GET:
 						conn.setRequestMethod("GET");
 						break;
-
 					case TYPE_POST:
 						conn.setRequestMethod("POST");
 						break;
-
 					case TYPE_PUT:
 						conn.setRequestMethod("PUT");
 						break;
-
 					case TYPE_PATCH:
 						conn.setRequestMethod("PATCH");
 						break;
-
 					case TYPE_DELETE:
 						conn.setRequestMethod("DELETE");
 						break;
-
 					default:
 						return null;
 				}
 				conn.setRequestProperty("Content-Type", "application/json");
 				conn.setDoInput(true);
+
 				if (postData != null) {
 					conn.setDoOutput(true);
 					OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -141,6 +138,7 @@ public class WebService {
 					wr.flush();
 					wr.close();
 				}
+
 				conn.connect();
 				int responseCode = conn.getResponseCode();
 				if (responseCode >= 300) {
@@ -151,11 +149,9 @@ public class WebService {
 				resultStr[0] = String.valueOf(responseCode);
 				resultStr[1] = getStringFromInputStream(is);
 			} catch (SocketTimeoutException connect_exception) {
-				connect_exception.printStackTrace();
 				resultStr[0] = String.valueOf(ERROR_TIMEOUT);
 				resultStr[1] = null;
 			} catch (IOException io_exception) {
-				io_exception.printStackTrace();
 				resultStr[0] = String.valueOf(ERROR_IO);
 				resultStr[1] = null;
 			} finally {
@@ -167,12 +163,44 @@ public class WebService {
 					}
 				}
 			}
-
-			for (String s : resultStr) {
-				Log.e("RESULT", s);
-			}
-
 			return resultStr;
+		}
+
+
+		@Override
+		protected void onPostExecute(final String[] s) {
+			super.onPostExecute(s);
+
+			if (Integer.parseInt(s[0]) == ERROR_IO) {
+				onErrorExecute(ERROR_IO, null);
+				return;
+			}
+			if (Integer.parseInt(s[0]) == ERROR_TIMEOUT) {
+				onErrorExecute(ERROR_TIMEOUT, null);
+				return;
+			}
+			call_back.onSuccess(s[1]);
+		}
+
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				conn.disconnect();
+				conn = null;
+			}
+			call_back.onCancel();
+		}
+
+		protected void onErrorExecute(final int type, final String s) {
+			call_back.onError(type, s);
 		}
 
 		private String getStringFromInputStream(InputStream is) {
