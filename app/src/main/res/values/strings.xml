@@ -23,6 +23,7 @@
 	<string name="date_field">Birthdate :</string>
 	<string name="action_validate">Validate</string>
 	<string name="error_name_already_used">Name \\\"%s\\\" already used</string>
+	<string name="error_no_path_found">No path found.</string>
 	<string name="error_empty_name">Firstname cannot be empty</string>
 	<string name="error_empty_title">Title cannot be empty</string>
 	<string name="date_picker">Set</string>

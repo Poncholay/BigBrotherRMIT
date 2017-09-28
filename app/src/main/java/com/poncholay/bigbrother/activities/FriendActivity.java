@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +40,7 @@ public class FriendActivity extends AppCompatActivity {
 			return;
 		}
 
+		Log.e("FRIEND", "Friend id : " + mFriend.getId());
 		setupToolbar();
 		setupFormListeners();
 		IconUtils.setupIconBig(mIconView, mFriend, this);

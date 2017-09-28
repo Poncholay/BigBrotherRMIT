@@ -30,6 +30,7 @@ import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
+import com.poncholay.bigbrother.utils.database.FriendsUtils;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -175,25 +176,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 		}
 	}
 
-	private List<Friend> findCurrentFriends(List<DummyLocationService.FriendLocation> matched) {
-		StringBuilder query = new StringBuilder();
-
-		Iterator<DummyLocationService.FriendLocation> it = matched.iterator();
-		while (it.hasNext()) {
-			DummyLocationService.FriendLocation friendLocation = it.next();
-			query.append(DatabaseContract.FriendEntry._ID + " = ").append(friendLocation.id);
-			if (it.hasNext()) {
-				query.append(" OR ");
-			}
-		}
-		return Friend.getAll(Friend.class, query.toString());
-	}
 
 	private void setupFriends() {
 		if (mMap != null) {
 			DummyLocationService DLS = DummyLocationService.getSingletonInstance();
 			List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), new Date(), 10, 10);
-			List<Friend> friends = findCurrentFriends(matched);
+			List<Friend> friends = FriendsUtils.findCurrentFriends(matched);
 			for (Friend friend : friends) {
 				for (DummyLocationService.FriendLocation friendLocation : matched) {
 					if (friendLocation.id.equals(friend.getId().toString())) {

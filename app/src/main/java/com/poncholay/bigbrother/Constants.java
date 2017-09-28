@@ -17,6 +17,7 @@ public class Constants {
 	public static final int BY_DATE_INV = 11;
 	public static final int BY_NAME = 12;
 	public static final int BY_NAME_INV = 13;
+	public static final int REQUEST_ACCESS_COARSE_LOCATION = 14;
 	public static final String ICON = "icon.jpg";
 
 	static final public SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault());
