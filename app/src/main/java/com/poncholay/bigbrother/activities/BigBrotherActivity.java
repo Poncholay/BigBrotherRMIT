@@ -10,7 +10,6 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -46,12 +45,12 @@ public class BigBrotherActivity extends AppCompatActivity {
 			startService(intent);
 		}
 	}
+
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 		switch (requestCode) {
 			case Constants.REQUEST_ACCESS_COARSE_LOCATION: {
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
 					Intent intent = new Intent(this, MeetingSuggestionsService.class);
 					stopService(intent);
 					startService(intent);
@@ -70,7 +69,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.action_settings) {
-//			startActivity(new Intent(this, SettingsActivity.class));
+			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

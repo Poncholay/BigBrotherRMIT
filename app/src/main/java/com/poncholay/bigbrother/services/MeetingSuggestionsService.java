@@ -7,33 +7,20 @@ package com.poncholay.bigbrother.services;
  */
 
 import android.Manifest;
-import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.FriendDistance;
 import com.poncholay.bigbrother.utils.MeetingSuggestion;
-import com.poncholay.bigbrother.utils.database.DatabaseContract;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 public class MeetingSuggestionsService extends Service implements LocationListener {
@@ -54,7 +41,6 @@ public class MeetingSuggestionsService extends Service implements LocationListen
         LocationManager lm = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
 
         requestLocationUpdate();
-
 
         return Service.START_STICKY;
     }
@@ -78,17 +64,17 @@ public class MeetingSuggestionsService extends Service implements LocationListen
     }
 
 
-    public Location get_userLocation() { return _userLocation; }
+    public Location get_userLocation() {
+        return _userLocation;
+    }
 
     @Override
     public void onLocationChanged(Location location) {
-
-        if(location != null) {
+        if (location != null) {
             _userLocation = location;
             MeetingSuggestion ms = new MeetingSuggestion(getApplicationContext(), _userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
                 @Override
                 public void onSuccess(List<FriendDistance> friendDistances) {
-
                     FriendDistance sugFriendDist = friendDistances.get(0);
                     Friend closestFriend = sugFriendDist.get_friend();
                     Log.e(TAG, "onSuccess - closest friend : " + closestFriend.getFirstname() +

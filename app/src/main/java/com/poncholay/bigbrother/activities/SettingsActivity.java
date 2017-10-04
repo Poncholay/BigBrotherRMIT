@@ -1,223 +1,94 @@
 package com.poncholay.bigbrother.activities;
 
-
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.support.v7.app.ActionBar;
-import android.text.TextUtils;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.model.StepSlider;
 
-import java.util.List;
+public class SettingsActivity extends AppCompatActivity {
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
-	private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object value) {
-			String stringValue = value.toString();
+	private SwitchCompat aSwitch;
 
-			if (preference instanceof ListPreference) {
-				ListPreference listPreference = (ListPreference) preference;
-				int index = listPreference.findIndexOfValue(stringValue);
-				preference.setSummary(
-						index >= 0
-								? listPreference.getEntries()[index]
-								: null);
+	private StepSlider intervalStepSlider;
+	private TextView intervalDetailLabel;
 
-			} else if (preference instanceof RingtonePreference) {
-				if (TextUtils.isEmpty(stringValue)) {
-					preference.setSummary(R.string.pref_ringtone_silent);
-				} else {
-					Ringtone ringtone = RingtoneManager.getRingtone(preference.getContext(), Uri.parse(stringValue));
-					if (ringtone == null) {
-						preference.setSummary(null);
-					} else {
-						String name = ringtone.getTitle(preference.getContext());
-						preference.setSummary(name);
-					}
-				}
-			} else {
-				preference.setSummary(stringValue);
-			}
-			return true;
-		}
-	};
-
-	/**
-	 * Helper method to determine if the device has an extra-large screen. For
-	 * example, 10" tablets are extra-large.
-	 */
-	private static boolean isXLargeTablet(Context context) {
-		return (context.getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-	}
-
-	/**
-	 * Binds a preference's summary to its value. More specifically, when the
-	 * preference's value is changed, its summary (line of text below the
-	 * preference title) is updated to reflect the value. The summary is also
-	 * immediately updated upon calling this method. The exact display format is
-	 * dependent on the type of preference.
-	 *
-	 * @see #sBindPreferenceSummaryToValueListener
-	 */
-	private static void bindPreferenceSummaryToValue(Preference preference) {
-		// Set the listener to watch for value changes.
-		preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-		// Trigger the listener immediately with the preference's
-		// current value.
-		sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-				PreferenceManager
-						.getDefaultSharedPreferences(preference.getContext())
-						.getString(preference.getKey(), ""));
-	}
+	private StepSlider delayStepSlider;
+	private TextView delayDetailLabel;
+	private int[] steps = {0, 5, 10, 60, 240, 1440};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setupActionBar();
+		setContentView(R.layout.activity_settings);
+
+		setupToolbar();
+
+		aSwitch = (SwitchCompat) findViewById(R.id.switchInterval);
+
+		intervalStepSlider = (StepSlider) findViewById(R.id.intervalStepSlider);
+		intervalDetailLabel = (TextView) findViewById(R.id.intervalDetailsLabel);
+		setupStepSlider(intervalStepSlider, intervalDetailLabel, "suggestionInterval");
+
+		delayStepSlider = (StepSlider) findViewById(R.id.delayStepSlider);
+		delayDetailLabel = (TextView) findViewById(R.id.delayDetailsLabel);
+		setupStepSlider(delayStepSlider, delayDetailLabel, "reminderDelay");
 	}
 
-	/**
-	 * Set up the {@link android.app.ActionBar}, if the API is available.
-	 */
-	private void setupActionBar() {
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			// Show the Up button in the action bar.
-			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public boolean onIsMultiPane() {
-		return isXLargeTablet(this);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.clear();
+		getMenuInflater().inflate(R.menu.bar_settings_activity, menu);
+		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public void onBuildHeaders(List<Header> target) {
-		loadHeadersFromResource(R.xml.pref_headers, target);
-	}
-
-	/**
-	 * This method stops fragment injection in malicious applications.
-	 * Make sure to deny any unknown fragments here.
-	 */
-	protected boolean isValidFragment(String fragmentName) {
-		return PreferenceFragment.class.getName().equals(fragmentName)
-				|| GeneralPreferenceFragment.class.getName().equals(fragmentName)
-				|| DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-				|| NotificationPreferenceFragment.class.getName().equals(fragmentName);
-	}
-
-	/**
-	 * This fragment shows general preferences only. It is used when the
-	 * activity is showing a two-pane settings UI.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static class GeneralPreferenceFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.pref_general);
-			setHasOptionsMenu(true);
-
-			// Bind the summaries of EditText/List/Dialog/Ringtone preferences
-			// to their values. When their values change, their summaries are
-			// updated to reflect the new value, per the Android Design
-			// guidelines.
-			bindPreferenceSummaryToValue(findPreference("example_text"));
-			bindPreferenceSummaryToValue(findPreference("example_list"));
-		}
-
-		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			int id = item.getItemId();
-			if (id == android.R.id.home) {
-				startActivity(new Intent(getActivity(), SettingsActivity.class));
-				return true;
+	private void setupToolbar() {
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_settings);
+		toolbar.setTitle("Settings");
+		setSupportActionBar(toolbar);
+		toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_toolbar_back, null));
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
 			}
-			return super.onOptionsItemSelected(item);
-		}
+		});
 	}
 
-	/**
-	 * This fragment shows notification preferences only. It is used when the
-	 * activity is showing a two-pane settings UI.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static class NotificationPreferenceFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.pref_notification);
-			setHasOptionsMenu(true);
+	private void setupStepSlider(final StepSlider stepSlider, final TextView label, final String key) {
+		stepSlider.setSteps(steps);
+		stepSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				stepSlider.snapToPosition();
+				label.setText(stepSlider.getStepLabel(progress));
 
-			// Bind the summaries of EditText/List/Dialog/Ringtone preferences
-			// to their values. When their values change, their summaries are
-			// updated to reflect the new value, per the Android Design
-			// guidelines.
-			bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-		}
-
-		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			int id = item.getItemId();
-			if (id == android.R.id.home) {
-				startActivity(new Intent(getActivity(), SettingsActivity.class));
-				return true;
+				SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putInt(key, stepSlider.getSliderProgress());
+				editor.apply();
 			}
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
-	/**
-	 * This fragment shows data and sync preferences only. It is used when the
-	 * activity is showing a two-pane settings UI.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static class DataSyncPreferenceFragment extends PreferenceFragment {
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.pref_data_sync);
-			setHasOptionsMenu(true);
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {}
 
-			// Bind the summaries of EditText/List/Dialog/Ringtone preferences
-			// to their values. When their values change, their summaries are
-			// updated to reflect the new value, per the Android Design
-			// guidelines.
-			bindPreferenceSummaryToValue(findPreference("sync_frequency"));
-		}
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {}
+		});
 
-		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			if (item.getItemId() == android.R.id.home) {
-				startActivity(new Intent(getActivity(), SettingsActivity.class));
-				return true;
+		int value = getPreferences(Context.MODE_PRIVATE).getInt(key, 5);
+		for (int i = 0; i < steps.length; i++) {
+			if (steps[i] == value) {
+				stepSlider.setSliderProgress(i);
 			}
-			return super.onOptionsItemSelected(item);
 		}
 	}
 }

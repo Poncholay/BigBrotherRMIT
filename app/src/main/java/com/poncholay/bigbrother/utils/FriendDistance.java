@@ -92,12 +92,12 @@ public class FriendDistance {
             JSONObject legs     = routes.getJSONArray("legs").getJSONObject(0);
             JSONObject dur      = legs.getJSONObject("duration");
 
-            return new Pair<Double, String>(Double.parseDouble(dur.getString("value")), dur.getString("text"));
+            return new Pair<>(Double.parseDouble(dur.getString("value")), dur.getString("text"));
 
         } catch (JSONException e) {
             Log.e("JSON_EXCEPT", e.toString());
         }
-        return new Pair<Double, String>((double) -1, _context.getResources().getString(R.string.error_no_path_found));
+        return new Pair<>((double) -1, _context.getResources().getString(R.string.error_no_path_found));
     }
 
     public Friend get_friend() {

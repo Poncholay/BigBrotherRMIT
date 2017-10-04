@@ -29,11 +29,8 @@ import com.poncholay.bigbrother.utils.BitmapUtils;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
-import com.poncholay.bigbrother.utils.database.DatabaseContract;
-import com.poncholay.bigbrother.utils.database.FriendsUtils;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
@@ -181,7 +178,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 		if (mMap != null) {
 			DummyLocationService DLS = DummyLocationService.getSingletonInstance();
 			List<DummyLocationService.FriendLocation> matched = DLS.getFriendLocationsForTime(this.getContext(), new Date(), 10, 10);
-			List<Friend> friends = FriendsUtils.findCurrentFriends(matched);
+			List<Friend> friends = Friend.findCurrent(matched);
 			for (Friend friend : friends) {
 				for (DummyLocationService.FriendLocation friendLocation : matched) {
 					if (friendLocation.id.equals(friend.getId().toString())) {

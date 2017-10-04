@@ -11,7 +11,6 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.utils.database.FriendsUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,13 +34,12 @@ public class MeetingSuggestion {
     }
 
     private void suggestMeeting(Location currentLocation) {
-
         // Get friends location
         DummyLocationService dls = DummyLocationService.getSingletonInstance();
 
         List<DummyLocationService.FriendLocation> matched = dls.getFriendLocationsForTime(_context, Calendar.getInstance().getTime(), 10, 10);
-        List<Friend> friends = FriendsUtils.findCurrentFriends(matched);
-        final List<FriendDistance> friendDistances = new ArrayList<FriendDistance>();
+        List<Friend> friends = Friend.findCurrent(matched);
+        final List<FriendDistance> friendDistances = new ArrayList<>();
 
         // Search matching friends
         for (Friend friend : friends) {
@@ -57,7 +55,7 @@ public class MeetingSuggestion {
                             _context, new FriendDistance.FriendDistanceCallBack() {
 
                         // When the duration has been set (result of the call to the rest api)
-                        // Check if all friends distances has been set
+                        // Check if all friends distances have been set
                         @Override
                         public void onDurationSet() {
                             if (++_friendsDistancesCount == friendDistances.size()) {
@@ -101,7 +99,6 @@ public class MeetingSuggestion {
     //
 
     public static abstract class MeetingSuggestionCallback {
-
         public abstract void onSuccess(List<FriendDistance> friendsDistances);
 
         public abstract void onError();

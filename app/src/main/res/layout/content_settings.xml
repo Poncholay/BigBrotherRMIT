@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	app:layout_behavior="@string/appbar_scrolling_view_behavior"
+	tools:context="com.poncholay.bigbrother.activities.SettingsActivity"
+	tools:showIn="@layout/app_bar_settings">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:paddingBottom="16dp"
+		android:paddingTop="16dp">
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="16dp"
+			android:layout_weight="85"
+			android:text="To determine"
+			android:textColor="@color/colorPrimaryText"
+			android:textSize="14sp"/>
+
+		<android.support.v7.widget.SwitchCompat
+			android:id="@+id/switchInterval"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="16dp"
+			android:layout_marginStart="8dp"
+			android:layout_weight="15"
+			android:checked="false"
+			android:textOff="N"
+			android:textOn="Y"
+			app:showText="true"
+			app:theme="@style/Custom.Widget.SwitchCompat"/>
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="16dp"
+				android:text="@string/meeting_suggestion_interval"
+				android:textColor="@color/colorPrimaryText"
+				android:textSize="14sp"/>
+
+			<TextView
+				android:id="@+id/intervalDetailsLabel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="16dp"
+				android:layout_marginEnd="16dp"
+				android:layout_weight="1"
+				android:gravity="end"
+				android:textSize="14sp"
+				tools:text="5min"/>
+		</LinearLayout>
+
+		<com.poncholay.bigbrother.model.StepSlider
+			android:id="@+id/intervalStepSlider"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_marginTop="16dp"/>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginBottom="16dp"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:orientation="horizontal">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:text="0ff"
+				android:textSize="11sp"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:text="5min"
+				android:textSize="11sp"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:text="10min"
+				android:textSize="11sp"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:text="1h"
+				android:textSize="11sp"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:text="4h"
+				android:textSize="11sp"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:text="24h"
+				android:textSize="11sp"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="16dp"
+					android:text="@string/meeting_reminder_delay"
+					android:textColor="@color/colorPrimaryText"
+					android:textSize="14sp"/>
+
+				<TextView
+					android:id="@+id/delayDetailsLabel"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="16dp"
+					android:layout_marginEnd="16dp"
+					android:layout_weight="1"
+					android:gravity="end"
+					android:textSize="14sp"
+					tools:text="5min"/>
+			</LinearLayout>
+
+			<com.poncholay.bigbrother.model.StepSlider
+				android:id="@+id/delayStepSlider"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="8dp"
+				android:layout_marginEnd="8dp"
+				android:layout_marginTop="16dp"/>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginBottom="16dp"
+				android:layout_marginStart="8dp"
+				android:layout_marginEnd="8dp"
+				android:orientation="horizontal">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="center_horizontal"
+					android:text="0ff"
+					android:textSize="11sp"/>
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="center_horizontal"
+					android:text="5min"
+					android:textSize="11sp"/>
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="center_horizontal"
+					android:text="10min"
+					android:textSize="11sp"/>
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="center_horizontal"
+					android:text="1h"
+					android:textSize="11sp"/>
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="center_horizontal"
+					android:text="4h"
+					android:textSize="11sp"/>
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="center_horizontal"
+					android:text="24h"
+					android:textSize="11sp"/>
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

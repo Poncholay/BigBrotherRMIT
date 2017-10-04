@@ -5,10 +5,13 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.poncholay.bigbrother.utils.DummyLocationService;
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import static com.poncholay.bigbrother.utils.database.DatabaseContract.FriendEntry.COL_FRIEND_BIRTHDAY;
@@ -174,5 +177,19 @@ public class Friend extends SQLiteObject implements Parcelable {
 			setHasIcon(cursor.getInt(idx) == 1);
 		}
 		return true;
+	}
+
+	public static List<Friend> findCurrent(List<DummyLocationService.FriendLocation> matched) {
+		StringBuilder query = new StringBuilder();
+
+		Iterator<DummyLocationService.FriendLocation> it = matched.iterator();
+		while (it.hasNext()) {
+			DummyLocationService.FriendLocation friendLocation = it.next();
+			query.append(DatabaseContract.FriendEntry._ID + " = ").append(friendLocation.id);
+			if (it.hasNext()) {
+				query.append(" OR ");
+			}
+		}
+		return Friend.getAll(Friend.class, query.toString());
 	}
 }

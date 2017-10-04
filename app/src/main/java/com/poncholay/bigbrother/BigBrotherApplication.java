@@ -1,15 +1,8 @@
 package com.poncholay.bigbrother;
 
-import android.Manifest;
 import android.app.Application;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.services.MeetingSuggestionsService;
-import com.poncholay.bigbrother.utils.FriendDistance;
 import com.poncholay.bigbrother.utils.WebService;
 import com.poncholay.bigbrother.utils.database.DatabaseHelper;
 

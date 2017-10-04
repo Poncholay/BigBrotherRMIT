@@ -72,8 +72,11 @@
 			android:theme="@style/AppTheme.NoActionBar">
 		</activity>
 
+		<receiver android:name=".activities.ReminderReceiver"/>
+
 		<!-- Meeting Suggestions Service Declaration -->
-		<service android:name=".services.MeetingSuggestionsService"
+		<service
+			android:name=".services.MeetingSuggestionsService"
 			android:exported="false"/>
 
 		<meta-data

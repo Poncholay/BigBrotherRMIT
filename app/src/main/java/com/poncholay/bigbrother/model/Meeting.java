@@ -1,10 +1,15 @@
 package com.poncholay.bigbrother.model;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.poncholay.bigbrother.activities.ReminderReceiver;
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
@@ -112,6 +117,30 @@ public class Meeting extends SQLiteObject implements Parcelable {
 			return friends;
 		}
 		return new ArrayList<>();
+	}
+
+	public void createReminder(Context context) {
+		AlarmManager alarmMgr;
+		PendingIntent alarmIntent;
+		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, ReminderReceiver.class);
+		alarmIntent = PendingIntent.getBroadcast(context, id.intValue(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//		alarmMgr.set(AlarmManager.RTC_WAKEUP, getStart().getTime(), alarmIntent);
+		alarmMgr.set(AlarmManager.RTC_WAKEUP, new Date().getTime() + 2000, alarmIntent);
+	}
+
+	public void cancelReminder(Context context) {
+		AlarmManager alarmMgr;
+		PendingIntent alarmIntent;
+		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, ReminderReceiver.class);
+		alarmIntent = PendingIntent.getBroadcast(context, id.intValue(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		alarmMgr.cancel(alarmIntent);
+	}
+
+	public void updateReminder(Context context) {
+		cancelReminder(context);
+		createReminder(context);
 	}
 
 	public List<Friend> getFriends() {

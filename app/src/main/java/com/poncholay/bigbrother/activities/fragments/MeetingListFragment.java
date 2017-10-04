@@ -1,5 +1,7 @@
 package com.poncholay.bigbrother.activities.fragments;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +26,7 @@ import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -36,7 +39,6 @@ public class MeetingListFragment extends Fragment {
 
 	private MeetingRecyclerViewAdapter mAdapter;
 	private RecyclerView mRecyclerView;
-	private int mSort;
 
 	public MeetingListFragment() {}
 
@@ -88,6 +90,7 @@ public class MeetingListFragment extends Fragment {
 					Meeting meeting = data.getParcelableExtra("meeting");
 					if (meeting != null) {
 						meeting.save();
+						meeting.createReminder(getActivity());
 						if (mAdapter != null) {
 							mAdapter.add(meeting);
 						}
@@ -100,6 +103,7 @@ public class MeetingListFragment extends Fragment {
 					Meeting meeting = data.getParcelableExtra("meeting");
 					if (meeting != null) {
 						meeting.save();
+						meeting.updateReminder(getActivity());
 						if (mAdapter != null) {
 							int pos = mAdapter.getPosition(meeting);
 							mAdapter.remove(meeting);
@@ -178,7 +182,10 @@ public class MeetingListFragment extends Fragment {
 					public boolean onMenuItemClick(MenuItem item) {
 						switch (item.getTitle().toString()) {
 							case "Delete":
-								mAdapter.remove(meeting);
+								if (mAdapter != null) {
+									mAdapter.remove(meeting);
+								}
+								meeting.cancelReminder(getActivity());
 								meeting.delete();
 								return true;
 							default:
