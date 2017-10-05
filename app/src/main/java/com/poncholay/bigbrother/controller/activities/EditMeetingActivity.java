@@ -77,6 +77,11 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 			mMeeting = new Meeting();
 		}
 
+		Friend friend = (Friend) BundleUtils.retrieveParcelable(savedInstanceState, getIntent().getExtras(), "friend");
+		if (friend != null) {
+			mMeeting.getFriends().add(friend);
+		}
+
 		setupToolbar();
 		setupFormListeners();
 	}

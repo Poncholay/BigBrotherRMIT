@@ -7,11 +7,9 @@ package com.poncholay.bigbrother.model;
  */
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.utils.WebService;
 
 import org.json.JSONException;
@@ -94,9 +92,8 @@ public class FriendDistance {
             return new Pair<>(Double.parseDouble(dur.getString("value")), dur.getString("text"));
 
         } catch (JSONException e) {
-            Log.e("JSON_EXCEPT", e.toString());
+            return new Pair<>((double) -1, e.getMessage());
         }
-        return new Pair<>((double) -1, _context.getResources().getString(R.string.error_no_path_found));
     }
 
     public Friend getFriend() {

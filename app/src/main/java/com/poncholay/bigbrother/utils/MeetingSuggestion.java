@@ -11,13 +11,14 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.services.DummyLocationService;
 import com.poncholay.bigbrother.model.FriendDistance;
+import com.poncholay.bigbrother.services.DummyLocationService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class MeetingSuggestion {
@@ -38,7 +39,7 @@ public class MeetingSuggestion {
 
     public void execute() {
         if (_currentLocation == null) {
-            _meetingSuggestionCallback.onError("");
+            _meetingSuggestionCallback.onError("Waiting for use location, try again later.");
             return;
         }
         suggestMeeting();
@@ -48,7 +49,7 @@ public class MeetingSuggestion {
         // Get friends location
         DummyLocationService dls = DummyLocationService.getSingletonInstance();
 
-        List<DummyLocationService.FriendLocation> matched = dls.getFriendLocationsForTime(_context, Calendar.getInstance().getTime(), 10, 10);
+        List<DummyLocationService.FriendLocation> matched = dls.getFriendLocationsForTime(_context, Calendar.getInstance().getTime(), 10, 0);
         List<Friend> friends = Friend.findCurrent(matched);
         final List<FriendDistance> friendDistances = new ArrayList<>();
 
@@ -78,7 +79,7 @@ public class MeetingSuggestion {
             }
         }
         if (friendDistances.size() == 0) {
-            _meetingSuggestionCallback.onSuccess(new ArrayList<FriendDistance>());
+            _meetingSuggestionCallback.onSuccess(friendDistances);
         }
         for (FriendDistance f : friendDistances) {
             f.execute();
@@ -88,10 +89,15 @@ public class MeetingSuggestion {
     private void findClosestFriend(final List<FriendDistance> friendDistances) {
 
         // Filter list
-        // Note: Need to be replaced by remove if in Java8
-        for (FriendDistance friend : friendDistances) {
+        Iterator<FriendDistance> friendIterator = friendDistances.iterator();
+        while (friendIterator.hasNext()) {
+            FriendDistance friend = friendIterator.next();
             if (friend.getTotalDuration() == -1) {
-                friendDistances.remove(friend);
+                String error = friend.getFriendTextDuration();
+                friendIterator.remove();
+                if (friendDistances.size() == 0) {
+                    _meetingSuggestionCallback.onError(error);
+                }
             }
         }
 

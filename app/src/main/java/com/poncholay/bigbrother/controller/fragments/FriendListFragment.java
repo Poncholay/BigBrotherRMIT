@@ -28,10 +28,10 @@ import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.controller.activities.EditFriendActivity;
 import com.poncholay.bigbrother.controller.activities.FriendActivity;
 import com.poncholay.bigbrother.controller.adapters.FriendRecyclerViewAdapter;
-import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.CopyHelper;
+import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;

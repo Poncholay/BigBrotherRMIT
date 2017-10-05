@@ -118,7 +118,8 @@ public class Meeting extends SQLiteObject implements Parcelable {
 			friends = Friend.getAll(Friend.class, where.toString());
 			return friends;
 		}
-		return new ArrayList<>();
+		friends = new ArrayList<>();
+		return friends;
 	}
 
 	public void createReminder(Activity context) {
