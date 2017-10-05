@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.model;
+package com.poncholay.bigbrother.view;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

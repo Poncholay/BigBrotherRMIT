@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.activities.fragments;
+package com.poncholay.bigbrother.controller.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,7 +27,7 @@ import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.BitmapUtils;
 import com.poncholay.bigbrother.utils.ContactDataManager;
-import com.poncholay.bigbrother.utils.DummyLocationService;
+import com.poncholay.bigbrother.services.DummyLocationService;
 import com.poncholay.bigbrother.utils.IconUtils;
 
 import java.util.Date;

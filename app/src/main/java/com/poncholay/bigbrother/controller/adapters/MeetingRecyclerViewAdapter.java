@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.controllers;
+package com.poncholay.bigbrother.controller.adapters;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;

@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.activities;
+package com.poncholay.bigbrother.controller.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -15,10 +15,10 @@ import android.view.MenuItem;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.fragments.FriendListFragment;
-import com.poncholay.bigbrother.activities.fragments.MapFragment;
-import com.poncholay.bigbrother.activities.fragments.MeetingListFragment;
-import com.poncholay.bigbrother.controllers.DynamicTitledFragmentPagerAdapter;
+import com.poncholay.bigbrother.controller.adapters.DynamicTitledFragmentPagerAdapter;
+import com.poncholay.bigbrother.controller.fragments.FriendListFragment;
+import com.poncholay.bigbrother.controller.fragments.MapFragment;
+import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
 import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 
 import me.relex.circleindicator.CircleIndicator;

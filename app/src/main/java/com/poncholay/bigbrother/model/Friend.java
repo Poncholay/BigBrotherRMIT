@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.poncholay.bigbrother.utils.DummyLocationService;
+import com.poncholay.bigbrother.services.DummyLocationService;
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
@@ -123,7 +123,7 @@ public class Friend extends SQLiteObject implements Parcelable {
 		return 0;
 	}
 
-	public static final Parcelable.Creator CREATOR = new Parcelable.Creator<Friend>() {
+	public static final Parcelable.Creator<Friend> CREATOR = new Parcelable.Creator<Friend>() {
 		public Friend createFromParcel(Parcel in) {
 			return new Friend(in);
 		}

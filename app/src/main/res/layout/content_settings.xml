@@ -7,42 +7,13 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
-	tools:context="com.poncholay.bigbrother.activities.SettingsActivity"
+	tools:context="com.poncholay.bigbrother.controller.activities.SettingsActivity"
 	tools:showIn="@layout/app_bar_settings">
 
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:paddingBottom="16dp"
-		android:paddingTop="16dp">
-
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_marginStart="16dp"
-			android:layout_weight="85"
-			android:text="To determine"
-			android:textColor="@color/colorPrimaryText"
-			android:textSize="14sp"/>
-
-		<android.support.v7.widget.SwitchCompat
-			android:id="@+id/switchInterval"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_marginEnd="16dp"
-			android:layout_marginStart="8dp"
-			android:layout_weight="15"
-			android:checked="false"
-			android:textOff="N"
-			android:textOn="Y"
-			app:showText="true"
-			app:theme="@style/Custom.Widget.SwitchCompat"/>
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
 		android:orientation="vertical">
 
 		<LinearLayout
@@ -60,7 +31,7 @@
 
 			<TextView
 				android:id="@+id/intervalDetailsLabel"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_marginStart="16dp"
 				android:layout_marginEnd="16dp"
@@ -70,7 +41,7 @@
 				tools:text="5min"/>
 		</LinearLayout>
 
-		<com.poncholay.bigbrother.model.StepSlider
+		<com.poncholay.bigbrother.view.StepSlider
 			android:id="@+id/intervalStepSlider"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -156,7 +127,7 @@
 
 				<TextView
 					android:id="@+id/delayDetailsLabel"
-					android:layout_width="wrap_content"
+					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_marginStart="16dp"
 					android:layout_marginEnd="16dp"
@@ -166,7 +137,7 @@
 					tools:text="5min"/>
 			</LinearLayout>
 
-			<com.poncholay.bigbrother.model.StepSlider
+			<com.poncholay.bigbrother.view.StepSlider
 				android:id="@+id/delayStepSlider"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -229,6 +200,38 @@
 					android:gravity="center_horizontal"
 					android:text="24h"
 					android:textSize="11sp"/>
+			</LinearLayout>
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/snooze_delay"
+				android:textColor="@color/colorPrimaryText"
+				android:textSize="14sp"/>
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+				<EditText
+					android:id="@+id/snoozeEditText"
+					android:layout_width="50dp"
+					android:layout_height="wrap_content"
+					android:inputType="numberDecimal"/>
+
+				<TextView
+					android:id="@+id/snoozeDetailsLabel"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="end"
+					android:textSize="14sp"
+					tools:text="5min"/>
 			</LinearLayout>
 		</LinearLayout>
 	</LinearLayout>

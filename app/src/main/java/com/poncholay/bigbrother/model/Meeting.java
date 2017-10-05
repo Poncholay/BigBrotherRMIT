@@ -1,5 +1,6 @@
 package com.poncholay.bigbrother.model;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -9,7 +10,8 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.poncholay.bigbrother.activities.ReminderReceiver;
+import com.poncholay.bigbrother.controller.receivers.ReminderReceiver;
+import com.poncholay.bigbrother.utils.ParcelableUtils;
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 
@@ -119,17 +121,34 @@ public class Meeting extends SQLiteObject implements Parcelable {
 		return new ArrayList<>();
 	}
 
-	public void createReminder(Context context) {
-		AlarmManager alarmMgr;
-		PendingIntent alarmIntent;
-		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(context, ReminderReceiver.class);
-		alarmIntent = PendingIntent.getBroadcast(context, id.intValue(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//		alarmMgr.set(AlarmManager.RTC_WAKEUP, getStart().getTime(), alarmIntent);
-		alarmMgr.set(AlarmManager.RTC_WAKEUP, new Date().getTime() + 2000, alarmIntent);
+	public void createReminder(Activity context) {
+		float reminderDelay = context.getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("reminderDelay", 5);
+		if (reminderDelay != 0.0f) {
+			PendingIntent alarmIntent;
+			Intent intent = new Intent(context, ReminderReceiver.class);
+			intent.putExtra("meeting", ParcelableUtils.marshall(this));
+			alarmIntent = PendingIntent.getBroadcast(context, id.intValue(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			createReminder(context, alarmIntent, (long) (getStart().getTime() - 1000 * 60 * reminderDelay));
+		}
 	}
 
-	public void cancelReminder(Context context) {
+	public void createReminder(Activity context, float reminderDelay) {
+		if (reminderDelay != 0.0f) {
+			PendingIntent alarmIntent;
+			Intent intent = new Intent(context, ReminderReceiver.class);
+			intent.putExtra("meeting", ParcelableUtils.marshall(this));
+			alarmIntent = PendingIntent.getBroadcast(context, id.intValue(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			createReminder(context, alarmIntent, (long) (new Date().getTime() + 1000 * 60 * reminderDelay));
+		}
+	}
+
+	private void createReminder(Activity context, PendingIntent alarmIntent, long time) {
+		AlarmManager alarmMgr;
+		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		alarmMgr.set(AlarmManager.RTC_WAKEUP, time, alarmIntent);
+	}
+
+	public void cancelReminder(Activity context) {
 		AlarmManager alarmMgr;
 		PendingIntent alarmIntent;
 		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -138,7 +157,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 		alarmMgr.cancel(alarmIntent);
 	}
 
-	public void updateReminder(Context context) {
+	public void updateReminder(Activity context) {
 		cancelReminder(context);
 		createReminder(context);
 	}
@@ -207,7 +226,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 		return 0;
 	}
 
-	public static final Parcelable.Creator CREATOR = new Parcelable.Creator<Meeting>() {
+	public static final Parcelable.Creator<Meeting> CREATOR = new Parcelable.Creator<Meeting>() {
 		public Meeting createFromParcel(Parcel in) {
 			return new Meeting(in);
 		}

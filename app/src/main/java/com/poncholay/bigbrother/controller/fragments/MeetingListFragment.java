@@ -1,7 +1,6 @@
-package com.poncholay.bigbrother.activities.fragments;
+package com.poncholay.bigbrother.controller.fragments;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,15 +19,16 @@ import android.view.ViewGroup;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.EditMeetingActivity;
-import com.poncholay.bigbrother.controllers.MeetingRecyclerViewAdapter;
+import com.poncholay.bigbrother.controller.activities.EditMeetingActivity;
+import com.poncholay.bigbrother.controller.adapters.MeetingRecyclerViewAdapter;
+import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -49,7 +49,7 @@ public class MeetingListFragment extends Fragment {
 		setupRecyclerView(recyclerView, savedInstanceState);
 
 		View fab = view.findViewById(R.id.meetinglist_fab_add);
-		setupFab(fab);
+		setupFab(fab, view, getActivity());
 
 		setHasOptionsMenu(true);
 
@@ -270,9 +270,27 @@ public class MeetingListFragment extends Fragment {
 		}
 	}
 
-	private void setupFab(View fab) {
+	private void setupFab(View fab, View view, final Activity context) {
 		if (fab instanceof FloatingActionButton) {
-			fab.setOnClickListener(new View.OnClickListener() {
+			AnchoredFloatingActionButton anchoredFab = new AnchoredFloatingActionButton(context, (FloatingActionButton) fab);
+
+			final FloatingActionButton fromContact = (FloatingActionButton) view.findViewById(R.id.meetinglist_fab_instant);
+			fromContact.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+//					instantSuggestion();
+					//TODO : TEMPORARY ONLY
+					Meeting m = new Meeting();
+					m.setId((long) 42);
+					m.setTitle("Yolo");
+					m.setStart(new Date(new Date().getTime() + 100));
+					m.createReminder(context);
+				}
+			});
+			anchoredFab.addChild(fromContact);
+
+			final FloatingActionButton fromScratch = (FloatingActionButton) view.findViewById(R.id.meetinglist_fab_from_scratch);
+			fromScratch.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(getActivity(), EditMeetingActivity.class);
@@ -280,6 +298,9 @@ public class MeetingListFragment extends Fragment {
 					startActivityForResult(intent, Constants.NEW_MEETING);
 				}
 			});
+			anchoredFab.addChild(fromScratch);
+
+			anchoredFab.setup();
 		}
 	}
 

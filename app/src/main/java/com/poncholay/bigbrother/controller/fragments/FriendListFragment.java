@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.activities.fragments;
+package com.poncholay.bigbrother.controller.fragments;
 
 import android.Manifest;
 import android.content.Context;
@@ -25,10 +25,10 @@ import android.widget.Toast;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.activities.EditFriendActivity;
-import com.poncholay.bigbrother.activities.FriendActivity;
-import com.poncholay.bigbrother.controllers.FriendRecyclerViewAdapter;
-import com.poncholay.bigbrother.model.AnchoredFloatingActionButton;
+import com.poncholay.bigbrother.controller.activities.EditFriendActivity;
+import com.poncholay.bigbrother.controller.activities.FriendActivity;
+import com.poncholay.bigbrother.controller.adapters.FriendRecyclerViewAdapter;
+import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.CopyHelper;

@@ -3,12 +3,12 @@ package com.poncholay.bigbrother.utils;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
+
+import com.poncholay.bigbrother.controller.receivers.NetworkReceiver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,37 +34,29 @@ public class WebService {
 	public static final int TYPE_PATCH = 4;
 	public static final int TYPE_DELETE = 5;
 
-	Context context;
-	String url;
-	String data;
-	WebServiceCallBack call_back;
-	int type = 1;
+	private Context context;
+	private String url;
+	private String data;
+	private WebServiceCallBack callback;
+	private int type;
 
 
-	public WebService(Context context, String url, int type, String data, WebServiceCallBack call_back) {
+	public WebService(Context context, String url, int type, String data, WebServiceCallBack callback) {
 		this.context = context;
 		this.url = url;
 		this.type = type;
 		this.data = data;
-		this.call_back = call_back;
+		this.callback = callback;
 	}
 
 	public void execute() {
-		if (checkNetwork()) {
+		if (NetworkReceiver.isConnected()) {
 			new Request().execute(url, data);
-		}
-	}
-
-	private boolean checkNetwork() {
-		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-		if (networkInfo != null && networkInfo.isConnected()) {
-			return true;
 		} else {
 			try {
 				new AlertDialog.Builder(context)
 						.setTitle("Connection error")
-						.setMessage("Your Internet connection appears to be offline.")
+						.setMessage("Your internet connection appears to be offline.")
 						.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int which) {
 								context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
@@ -73,9 +65,8 @@ public class WebService {
 						.setNegativeButton("Cancel", null)
 						.show();
 			} catch (Exception e) {
-				Toast.makeText(context, "Your Internet connection appears to be offline", Toast.LENGTH_LONG).show();
+				Toast.makeText(context, "Your internet connection appears to be offline", Toast.LENGTH_LONG).show();
 			}
-			return false;
 		}
 	}
 
@@ -177,7 +168,7 @@ public class WebService {
 				onErrorExecute(ERROR_TIMEOUT, null);
 				return;
 			}
-			call_back.onSuccess(s[1]);
+			callback.onSuccess(s[1]);
 		}
 
 		@Override
@@ -194,11 +185,11 @@ public class WebService {
 				conn.disconnect();
 				conn = null;
 			}
-			call_back.onCancel();
+			callback.onCancel();
 		}
 
 		protected void onErrorExecute(final int type, final String s) {
-			call_back.onError(type, s);
+			callback.onError(type, s);
 		}
 
 		private String getStringFromInputStream(InputStream is) {
@@ -229,10 +220,6 @@ public class WebService {
 	public static abstract class WebServiceCallBack {
 		private Context context;
 
-		public WebServiceCallBack() {
-			this.context = null;
-		}
-
 		public WebServiceCallBack(Context context) {
 			this.context = context;
 		}
@@ -241,7 +228,7 @@ public class WebService {
 
 		public void onError(int code, String response) {
 			if (context != null) {
-				Toast.makeText(context, "An error happened, please try later.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, "An error happened, please try again later.", Toast.LENGTH_SHORT).show();
 			}
 		}
 

@@ -18,7 +18,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.poncholay.bigbrother.model.Friend;
-import com.poncholay.bigbrother.utils.FriendDistance;
+import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.utils.MeetingSuggestion;
 
 import java.util.List;
@@ -38,7 +38,6 @@ public class MeetingSuggestionsService extends Service implements LocationListen
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i(TAG, "Service onStartCommand");
-        LocationManager lm = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
 
         requestLocationUpdate();
 
@@ -53,7 +52,6 @@ public class MeetingSuggestionsService extends Service implements LocationListen
 
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100000, 10, this);
-//                if (_userLocation != null) {
                 _userLocation = lm.getLastKnownLocation(isGpsEnabled ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER);
             } else {
                 Log.e(TAG, "ACCESS_COARSE_LOCATION : PERMISSION_DENIED.");
@@ -72,7 +70,7 @@ public class MeetingSuggestionsService extends Service implements LocationListen
     public void onLocationChanged(Location location) {
         if (location != null) {
             _userLocation = location;
-            MeetingSuggestion ms = new MeetingSuggestion(getApplicationContext(), _userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
+            new MeetingSuggestion(getApplicationContext(), _userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
                 @Override
                 public void onSuccess(List<FriendDistance> friendDistances) {
                     FriendDistance sugFriendDist = friendDistances.get(0);
@@ -86,7 +84,7 @@ public class MeetingSuggestionsService extends Service implements LocationListen
                 public void onError() {
                     Log.e(TAG, "onError: Impossible to suggest a meeting");
                 }
-            });
+            }).execute();
         } else {
             Log.e(TAG, "onLocationChanged : new location is null");
         }

@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.controllers;
+package com.poncholay.bigbrother.controller.adapters;
 
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;

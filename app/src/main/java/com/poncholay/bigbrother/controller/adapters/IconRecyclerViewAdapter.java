@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.controllers;
+package com.poncholay.bigbrother.controller.adapters;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

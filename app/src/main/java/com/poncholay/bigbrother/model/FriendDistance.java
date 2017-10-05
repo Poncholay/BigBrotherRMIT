@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.utils;
+package com.poncholay.bigbrother.model;
 
 /*
  * BigBrotherRMIT
@@ -13,6 +13,7 @@ import android.util.Pair;
 import com.google.android.gms.maps.model.LatLng;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
+import com.poncholay.bigbrother.utils.WebService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,6 @@ public class FriendDistance {
 
     public FriendDistance(Friend friend, LatLng friendLocation, LatLng userLocation,
                           Context context, FriendDistanceCallBack onDistanceSet) {
-
         _friendDistanceCallback = onDistanceSet;
         _friend         = friend;
         _context        = context;
@@ -67,7 +67,6 @@ public class FriendDistance {
     }
 
     private void fetchDistances(LatLng from, LatLng to, final String mode, WebService.WebServiceCallBack onSuccess) {
-
         String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" +
                 _userLocation.latitude + "," + _userLocation.longitude + "&destination=" +
                 _friendLocation.latitude + "," + _friendLocation.longitude + "&mode=" +
@@ -77,7 +76,6 @@ public class FriendDistance {
     }
 
     private Pair<Double, String> isolateDuration(final String response) {
-
         try {
 
             JSONObject jsonObject = new JSONObject(response);
@@ -174,7 +172,6 @@ public class FriendDistance {
     }
 
     public static abstract class FriendDistanceCallBack {
-
         public abstract void onDurationSet();
     }
 }

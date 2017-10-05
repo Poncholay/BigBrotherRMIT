@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.activities;
+package com.poncholay.bigbrother.controller.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,9 +26,9 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.controllers.FriendRecyclerViewAdapter;
-import com.poncholay.bigbrother.controllers.IconRecyclerViewAdapter;
-import com.poncholay.bigbrother.controllers.SelectFriendRecyclerViewAdapter;
+import com.poncholay.bigbrother.controller.adapters.FriendRecyclerViewAdapter;
+import com.poncholay.bigbrother.controller.adapters.IconRecyclerViewAdapter;
+import com.poncholay.bigbrother.controller.adapters.SelectFriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.BundleUtils;
@@ -151,6 +151,10 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 		}
 		if (mDateStart.after(mDateEnd)) {
 			Toast.makeText(this, getString(R.string.error_invalid_date), Toast.LENGTH_SHORT).show();
+			return;
+		}
+		if (mDateStart.before(new Date())) {
+			Toast.makeText(this, getString(R.string.error_invalid_date_now), Toast.LENGTH_SHORT).show();
 			return;
 		}
 

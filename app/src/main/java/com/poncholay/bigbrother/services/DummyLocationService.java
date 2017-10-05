@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.utils;
+package com.poncholay.bigbrother.services;
 
 import android.content.Context;
 import android.content.res.Resources;
