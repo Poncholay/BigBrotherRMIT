@@ -37,6 +37,10 @@ public class MeetingSuggestion {
     }
 
     public void execute() {
+        if (_currentLocation == null) {
+            _meetingSuggestionCallback.onError("");
+            return;
+        }
         suggestMeeting();
     }
 
@@ -73,6 +77,12 @@ public class MeetingSuggestion {
                 }
             }
         }
+        if (friendDistances.size() == 0) {
+            _meetingSuggestionCallback.onSuccess(new ArrayList<FriendDistance>());
+        }
+        for (FriendDistance f : friendDistances) {
+            f.execute();
+        }
     }
 
     private void findClosestFriend(final List<FriendDistance> friendDistances) {
@@ -80,25 +90,20 @@ public class MeetingSuggestion {
         // Filter list
         // Note: Need to be replaced by remove if in Java8
         for (FriendDistance friend : friendDistances) {
-            if (friend.get_totalDuration() == -1) {
+            if (friend.getTotalDuration() == -1) {
                 friendDistances.remove(friend);
             }
         }
 
-        if (!friendDistances.isEmpty()) {
+        // Sort the list by the closest combined walk time
+        Collections.sort(friendDistances, new Comparator<FriendDistance>() {
+            @Override
+            public int compare(FriendDistance o1, FriendDistance o2) {
+                return Double.compare(o1.getTotalDuration(), o2.getTotalDuration());
+            }
+        });
 
-            // Sort the list by the closest combined walk time
-            Collections.sort(friendDistances, new Comparator<FriendDistance>() {
-                @Override
-                public int compare(FriendDistance o1, FriendDistance o2) {
-                    return Double.compare(o1.get_totalDuration(), o2.get_totalDuration());
-                }
-            });
-
-            _meetingSuggestionCallback.onSuccess(friendDistances);
-        } else {
-            _meetingSuggestionCallback.onError();
-        }
+        _meetingSuggestionCallback.onSuccess(friendDistances);
     }
 
     //
@@ -107,7 +112,6 @@ public class MeetingSuggestion {
 
     public static abstract class MeetingSuggestionCallback {
         public abstract void onSuccess(List<FriendDistance> friendsDistances);
-
-        public abstract void onError();
+        public abstract void onError(String msg);
     }
 }

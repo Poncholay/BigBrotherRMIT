@@ -40,7 +40,7 @@ public class FriendActivity extends AppCompatActivity {
 			return;
 		}
 
-		Log.e("FRIEND", "Friend id : " + mFriend.getId());
+		Log.i("FRIEND", "Friend id : " + mFriend.getId());
 		setupToolbar();
 		setupFormListeners();
 		IconUtils.setupIconBig(mIconView, mFriend, this);

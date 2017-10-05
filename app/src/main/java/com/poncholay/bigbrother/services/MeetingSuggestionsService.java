@@ -27,7 +27,7 @@ public class MeetingSuggestionsService extends Service implements LocationListen
 
     private static final String TAG = "Service_MS";
 
-    private Location _userLocation = null;
+    private static Location userLocation = null;
 
     @Override
     public void onCreate() {
@@ -48,11 +48,10 @@ public class MeetingSuggestionsService extends Service implements LocationListen
         try {
             LocationManager lm = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
             Boolean isGpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            Boolean isNetworkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100000, 10, this);
-                _userLocation = lm.getLastKnownLocation(isGpsEnabled ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER);
+                userLocation = lm.getLastKnownLocation(isGpsEnabled ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER);
             } else {
                 Log.e(TAG, "ACCESS_COARSE_LOCATION : PERMISSION_DENIED.");
             }
@@ -61,28 +60,29 @@ public class MeetingSuggestionsService extends Service implements LocationListen
         }
     }
 
-
-    public Location get_userLocation() {
-        return _userLocation;
+    public static Location getUserLocation() {
+        return userLocation;
     }
 
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            _userLocation = location;
-            new MeetingSuggestion(getApplicationContext(), _userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
+            userLocation = location;
+            new MeetingSuggestion(getApplicationContext(), userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
                 @Override
                 public void onSuccess(List<FriendDistance> friendDistances) {
-                    FriendDistance sugFriendDist = friendDistances.get(0);
-                    Friend closestFriend = sugFriendDist.get_friend();
-                    Log.e(TAG, "onSuccess - closest friend : " + closestFriend.getFirstname() +
-                            " " + closestFriend.getLastname() + " is at " + sugFriendDist.get_userTextDuration()
-                            + " walking time !");
+                    if (friendDistances.size() > 0) {
+                        FriendDistance sugFriendDist = friendDistances.get(0);
+                        Friend closestFriend = sugFriendDist.getFriend();
+                        Log.e(TAG, "onSuccess - closest friend : " + closestFriend.getFirstname() +
+                                " " + closestFriend.getLastname() + " is at " + sugFriendDist.getUserTextDuration()
+                                + " walking time !");
+                    }
                 }
 
                 @Override
-                public void onError() {
-                    Log.e(TAG, "onError: Impossible to suggest a meeting");
+                public void onError(String msg) {
+                    Log.e(TAG, "onError: Impossible to suggest a meeting : " + msg);
                 }
             }).execute();
         } else {

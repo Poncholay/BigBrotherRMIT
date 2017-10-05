@@ -12,7 +12,6 @@ import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.utils.WebService;
 
 import org.json.JSONException;
@@ -50,18 +49,20 @@ public class FriendDistance {
         _friendLocation = friendLocation;
         _userLocation   = userLocation;
         _midPoint       = midPoint(_userLocation, _friendLocation);
+    }
 
+    public void execute() {
         fetchDistances(_friendLocation, _midPoint, MODE_WALKING, new WebService.WebServiceCallBack(_context) {
             @Override
             public void onSuccess(String response) {
-                set_fullFriendDuration(isolateDuration(response));
+                setFullFriendDuration(isolateDuration(response));
             }
         });
 
         fetchDistances(_userLocation, _midPoint, MODE_WALKING, new WebService.WebServiceCallBack(_context) {
             @Override
             public void onSuccess(String response) {
-                set_fullUserDuration(isolateDuration(response));
+                setFullUserDuration(isolateDuration(response));
             }
         });
     }
@@ -98,44 +99,44 @@ public class FriendDistance {
         return new Pair<>((double) -1, _context.getResources().getString(R.string.error_no_path_found));
     }
 
-    public Friend get_friend() {
+    public Friend getFriend() {
         return _friend;
     }
 
-    public LatLng get_midPoint() { return _midPoint; }
+    public LatLng getMidPoint() { return _midPoint; }
 
-    public double get_totalDuration() {
+    public double getTotalDuration() {
 
-        if (get_friendDuration() == -1 || get_userDuration() == -1) {
+        if (getFriendDuration() == -1 || getUserDuration() == -1) {
             return -1;
         } else {
-            return get_friendDuration() + get_userDuration();
+            return getFriendDuration() + getUserDuration();
         }
     }
 
-    public double get_friendDuration() {
+    public double getFriendDuration() {
         return _friendDuration;
     }
 
-    public String get_friendTextDuration() {
+    public String getFriendTextDuration() {
         return _friendTextDuration;
     }
 
-    public double get_userDuration() {
+    public double getUserDuration() {
         return _userDuration;
     }
 
-    public String get_userTextDuration() {
+    public String getUserTextDuration() {
         return _userTextDuration;
     }
 
-    public String get_matrixStatus() {
+    public String getMatrixStatus() {
         return _matrixStatus;
     }
 
-    public void set_userLocation(LatLng userLocation) { _userLocation = userLocation; }
+    public void setUserLocation(LatLng userLocation) { _userLocation = userLocation; }
 
-    private void set_fullUserDuration(Pair<Double, String> duration) {
+    private void setFullUserDuration(Pair<Double, String> duration) {
         _userDuration       = duration.first;
         _userTextDuration   = duration.second;
         if (_friendTextDuration != null) {
@@ -143,7 +144,7 @@ public class FriendDistance {
         }
     }
 
-    private void set_fullFriendDuration(Pair<Double, String> duration) {
+    private void setFullFriendDuration(Pair<Double, String> duration) {
         _friendDuration     = duration.first;
         _friendTextDuration = duration.second;
         if (_userTextDuration != null) {

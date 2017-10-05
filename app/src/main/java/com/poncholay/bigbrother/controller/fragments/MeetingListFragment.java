@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,16 +21,19 @@ import android.view.ViewGroup;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
 import com.poncholay.bigbrother.controller.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.controller.adapters.MeetingRecyclerViewAdapter;
-import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
+import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.model.Meeting;
+import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 import com.poncholay.bigbrother.utils.ContactDataManager;
+import com.poncholay.bigbrother.utils.MeetingSuggestion;
+import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -40,16 +45,18 @@ public class MeetingListFragment extends Fragment {
 	private MeetingRecyclerViewAdapter mAdapter;
 	private RecyclerView mRecyclerView;
 
+	private View view;
+
 	public MeetingListFragment() {}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_meetinglist, container, false);
+		view = inflater.inflate(R.layout.fragment_meetinglist, container, false);
 		View recyclerView = view.findViewById(R.id.meetinglist_recycler_view);
 		setupRecyclerView(recyclerView, savedInstanceState);
 
 		View fab = view.findViewById(R.id.meetinglist_fab_add);
-		setupFab(fab, view, getActivity());
+		setupFab(fab, getActivity());
 
 		setHasOptionsMenu(true);
 
@@ -270,7 +277,25 @@ public class MeetingListFragment extends Fragment {
 		}
 	}
 
-	private void setupFab(View fab, View view, final Activity context) {
+	private void instantSuggestion(Context context) {
+		new MeetingSuggestion(context, MeetingSuggestionsService.getUserLocation(), new MeetingSuggestion.MeetingSuggestionCallback() {
+			@Override
+			public void onSuccess(List<FriendDistance> friendsDistances) {
+				Snackbar.make(view, "Yolo", Snackbar.LENGTH_LONG).show();
+				for (FriendDistance f : friendsDistances) {
+					Log.e("YOLO", f.getFriend().getFirstname());
+					Log.e("YOLO", f.getUserTextDuration());
+				}
+			}
+
+			@Override
+			public void onError(String msg) {
+				Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
+			}
+		}).execute();
+	}
+
+	private void setupFab(View fab, final Activity context) {
 		if (fab instanceof FloatingActionButton) {
 			AnchoredFloatingActionButton anchoredFab = new AnchoredFloatingActionButton(context, (FloatingActionButton) fab);
 
@@ -278,13 +303,7 @@ public class MeetingListFragment extends Fragment {
 			fromContact.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					instantSuggestion();
-					//TODO : TEMPORARY ONLY
-					Meeting m = new Meeting();
-					m.setId((long) 42);
-					m.setTitle("Yolo");
-					m.setStart(new Date(new Date().getTime() + 100));
-					m.createReminder(context);
+					instantSuggestion(context);
 				}
 			});
 			anchoredFab.addChild(fromContact);
