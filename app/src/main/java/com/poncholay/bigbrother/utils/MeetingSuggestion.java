@@ -39,7 +39,7 @@ public class MeetingSuggestion {
 
     public void execute() {
         if (_currentLocation == null) {
-            _meetingSuggestionCallback.onError("Waiting for use location, try again later.");
+            _meetingSuggestionCallback.onError("Waiting for user location, try again later.");
             return;
         }
         suggestMeeting();
@@ -80,6 +80,7 @@ public class MeetingSuggestion {
         }
         if (friendDistances.size() == 0) {
             _meetingSuggestionCallback.onSuccess(friendDistances);
+            return;
         }
         for (FriendDistance f : friendDistances) {
             f.execute();

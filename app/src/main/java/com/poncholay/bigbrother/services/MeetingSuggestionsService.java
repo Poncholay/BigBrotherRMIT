@@ -7,8 +7,11 @@ package com.poncholay.bigbrother.services;
  */
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,13 +19,28 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.poncholay.bigbrother.Constants;
+import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
+import com.poncholay.bigbrother.controller.activities.EditMeetingActivity;
+import com.poncholay.bigbrother.controller.activities.SnoozeActivity;
+import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.FriendDistance;
+import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.MeetingSuggestion;
+import com.poncholay.bigbrother.utils.ParcelableUtils;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MeetingSuggestionsService extends Service implements LocationListener {
 
@@ -65,16 +83,26 @@ public class MeetingSuggestionsService extends Service implements LocationListen
         return userLocation;
     }
 
-    public static void launchMeetingDiscovery(Context context) {
+    public static void launchMeetingDiscovery(final Context context) {
         new MeetingSuggestion(context, userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
             @Override
             public void onSuccess(List<FriendDistance> friendDistances) {
                 if (friendDistances.size() > 0) {
-                    FriendDistance sugFriendDist = friendDistances.get(0);
-                    Friend closestFriend = sugFriendDist.getFriend();
-                    Log.e(TAG, "onSuccess - closest friend : " + closestFriend.getFirstname() +
-                            " " + closestFriend.getLastname() + " is at " + sugFriendDist.getUserTextDuration()
-                            + " walking time !");
+                    Intent i = new Intent(context, BigBrotherActivity.class);
+                    i.putParcelableArrayListExtra("distances", new ArrayList<Parcelable>(friendDistances));
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                            .setSmallIcon(R.drawable.icon)
+                            .setContentTitle("Friends available for meeting")
+                            .setContentText("Click to show or dismiss to ignore")
+                            .setAutoCancel(true);
+
+                    mBuilder.setContentIntent(pi);
+                    NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotificationManager.notify(-42, mBuilder.build());
                 }
             }
 

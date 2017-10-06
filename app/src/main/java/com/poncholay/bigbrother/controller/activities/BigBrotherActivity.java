@@ -19,13 +19,20 @@ import com.poncholay.bigbrother.controller.adapters.DynamicTitledFragmentPagerAd
 import com.poncholay.bigbrother.controller.fragments.FriendListFragment;
 import com.poncholay.bigbrother.controller.fragments.MapFragment;
 import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
+import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.services.MeetingSuggestionsService;
+import com.poncholay.bigbrother.utils.BundleUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
 
 public class BigBrotherActivity extends AppCompatActivity {
 
 	private DynamicTitledFragmentPagerAdapter mAdapter;
+	private ViewPager mViewPager;
+	private List<FriendDistance> mDistanceList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,8 @@ public class BigBrotherActivity extends AppCompatActivity {
 			stopService(intent);
 			startService(intent);
 		}
+
+		mDistanceList = BundleUtils.retrieveFriendDistances(savedInstanceState, getIntent().getExtras(), "distances");
 	}
 
 	@Override
@@ -82,7 +91,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 	}
 
 	private void setupPager(Bundle bundle) {
-		ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPager);
+		mViewPager = (ViewPager) findViewById(R.id.viewPager);
 		mViewPager.setOffscreenPageLimit(2);
 
 		CircleIndicator indicator = (CircleIndicator) findViewById(R.id.pager_indicator);
@@ -105,5 +114,21 @@ public class BigBrotherActivity extends AppCompatActivity {
 		mAdapter.push(FriendListFragment.class, FriendListFragment.getTitle());
 		mAdapter.push(MeetingListFragment.class, MeetingListFragment.getTitle());
 		mAdapter.push(MapFragment.class, MapFragment.getTitle());
+	}
+
+	public void moveToMeetings() {
+		try {
+			mViewPager.setCurrentItem(1, true);
+		} catch (Exception ignored) {}
+	}
+
+	public List<FriendDistance> getSuggestions() {
+		try {
+			List<FriendDistance> ret = mDistanceList;
+			mDistanceList = null;
+			return ret;
+		} catch (Exception ignored) {
+			return null;
+		}
 	}
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.IBinder;
 
 import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 
@@ -13,7 +14,7 @@ import com.poncholay.bigbrother.services.MeetingSuggestionsService;
  */
 public class NetworkReceiver extends BroadcastReceiver {
 
-	private static boolean connected = true;
+	private static boolean connected = false;
 
 	@Override
 	public void onReceive(final Context context, final Intent intent) {
@@ -23,6 +24,10 @@ public class NetworkReceiver extends BroadcastReceiver {
 		if (connected) {
 			MeetingSuggestionsService.launchMeetingDiscovery(context);
 		}
+	}
+
+	public static void update(boolean status) {
+		connected = status;
 	}
 
 	public static boolean isConnected() {

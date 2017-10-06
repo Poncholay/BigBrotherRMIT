@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
 import com.poncholay.bigbrother.controller.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.controller.adapters.MeetingRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.FriendDistance;
@@ -44,6 +46,7 @@ public class MeetingListFragment extends Fragment {
 
 	private MeetingRecyclerViewAdapter mAdapter;
 	private RecyclerView mRecyclerView;
+	private List<FriendDistance> mDistances;
 
 	private View view;
 
@@ -63,7 +66,19 @@ public class MeetingListFragment extends Fragment {
 		int index = getActivity().getPreferences(Context.MODE_PRIVATE).getInt("sortMeetings", Constants.BY_NAME);
 		mAdapter.sort(index);
 
+		mDistances = ((BigBrotherActivity)getActivity()).getSuggestions();
+
 		return view;
+	}
+
+	@Override
+	public void onResume() {
+		if (mDistances != null) {
+			((BigBrotherActivity)getActivity()).moveToMeetings();
+			suggestMeeting(this, mDistances, 0);
+			mDistances = null;
+		}
+		super.onResume();
 	}
 
 	@Override
@@ -277,35 +292,39 @@ public class MeetingListFragment extends Fragment {
 		}
 	}
 
-	private void suggestMeeting(final Context context, final List<FriendDistance> friendDistances, final int i) {
-		if (i < friendDistances.size()) {
-			final FriendDistance f = friendDistances.get(i);
-			new AlertDialog.Builder(context)
-					.setTitle(f.getFriend().getFirstname() + " " + f.getFriend().getLastname())
-					.setMessage(String.format("Available at %s.", f.getUserTextDuration()))
-					.setPositiveButton("Meet", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							Intent intent = new Intent(getActivity(), EditMeetingActivity.class);
-							intent.putExtra("mode", Constants.NEW_MEETING);
-							intent.putExtra("friend", f.getFriend());
-							startActivityForResult(intent, Constants.NEW_MEETING);
-						}
-					})
-					.setNegativeButton("Cancel", null)
-					.setNeutralButton("Next", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							suggestMeeting(context, friendDistances, i + 1);
-						}
-					})
-					.show();
-		} else {
-			Snackbar.make(view, "No more friends available at the moment", Snackbar.LENGTH_SHORT).show();
-		}
+	public static void suggestMeeting(final MeetingListFragment context, final List<FriendDistance> friendDistances, final int i) {
+		try {
+			if (i < friendDistances.size()) {
+				final FriendDistance f = friendDistances.get(i);
+				new AlertDialog.Builder(context.getActivity())
+						.setTitle(f.getFriend().getFirstname() + " " + f.getFriend().getLastname())
+						.setMessage(String.format("Available at %s.", f.getUserTextDuration()))
+						.setPositiveButton("Meet", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								Intent intent = new Intent(context.getActivity(), EditMeetingActivity.class);
+								intent.putExtra("mode", Constants.NEW_MEETING);
+								intent.putExtra("friend", f.getFriend());
+								context.startActivityForResult(intent, Constants.NEW_MEETING);
+							}
+						})
+						.setNegativeButton("Cancel", null)
+						.setNeutralButton("Next", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								suggestMeeting(context, friendDistances, i + 1);
+							}
+						})
+						.show();
+				return;
+			} else {
+				Snackbar.make(context.getActivity().findViewById(android.R.id.content), "No more friends available at the moment", Snackbar.LENGTH_SHORT).show();
+			}
+		} catch (Exception ignored) {}
 	}
 
-	private void instantSuggestion(final Context context) {
-		new MeetingSuggestion(context, MeetingSuggestionsService.getUserLocation(), new MeetingSuggestion.MeetingSuggestionCallback() {
+	private void instantSuggestion() {
+		final MeetingListFragment context = this;
+		new MeetingSuggestion(context.getActivity(), MeetingSuggestionsService.getUserLocation(), new MeetingSuggestion.MeetingSuggestionCallback() {
 			@Override
 			public void onSuccess(List<FriendDistance> friendsDistances) {
 				if (friendsDistances.size() == 0) {
@@ -330,7 +349,7 @@ public class MeetingListFragment extends Fragment {
 			fromContact.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					instantSuggestion(context);
+					instantSuggestion();
 				}
 			});
 			anchoredFab.addChild(fromContact);
