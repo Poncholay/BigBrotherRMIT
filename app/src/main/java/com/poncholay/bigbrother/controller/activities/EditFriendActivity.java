@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.poncholay.bigbrother.Constants;
@@ -117,7 +117,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 		EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
 			@Override
 			public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-				Toast.makeText(activity, "An error occurred", Toast.LENGTH_SHORT).show();
+				Snackbar.make(activity.findViewById(android.R.id.content), "An error occured", Snackbar.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -146,7 +146,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 
 	private boolean checkEmpty(String firstname) {
 		if (firstname.trim().equals("")) {
-			Toast.makeText(this, getString(R.string.error_empty_name), Toast.LENGTH_SHORT).show();
+			Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_empty_name), Snackbar.LENGTH_SHORT).show();
 			return true;
 		}
 		return false;
@@ -156,11 +156,7 @@ public class EditFriendActivity extends AppCompatActivity implements DatePickerD
 		if (mMode != Constants.EDIT_FRIEND || !firstname.equals(mFriend.getFirstname()) || !lastname.equals(mFriend.getLastname())) {
 			List<Friend> boards = Friend.getAll(Friend.class, "firstname = '" + firstname + "' AND lastname = '" + lastname + "'");
 			if (boards.size() != 0) {
-				Toast.makeText(this,
-						String.format(Locale.US,
-								getString(R.string.error_name_already_used),
-								firstname + " " + lastname),
-						Toast.LENGTH_SHORT).show();
+				Snackbar.make(findViewById(android.R.id.content), String.format(Locale.US, getString(R.string.error_name_already_used), firstname + " " + lastname), Snackbar.LENGTH_SHORT).show();
 				return true;
 			}
 		}

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
@@ -21,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
@@ -116,7 +116,7 @@ public class FriendListFragment extends Fragment {
 						startActivityForResult(intent, Constants.EDIT_FRIEND);
 					} catch (ContactDataManager.ContactQueryException e) {
 						Log.e(LOG_TAG, e.getMessage());
-						Toast.makeText(getActivity(), getString(R.string.error_generic), Toast.LENGTH_SHORT).show();
+						Snackbar.make(getActivity().findViewById(android.R.id.content), getString(R.string.error_generic), Snackbar.LENGTH_SHORT).show();
 					}
 				}
 				break;
@@ -306,7 +306,7 @@ public class FriendListFragment extends Fragment {
 		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
 			startActivityForResult(intent, Constants.PICK_CONTACTS);
 		} else {
-			Toast.makeText(getActivity(), getString(R.string.error_not_available), Toast.LENGTH_SHORT).show();
+			Snackbar.make(getActivity().findViewById(android.R.id.content), getString(R.string.error_not_available), Snackbar.LENGTH_SHORT).show();
 		}
 	}
 

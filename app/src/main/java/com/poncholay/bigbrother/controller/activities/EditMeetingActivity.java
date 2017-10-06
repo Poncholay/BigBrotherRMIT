@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -151,15 +151,16 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 		String title = mTitleView.getText().toString();
 
 		if (title.trim().equals("")) {
-			Toast.makeText(this, getString(R.string.error_empty_title), Toast.LENGTH_SHORT).show();
+			Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_empty_title), Snackbar.LENGTH_SHORT).show();
 			return;
 		}
 		if (mDateStart.after(mDateEnd)) {
-			Toast.makeText(this, getString(R.string.error_invalid_date), Toast.LENGTH_SHORT).show();
+			Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_invalid_date), Snackbar.LENGTH_SHORT).show();
 			return;
 		}
-		if (mDateStart.before(new Date())) {
-			Toast.makeText(this, getString(R.string.error_invalid_date_now), Toast.LENGTH_SHORT).show();
+		// Allow 10 minutes of leeway
+		if (mDateStart.before(new Date(new Date().getTime() - 60 * 1000))) {
+			Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_invalid_date_now), Snackbar.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -322,7 +323,7 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 		try {
 			startActivityForResult(builder.build(this), Constants.REQUEST_PLACE_PICKER);
 		} catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-			Toast.makeText(this, getString(R.string.error_not_available), Toast.LENGTH_SHORT).show();
+			Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_not_available), Snackbar.LENGTH_SHORT).show();
 		}
 	}
 
@@ -335,6 +336,7 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 				calendar.get(Calendar.MONTH),
 				calendar.get(Calendar.DAY_OF_MONTH)
 		);
+		dpd.setMinDate(Calendar.getInstance());
 		dpd.setVersion(DatePickerDialog.Version.VERSION_2);
 		dpd.show(getFragmentManager(), "Datepickerdialog");
 	}
