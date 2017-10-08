@@ -81,6 +81,8 @@
 		<receiver
 			android:name=".controller.receivers.ReminderReceiver"/>
 		<receiver
+			android:name=".utils.meetings.MeetingSuggestion"/>
+		<receiver
 			android:name=".controller.receivers.NetworkReceiver" >
 			<intent-filter>
 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -89,7 +91,7 @@
 
 		<!-- Meeting Suggestions Service Declaration -->
 		<service
-			android:name=".services.MeetingSuggestionsService"
+			android:name=".services.LocationTrackingService"
 			android:exported="false"/>
 
 		<meta-data

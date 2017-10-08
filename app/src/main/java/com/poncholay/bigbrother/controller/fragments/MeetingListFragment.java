@@ -26,9 +26,9 @@ import com.poncholay.bigbrother.controller.activities.EditMeetingActivity;
 import com.poncholay.bigbrother.controller.adapters.MeetingRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.model.Meeting;
-import com.poncholay.bigbrother.services.MeetingSuggestionsService;
+import com.poncholay.bigbrother.services.LocationTrackingService;
 import com.poncholay.bigbrother.utils.ContactDataManager;
-import com.poncholay.bigbrother.utils.MeetingSuggestion;
+import com.poncholay.bigbrother.utils.meetings.FindPossibleFriends;
 import com.poncholay.bigbrother.view.AnchoredFloatingActionButton;
 
 import java.util.ArrayList;
@@ -305,7 +305,7 @@ public class MeetingListFragment extends Fragment {
 	}
 
 	private void instantSuggestion(final Context context) {
-		new MeetingSuggestion(context, MeetingSuggestionsService.getUserLocation(), new MeetingSuggestion.MeetingSuggestionCallback() {
+		new FindPossibleFriends(context, LocationTrackingService.getUserLocation(), new FindPossibleFriends.FindPossibleFriendsCallback() {
 			@Override
 			public void onSuccess(List<FriendDistance> friendsDistances) {
 				if (friendsDistances.size() == 0) {

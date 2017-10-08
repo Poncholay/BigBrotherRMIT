@@ -6,7 +6,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.poncholay.bigbrother.services.MeetingSuggestionsService;
+import com.poncholay.bigbrother.services.LocationTrackingService;
+import com.poncholay.bigbrother.utils.meetings.MeetingSuggestion;
 
 /**
  * Created by Poncholay on 05/10/17.
@@ -21,7 +22,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		connected = networkInfo != null && networkInfo.isConnected();
 		if (connected) {
-			MeetingSuggestionsService.launchMeetingDiscovery(context);
+			MeetingSuggestion.launchMeetingDiscovery(context);
 		}
 	}
 

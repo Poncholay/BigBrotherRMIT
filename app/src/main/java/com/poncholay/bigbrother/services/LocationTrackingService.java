@@ -20,32 +20,32 @@ import android.util.Log;
 
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.FriendDistance;
-import com.poncholay.bigbrother.utils.MeetingSuggestion;
+import com.poncholay.bigbrother.utils.meetings.FindPossibleFriends;
 
 import java.util.List;
 
-public class MeetingSuggestionsService extends Service implements LocationListener {
+public class LocationTrackingService extends Service implements LocationListener {
 
-    private static final String TAG = "Service_MS";
+    private static final String TAG = "TrackingService";
 
     private static Location userLocation = null;
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "Service onCreate");
+        Log.i(TAG, "LocationTrackingService created.");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i(TAG, "Service onStartCommand");
+        Log.i(TAG, "LocationTrackingService started.");
 
         requestLocationUpdate();
-
         return Service.START_STICKY;
     }
 
     private void requestLocationUpdate() {
+
         try {
             LocationManager lm = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
             Boolean isGpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -65,31 +65,10 @@ public class MeetingSuggestionsService extends Service implements LocationListen
         return userLocation;
     }
 
-    public static void launchMeetingDiscovery(Context context) {
-        new MeetingSuggestion(context, userLocation, new MeetingSuggestion.MeetingSuggestionCallback() {
-            @Override
-            public void onSuccess(List<FriendDistance> friendDistances) {
-                if (friendDistances.size() > 0) {
-                    FriendDistance sugFriendDist = friendDistances.get(0);
-                    Friend closestFriend = sugFriendDist.getFriend();
-                    Log.e(TAG, "onSuccess - closest friend : " + closestFriend.getFirstname() +
-                            " " + closestFriend.getLastname() + " is at " + sugFriendDist.getUserTextDuration()
-                            + " walking time !");
-                }
-            }
-
-            @Override
-            public void onError(String msg) {
-                Log.e(TAG, "onError: Impossible to suggest a meeting : " + msg);
-            }
-        }).execute();
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            userLocation = location;
-            launchMeetingDiscovery(getApplicationContext());
+            userLocation.set(location);
         } else {
             Log.e(TAG, "onLocationChanged : new location is null");
         }

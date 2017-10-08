@@ -31,7 +31,7 @@ import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.services.DummyLocationService;
-import com.poncholay.bigbrother.services.MeetingSuggestionsService;
+import com.poncholay.bigbrother.services.LocationTrackingService;
 import com.poncholay.bigbrother.utils.BitmapUtils;
 import com.poncholay.bigbrother.utils.ContactDataManager;
 import com.poncholay.bigbrother.utils.IconUtils;
@@ -224,7 +224,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 	}
 
 	private void setupMyLocation() {
-		Location location = MeetingSuggestionsService.getUserLocation();
+		Location location = LocationTrackingService.getUserLocation();
 		if (location != null) {
 			mPos = new LatLng(location.getLatitude(), location.getLongitude());
 			MarkerOptions markerOptions = new MarkerOptions();

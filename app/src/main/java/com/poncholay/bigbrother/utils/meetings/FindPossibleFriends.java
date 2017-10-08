@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.utils;
+package com.poncholay.bigbrother.utils.meetings;
 
 /*
  * BigBrotherRMIT
@@ -21,31 +21,31 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class MeetingSuggestion {
+public class FindPossibleFriends {
 
-    private static final String TAG = "MeetingSuggestion";
+    private static final String TAG = "FindPossibleFriends";
 
     private Context                     _context;
-    private MeetingSuggestionCallback   _meetingSuggestionCallback;
+    private FindPossibleFriendsCallback _findPossibleFriendsCallback;
     private Location                    _currentLocation;
     private int                         _friendsDistancesCount = 0;
 
-    public MeetingSuggestion(Context context, Location currentLocation,
-                             MeetingSuggestionCallback meetingSuggestionCallback) {
+    public FindPossibleFriends(Context context, Location currentLocation,
+                               FindPossibleFriendsCallback findPossibleFriendsCallback) {
         _context = context;
-        _meetingSuggestionCallback = meetingSuggestionCallback;
+        _findPossibleFriendsCallback = findPossibleFriendsCallback;
         _currentLocation = currentLocation;
     }
 
     public void execute() {
         if (_currentLocation == null) {
-            _meetingSuggestionCallback.onError("Waiting for use location, try again later.");
+            _findPossibleFriendsCallback.onError("Waiting for use location, try again later.");
             return;
         }
-        suggestMeeting();
+        findFriends();
     }
 
-    private void suggestMeeting() {
+    private void findFriends() {
         // Get friends location
         DummyLocationService dls = DummyLocationService.getSingletonInstance();
 
@@ -79,7 +79,7 @@ public class MeetingSuggestion {
             }
         }
         if (friendDistances.size() == 0) {
-            _meetingSuggestionCallback.onSuccess(friendDistances);
+            _findPossibleFriendsCallback.onSuccess(friendDistances);
         }
         for (FriendDistance f : friendDistances) {
             f.execute();
@@ -96,7 +96,7 @@ public class MeetingSuggestion {
                 String error = friend.getFriendTextDuration();
                 friendIterator.remove();
                 if (friendDistances.size() == 0) {
-                    _meetingSuggestionCallback.onError(error);
+                    _findPossibleFriendsCallback.onError(error);
                 }
             }
         }
@@ -109,14 +109,14 @@ public class MeetingSuggestion {
             }
         });
 
-        _meetingSuggestionCallback.onSuccess(friendDistances);
+        _findPossibleFriendsCallback.onSuccess(friendDistances);
     }
 
     //
     // Callback
     //
 
-    public static abstract class MeetingSuggestionCallback {
+    public static abstract class FindPossibleFriendsCallback {
         public abstract void onSuccess(List<FriendDistance> friendsDistances);
         public abstract void onError(String msg);
     }

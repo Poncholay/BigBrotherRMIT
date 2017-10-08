@@ -19,6 +19,7 @@ public class Constants {
 	public static final int BY_NAME_INV = 13;
 	public static final int REQUEST_ACCESS_COARSE_LOCATION = 14;
 	public static final String ICON = "icon.jpg";
+	public static final int MEETING_SUGGEST_PENDING_INTENT = 15;
 
 	static final public SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault());
 	static final public SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());

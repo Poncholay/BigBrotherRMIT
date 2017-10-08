@@ -67,8 +67,8 @@ public class FriendDistance {
 
     private void fetchDistances(LatLng from, LatLng to, final String mode, WebService.WebServiceCallBack onSuccess) {
         String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" +
-                _userLocation.latitude + "," + _userLocation.longitude + "&destination=" +
-                _friendLocation.latitude + "," + _friendLocation.longitude + "&mode=" +
+                from.latitude + "," + from.longitude + "&destination=" +
+                to.latitude + "," + to.longitude + "&mode=" +
                 mode + "&sensor=false";
 
         new WebService(_context, url, TYPE_GET, null, onSuccess).execute();
@@ -153,7 +153,7 @@ public class FriendDistance {
 
         double dLon = Math.toRadians(latLng2.longitude - latLng1.longitude);
 
-        //convert to radians
+        // Convert to radians
         final double radLat1 = Math.toRadians(latLng1.latitude);
         final double radLat2 = Math.toRadians(latLng2.latitude);
         final double radLon1 = Math.toRadians(latLng1.longitude);
@@ -164,8 +164,7 @@ public class FriendDistance {
                 Math.sqrt((Math.cos(radLat1) + bx) * (Math.cos(radLat1) + bx) + by * by));
         final double radLon3 = radLon1 + Math.atan2(by, Math.cos(radLat1) + bx);
 
-        //print out in degrees
-        System.out.println("Result midpoint calc : " + Math.toDegrees(radLat3) + " " + Math.toDegrees(radLon3));
+        // Return in degrees
         return new LatLng(Math.toDegrees(radLat3), Math.toDegrees(radLon3));
     }
 
