@@ -11,7 +11,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -20,27 +19,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
-import com.poncholay.bigbrother.controller.activities.EditMeetingActivity;
-import com.poncholay.bigbrother.controller.activities.SnoozeActivity;
-import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
-import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.FriendDistance;
-import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.MeetingSuggestion;
-import com.poncholay.bigbrother.utils.ParcelableUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MeetingSuggestionsService extends Service implements LocationListener {
 
@@ -117,7 +105,7 @@ public class MeetingSuggestionsService extends Service implements LocationListen
     public void onLocationChanged(Location location) {
         if (location != null) {
             userLocation = location;
-            launchMeetingDiscovery(getApplicationContext());
+//            launchMeetingDiscovery(getApplicationContext());
         } else {
             Log.e(TAG, "onLocationChanged : new location is null");
         }

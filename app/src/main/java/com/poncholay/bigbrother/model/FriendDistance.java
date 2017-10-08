@@ -13,12 +13,9 @@ import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.poncholay.bigbrother.utils.WebService;
-import com.poncholay.bigbrother.utils.database.DatabaseContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 import static com.poncholay.bigbrother.utils.WebService.TYPE_GET;
 

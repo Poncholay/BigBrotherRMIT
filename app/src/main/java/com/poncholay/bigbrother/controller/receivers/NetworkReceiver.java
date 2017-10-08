@@ -1,11 +1,12 @@
 package com.poncholay.bigbrother.controller.receivers;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.IBinder;
 
 import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 
@@ -14,23 +15,46 @@ import com.poncholay.bigbrother.services.MeetingSuggestionsService;
  */
 public class NetworkReceiver extends BroadcastReceiver {
 
-	private static boolean connected = false;
+	private static NetworkReceiver receiver;
 
-	@Override
-	public void onReceive(final Context context, final Intent intent) {
-		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-		connected = networkInfo != null && networkInfo.isConnected();
-		if (connected) {
-			MeetingSuggestionsService.launchMeetingDiscovery(context);
+	private boolean connected = true;
+
+	private NetworkReceiver() {}
+
+	public static void init(Activity activity) {
+		if (receiver == null) {
+			receiver = getInstance();
+//			receiver.onReceive(activity, new Intent(ConnectivityManager.CONNECTIVITY_ACTION));
+			final IntentFilter intentFilter = new IntentFilter();
+			intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+			activity.registerReceiver(receiver, intentFilter);
 		}
 	}
 
-	public static void update(boolean status) {
-		connected = status;
+	public static NetworkReceiver getInstance() {
+		if (receiver == null) {
+			receiver = new NetworkReceiver();
+		}
+		return receiver;
 	}
 
-	public static boolean isConnected() {
+	@Override
+	public void onReceive(final Context context, final Intent intent) {
+		try {
+			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+				boolean previouslyConnected = connected;
+				connected = networkInfo != null && networkInfo.isConnected();
+				if (connected && !previouslyConnected) {
+					MeetingSuggestionsService.launchMeetingDiscovery(context);
+				}
+			}
+		} catch (IllegalArgumentException ignored) {
+		}
+	}
+
+	public boolean isConnected() {
 		return connected;
 	}
 }

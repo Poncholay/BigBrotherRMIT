@@ -79,12 +79,6 @@
 
 		<receiver
 			android:name=".controller.receivers.ReminderReceiver"/>
-		<receiver
-			android:name=".controller.receivers.NetworkReceiver" >
-			<intent-filter>
-				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-			</intent-filter>
-		</receiver>
 
 		<!-- Meeting Suggestions Service Declaration -->
 		<service

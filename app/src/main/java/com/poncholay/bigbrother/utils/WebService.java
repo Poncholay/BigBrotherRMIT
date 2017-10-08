@@ -1,18 +1,12 @@
 package com.poncholay.bigbrother.utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.poncholay.bigbrother.controller.receivers.NetworkReceiver;
-import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,7 +48,7 @@ public class WebService {
 	}
 
 	public void execute() {
-		if (NetworkReceiver.isConnected()) {
+		if (NetworkReceiver.getInstance().isConnected()) {
 			new Request().execute(url, data);
 			return;
 		}

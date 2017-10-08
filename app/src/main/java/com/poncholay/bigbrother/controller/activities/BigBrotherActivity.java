@@ -19,11 +19,11 @@ import com.poncholay.bigbrother.controller.adapters.DynamicTitledFragmentPagerAd
 import com.poncholay.bigbrother.controller.fragments.FriendListFragment;
 import com.poncholay.bigbrother.controller.fragments.MapFragment;
 import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
+import com.poncholay.bigbrother.controller.receivers.NetworkReceiver;
 import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.services.MeetingSuggestionsService;
 import com.poncholay.bigbrother.utils.BundleUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -51,6 +51,8 @@ public class BigBrotherActivity extends AppCompatActivity {
 			stopService(intent);
 			startService(intent);
 		}
+
+		NetworkReceiver.init(this);
 
 		mDistanceList = BundleUtils.retrieveFriendDistances(savedInstanceState, getIntent().getExtras(), "distances");
 	}

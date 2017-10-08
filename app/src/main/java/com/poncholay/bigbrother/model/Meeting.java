@@ -123,7 +123,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 	}
 
 	public void createReminder(Activity context) {
-		float reminderDelay = context.getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("reminderDelay", 5);
+		float reminderDelay = context.getSharedPreferences("settings", Context.MODE_PRIVATE).getFloat("reminderDelay", 5.0f);
 		if (reminderDelay != 0.0f) {
 			PendingIntent alarmIntent;
 			Intent intent = new Intent(context, ReminderReceiver.class);
