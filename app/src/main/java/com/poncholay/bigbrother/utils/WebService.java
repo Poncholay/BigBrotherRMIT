@@ -1,11 +1,9 @@
 package com.poncholay.bigbrother.utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.poncholay.bigbrother.controller.receivers.NetworkReceiver;
@@ -50,23 +48,16 @@ public class WebService {
 	}
 
 	public void execute() {
-		if (NetworkReceiver.isConnected()) {
+		if (NetworkReceiver.getInstance().isConnected()) {
+			new Request().execute(url, data);
+			return;
+		}
+		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+		if (networkInfo != null && networkInfo.isConnected()) {
 			new Request().execute(url, data);
 		} else {
-			try {
-				new AlertDialog.Builder(context)
-						.setTitle("Connection error")
-						.setMessage("Your internet connection appears to be offline.")
-						.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-							}
-						})
-						.setNegativeButton("Cancel", null)
-						.show();
-			} catch (Exception e) {
-				Toast.makeText(context, "Your internet connection appears to be offline", Toast.LENGTH_LONG).show();
-			}
+			Toast.makeText(context, "Your internet connection appears to be offline", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -228,7 +219,8 @@ public class WebService {
 
 		public void onError(int code, String response) {
 			if (context != null) {
-				Toast.makeText(context, "An error happened, please try again later.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, "An error happened, please try again later", Toast.LENGTH_SHORT).show();
+
 			}
 		}
 

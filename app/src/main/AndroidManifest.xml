@@ -48,7 +48,6 @@
 			android:theme="@style/AppTheme.NoActionBar">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
-
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
@@ -81,13 +80,7 @@
 		<receiver
 			android:name=".controller.receivers.ReminderReceiver"/>
 		<receiver
-			android:name=".utils.meetings.MeetingSuggestion"/>
-		<receiver
-			android:name=".controller.receivers.NetworkReceiver" >
-			<intent-filter>
-				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-			</intent-filter>
-		</receiver>
+			android:name=".controller.receivers.SuggestionsReceiver"/>
 
 		<!-- Meeting Suggestions Service Declaration -->
 		<service

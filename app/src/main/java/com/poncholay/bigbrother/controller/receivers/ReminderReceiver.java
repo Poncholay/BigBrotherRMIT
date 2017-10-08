@@ -34,6 +34,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
 		Intent i = new Intent(context, SnoozeActivity.class);
 		i.putExtra("meeting", bytes);
+		i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
 
 		float snoozeDuration = context.getSharedPreferences("settings", Context.MODE_PRIVATE).getFloat("snoozeDelay", 5.0f);

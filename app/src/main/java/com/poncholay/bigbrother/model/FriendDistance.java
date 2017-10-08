@@ -7,6 +7,8 @@ package com.poncholay.bigbrother.model;
  */
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -17,7 +19,7 @@ import org.json.JSONObject;
 
 import static com.poncholay.bigbrother.utils.WebService.TYPE_GET;
 
-public class FriendDistance {
+public class FriendDistance implements Parcelable {
 
     static public final String MODE_WALKING = "walking";
 
@@ -171,4 +173,42 @@ public class FriendDistance {
     public static abstract class FriendDistanceCallBack {
         public abstract void onDurationSet();
     }
+
+    public void setFriend(Friend _friend) {
+        this._friend = _friend;
+    }
+
+    public void setUserTextDuration(String _userTextDuration) {
+        this._userTextDuration = _userTextDuration;
+    }
+
+    //__________
+    //Parcelable
+
+    //Only what is necessary
+    public FriendDistance(Parcel in) {
+        this.setFriend((Friend) in.readParcelable(Friend.class.getClassLoader()));
+        this.setUserTextDuration(in.readString());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(_friend, 0);
+        dest.writeString(_userTextDuration);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<FriendDistance> CREATOR = new Parcelable.Creator<FriendDistance>() {
+        public FriendDistance createFromParcel(Parcel in) {
+            return new FriendDistance(in);
+        }
+
+        public FriendDistance[] newArray(int size) {
+            return new FriendDistance[size];
+        }
+    };
 }

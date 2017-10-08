@@ -7,6 +7,8 @@ package com.poncholay.bigbrother.services;
  */
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,12 +18,16 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.poncholay.bigbrother.model.Friend;
+import com.poncholay.bigbrother.R;
+import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
 import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.utils.meetings.FindPossibleFriends;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LocationTrackingService extends Service implements LocationListener {

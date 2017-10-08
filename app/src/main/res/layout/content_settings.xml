@@ -19,97 +19,43 @@
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal">
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginStart="16dp"
-				android:text="@string/meeting_suggestion_interval"
-				android:textColor="@color/colorPrimaryText"
-				android:textSize="14sp"/>
-
-			<TextView
-				android:id="@+id/intervalDetailsLabel"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginStart="16dp"
-				android:layout_marginEnd="16dp"
-				android:layout_weight="1"
-				android:gravity="end"
-				android:textSize="14sp"
-				tools:text="5min"/>
-		</LinearLayout>
-
-		<com.poncholay.bigbrother.view.StepSlider
-			android:id="@+id/intervalStepSlider"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginStart="8dp"
-			android:layout_marginEnd="8dp"
-			android:layout_marginTop="16dp"/>
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:layout_marginBottom="16dp"
-			android:layout_marginStart="8dp"
-			android:layout_marginEnd="8dp"
-			android:orientation="horizontal">
-
-			<TextView
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			android:orientation="vertical">
+			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:gravity="center_horizontal"
-				android:text="0ff"
-				android:textSize="11sp"/>
+				android:orientation="horizontal">
 
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:gravity="center_horizontal"
-				android:text="5min"
-				android:textSize="11sp"/>
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/meeting_suggestion_interval"
+					android:textColor="@color/colorPrimaryText"
+					android:textSize="14sp"/>
 
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:gravity="center_horizontal"
-				android:text="10min"
-				android:textSize="11sp"/>
+				<TextView
+					android:id="@+id/intervalDetailsLabel"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:gravity="end"
+					android:textSize="14sp"
+					tools:text="5min"/>
+			</LinearLayout>
 
-			<TextView
-				android:layout_width="match_parent"
+			<EditText
+				android:id="@+id/intervalEditText"
+				android:layout_width="50dp"
 				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:gravity="center_horizontal"
-				android:text="1h"
-				android:textSize="11sp"/>
-
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:gravity="center_horizontal"
-				android:text="4h"
-				android:textSize="11sp"/>
-
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:gravity="center_horizontal"
-				android:text="24h"
-				android:textSize="11sp"/>
+				android:inputType="numberDecimal"/>
 		</LinearLayout>
 
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
 			android:orientation="vertical">
 
 			<LinearLayout
@@ -120,7 +66,6 @@
 				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginStart="16dp"
 					android:text="@string/meeting_reminder_delay"
 					android:textColor="@color/colorPrimaryText"
 					android:textSize="14sp"/>
@@ -129,78 +74,17 @@
 					android:id="@+id/delayDetailsLabel"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
-					android:layout_marginStart="16dp"
-					android:layout_marginEnd="16dp"
 					android:layout_weight="1"
 					android:gravity="end"
 					android:textSize="14sp"
 					tools:text="5min"/>
 			</LinearLayout>
 
-			<com.poncholay.bigbrother.view.StepSlider
-				android:id="@+id/delayStepSlider"
-				android:layout_width="match_parent"
+			<EditText
+				android:id="@+id/delayEditText"
+				android:layout_width="50dp"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="8dp"
-				android:layout_marginEnd="8dp"
-				android:layout_marginTop="16dp"/>
-
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:layout_marginBottom="16dp"
-				android:layout_marginStart="8dp"
-				android:layout_marginEnd="8dp"
-				android:orientation="horizontal">
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_horizontal"
-					android:text="0ff"
-					android:textSize="11sp"/>
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_horizontal"
-					android:text="5min"
-					android:textSize="11sp"/>
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_horizontal"
-					android:text="10min"
-					android:textSize="11sp"/>
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_horizontal"
-					android:text="1h"
-					android:textSize="11sp"/>
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_horizontal"
-					android:text="4h"
-					android:textSize="11sp"/>
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_horizontal"
-					android:text="24h"
-					android:textSize="11sp"/>
-			</LinearLayout>
+				android:inputType="numberDecimal"/>
 		</LinearLayout>
 
 		<LinearLayout
@@ -209,20 +93,15 @@
 			android:layout_marginStart="16dp"
 			android:layout_marginEnd="16dp"
 			android:orientation="vertical">
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/snooze_delay"
-				android:textColor="@color/colorPrimaryText"
-				android:textSize="14sp"/>
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
-				<EditText
-					android:id="@+id/snoozeEditText"
-					android:layout_width="50dp"
+				<TextView
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:inputType="numberDecimal"/>
+					android:text="@string/snooze_delay"
+					android:textColor="@color/colorPrimaryText"
+					android:textSize="14sp"/>
 
 				<TextView
 					android:id="@+id/snoozeDetailsLabel"
@@ -233,6 +112,12 @@
 					android:textSize="14sp"
 					tools:text="5min"/>
 			</LinearLayout>
+
+			<EditText
+				android:id="@+id/snoozeEditText"
+				android:layout_width="50dp"
+				android:layout_height="wrap_content"
+				android:inputType="numberDecimal"/>
 		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>

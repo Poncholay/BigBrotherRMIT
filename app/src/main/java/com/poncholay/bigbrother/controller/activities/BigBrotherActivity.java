@@ -1,12 +1,7 @@
 package com.poncholay.bigbrother.controller.activities;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -15,7 +10,6 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,19 +19,22 @@ import com.poncholay.bigbrother.controller.adapters.DynamicTitledFragmentPagerAd
 import com.poncholay.bigbrother.controller.fragments.FriendListFragment;
 import com.poncholay.bigbrother.controller.fragments.MapFragment;
 import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
-import com.poncholay.bigbrother.services.LocationTrackingService;
+
+import com.poncholay.bigbrother.controller.receivers.NetworkReceiver;
+import com.poncholay.bigbrother.model.FriendDistance;
+import com.poncholay.bigbrother.utils.BundleUtils;
 import com.poncholay.bigbrother.utils.meetings.MeetingSuggestion;
 
-import java.util.Date;
+import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
-
-import static com.poncholay.bigbrother.utils.database.DatabaseHelper.DatabaseContext.context;
 
 public class BigBrotherActivity extends AppCompatActivity {
 
 	private DynamicTitledFragmentPagerAdapter mAdapter;
 	private static String TAG = "BigBrother";
+	private ViewPager mViewPager;
+	private List<FriendDistance> mDistanceList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +49,12 @@ public class BigBrotherActivity extends AppCompatActivity {
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
 			requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.REQUEST_ACCESS_COARSE_LOCATION);
 		} else {
-			startMeetingSuggestions();
+			MeetingSuggestion.getInstance().start();
 		}
+
+		NetworkReceiver.init(this);
+
+		mDistanceList = BundleUtils.retrieveFriendDistances(savedInstanceState, getIntent().getExtras(), "distances");
 	}
 
 	@Override
@@ -61,45 +62,9 @@ public class BigBrotherActivity extends AppCompatActivity {
 		switch (requestCode) {
 			case Constants.REQUEST_ACCESS_COARSE_LOCATION: {
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					startMeetingSuggestions();
+					MeetingSuggestion.getInstance().start();
 				}
 			}
-		}
-	}
-
-	private void startMeetingSuggestions() {
-
-		// Start tracking service
-		Intent intent = new Intent(this, LocationTrackingService.class);
-		startService(intent);
-
-		Date when = new Date(System.currentTimeMillis());
-		SharedPreferences sharedPref;
-
-		sharedPref 	 = getSharedPreferences("settings", Context.MODE_PRIVATE);
-		int interval = sharedPref.getInt("suggestionInterval", 5);
-
-		try{
-			Intent suggestMeeting = new Intent(context, MeetingSuggestion.class);
-
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(
-					context,
-					Constants.MEETING_SUGGEST_PENDING_INTENT,
-					suggestMeeting,
-					PendingIntent.FLAG_CANCEL_CURRENT);
-
-			AlarmManager alarms = (AlarmManager) context.getSystemService(
-					Context.ALARM_SERVICE);
-
-			alarms.setRepeating(AlarmManager.RTC_WAKEUP,
-					when.getTime(),
-					1 * 60 * 1000,
-					pendingIntent);
-
-			Log.e(TAG, "startMeetingSuggestions: Alarm will repeat.");
-
-		}catch(Exception e){
-			Log.e(TAG, "Failed to schedule meeting suggestions : " + e.toString());
 		}
 	}
 
@@ -126,7 +91,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 	}
 
 	private void setupPager(Bundle bundle) {
-		ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPager);
+		mViewPager = (ViewPager) findViewById(R.id.viewPager);
 		mViewPager.setOffscreenPageLimit(2);
 
 		CircleIndicator indicator = (CircleIndicator) findViewById(R.id.pager_indicator);
@@ -149,5 +114,21 @@ public class BigBrotherActivity extends AppCompatActivity {
 		mAdapter.push(FriendListFragment.class, FriendListFragment.getTitle());
 		mAdapter.push(MeetingListFragment.class, MeetingListFragment.getTitle());
 		mAdapter.push(MapFragment.class, MapFragment.getTitle());
+	}
+
+	public void moveToMeetings() {
+		try {
+			mViewPager.setCurrentItem(1, true);
+		} catch (Exception ignored) {}
+	}
+
+	public List<FriendDistance> getSuggestions() {
+		try {
+			List<FriendDistance> ret = mDistanceList;
+			mDistanceList = null;
+			return ret;
+		} catch (Exception ignored) {
+			return null;
+		}
 	}
 }

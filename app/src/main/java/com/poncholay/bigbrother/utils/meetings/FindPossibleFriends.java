@@ -80,6 +80,7 @@ public class FindPossibleFriends {
         }
         if (friendDistances.size() == 0) {
             _findPossibleFriendsCallback.onSuccess(friendDistances);
+            return;
         }
         for (FriendDistance f : friendDistances) {
             f.execute();

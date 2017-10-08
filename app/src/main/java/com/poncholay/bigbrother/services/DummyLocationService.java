@@ -8,6 +8,7 @@ import com.poncholay.bigbrother.R;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -90,7 +91,7 @@ public class DummyLocationService {
          scanner.useDelimiter(",\\s*");
          while (scanner.hasNext()) {
             FriendLocation friend = new FriendLocation();
-            friend.time = DateFormat.getTimeInstance(DateFormat.MEDIUM).parse(scanner.next());
+            friend.time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(scanner.next());
             friend.id = scanner.next();
             friend.name = scanner.next();
             friend.latitude = Double.parseDouble(scanner.next());
@@ -98,9 +99,9 @@ public class DummyLocationService {
             locationList.addLast(friend);
          }
       } catch (Resources.NotFoundException e) {
-         Log.i(LOG_TAG, "File Not Found Exception Caught");
+         Log.e(LOG_TAG, "File Not Found Exception Caught");
       } catch (ParseException e) {
-         Log.i(LOG_TAG, "ParseException Caught (Incorrect File Format)");
+         Log.e(LOG_TAG, "ParseException Caught : " + e.getMessage());
       }
    }
 

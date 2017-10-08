@@ -10,23 +10,18 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.poncholay.bigbrother.R;
-import com.poncholay.bigbrother.view.StepSlider;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity {
 
-	private EditText snooze;
-	private TextView snoozeDetailLabel;
-
 	private SharedPreferences sharedPref;
 	private SharedPreferences.Editor editor;
-
-	private int[] steps = {0, 5, 10, 60, 240, 1440};
+	private DecimalFormat format;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +32,69 @@ public class SettingsActivity extends AppCompatActivity {
 
 		sharedPref = getSharedPreferences("settings", Context.MODE_PRIVATE);
 		editor = sharedPref.edit();
+		format = new DecimalFormat();
+		format.setDecimalSeparatorAlwaysShown(false);
 
-		snooze = (EditText) findViewById(R.id.snoozeEditText);
-		snoozeDetailLabel = (TextView) findViewById(R.id.snoozeDetailsLabel);
+		EditText interval = (EditText) findViewById(R.id.intervalEditText);
+		final TextView intervalDetailLabel = (TextView) findViewById(R.id.intervalDetailsLabel);
 
-		StepSlider intervalStepSlider = (StepSlider) findViewById(R.id.intervalStepSlider);
-		TextView intervalDetailLabel = (TextView) findViewById(R.id.intervalDetailsLabel);
-		setupStepSlider(intervalStepSlider, intervalDetailLabel, "suggestionInterval");
+		EditText delay = (EditText) findViewById(R.id.delayEditText);
+		final TextView delayDetailLabel = (TextView) findViewById(R.id.delayDetailsLabel);
 
-		StepSlider delayStepSlider = (StepSlider) findViewById(R.id.delayStepSlider);
-		TextView delayDetailLabel = (TextView) findViewById(R.id.delayDetailsLabel);
-		setupStepSlider(delayStepSlider, delayDetailLabel, "reminderDelay");
+		final EditText snooze = (EditText) findViewById(R.id.snoozeEditText);
+		final TextView snoozeDetailLabel = (TextView) findViewById(R.id.snoozeDetailsLabel);
+
+		interval.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				float delay = 0;
+				try {
+					delay = Float.parseFloat(s.toString());
+				} catch (RuntimeException ignored) {
+				}
+				intervalDetailLabel.setText(String.format(Locale.getDefault(), "%smin", format.format(delay)));
+
+				editor.putFloat("suggestionInterval", delay);
+				editor.apply();
+			}
+		});
+		float intervalValue = sharedPref.getFloat("suggestionInterval", 5.0f);
+		intervalDetailLabel.setText(String.format(Locale.getDefault(), "%smin", format.format(intervalValue)));
+		interval.setText(String.valueOf(intervalValue));
+
+
+		delay.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				float delay = 0;
+				try {
+					delay = Float.parseFloat(s.toString());
+				} catch (RuntimeException ignored) {
+				}
+				delayDetailLabel.setText(String.format(Locale.getDefault(), "%smin", format.format(delay)));
+
+				editor.putFloat("reminderDelay", delay);
+				editor.apply();
+
+				refreshSnooze(snooze, snoozeDetailLabel);
+			}
+		});
+		float reminderValue = sharedPref.getFloat("reminderDelay", 5.0f);
+		delayDetailLabel.setText(String.format(Locale.getDefault(), "%smin", format.format(reminderValue)));
+		delay.setText(String.valueOf(reminderValue));
+
 
 		snooze.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -58,22 +105,20 @@ public class SettingsActivity extends AppCompatActivity {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				snoozeDetailLabel.setText(String.format(Locale.getDefault(), "%smin", s));
-
-				if (sharedPref.getInt("reminderDelay", 5) != 0) {
+				if (sharedPref.getFloat("reminderDelay", 5.0f) != 0) {
 					float delay = 0;
 					try {
 						delay = Float.parseFloat(s.toString());
 					} catch (RuntimeException ignored) {
 					}
+					snoozeDetailLabel.setText(String.format(Locale.getDefault(), "%smin", format.format(delay)));
 
 					editor.putFloat("snoozeDelay", delay);
 					editor.apply();
 				}
 			}
 		});
-
-		refreshSnooze();
+		refreshSnooze(snooze, snoozeDetailLabel);
 	}
 
 	@Override
@@ -96,41 +141,12 @@ public class SettingsActivity extends AppCompatActivity {
 		});
 	}
 
-	private void refreshSnooze() {
-		int reminderDelay = sharedPref.getInt("reminderDelay", 5);
+	private void refreshSnooze(EditText snooze, TextView snoozeDetailLabel) {
+		float reminderDelay = sharedPref.getFloat("reminderDelay", 5.0f);
 		float snoozeDelay = reminderDelay == 0 ? 0 : sharedPref.getFloat("snoozeDelay", 5.0f);
 
-		snoozeDetailLabel.setText(String.format(Locale.getDefault(), "%fmin", snoozeDelay));
+		snoozeDetailLabel.setText(String.format(Locale.getDefault(), "%smin", format.format(snoozeDelay)));
 		snooze.setEnabled(reminderDelay != 0);
 		snooze.setText(String.valueOf(snoozeDelay));
-	}
-
-	private void setupStepSlider(final StepSlider stepSlider, final TextView label, final String key) {
-		stepSlider.setSteps(steps);
-		stepSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				stepSlider.snapToPosition();
-				label.setText(stepSlider.getStepLabel(progress));
-
-				editor.putInt(key, stepSlider.getSliderProgress());
-				editor.apply();
-
-				refreshSnooze();
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {}
-		});
-
-		int value = sharedPref.getInt(key, 5);
-		for (int i = 0; i < steps.length; i++) {
-			if (steps[i] == value) {
-				stepSlider.setSliderProgress(i);
-			}
-		}
 	}
 }
