@@ -33,7 +33,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 		int m = (int) ((start.getTime() / 1000 - current.getTime() / 1000) / 60);
 
 		Intent i = new Intent(context, SnoozeActivity.class);
-		i.putExtra("meeting", bytes);
+		i.putExtra("meeting", ParcelableUtils.marshall(meeting));
 		i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 		PendingIntent pi = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
 

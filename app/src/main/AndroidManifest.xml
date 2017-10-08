@@ -84,7 +84,7 @@
 
 		<!-- Meeting Suggestions Service Declaration -->
 		<service
-			android:name=".services.LocationTrackingService"
+			android:name=".controller.services.LocationTrackingService"
 			android:exported="false"/>
 
 		<meta-data

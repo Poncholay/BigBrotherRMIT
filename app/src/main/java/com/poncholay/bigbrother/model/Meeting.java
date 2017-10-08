@@ -146,7 +146,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 	private void createReminder(Activity context, PendingIntent alarmIntent, long time) {
 		AlarmManager alarmMgr;
 		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		alarmMgr.set(AlarmManager.RTC_WAKEUP, time, alarmIntent);
+		alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent);
 	}
 
 	public void cancelReminder(Activity context) {
@@ -154,6 +154,7 @@ public class Meeting extends SQLiteObject implements Parcelable {
 		PendingIntent alarmIntent;
 		alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(context, ReminderReceiver.class);
+		intent.putExtra("meeting", ParcelableUtils.marshall(this));
 		alarmIntent = PendingIntent.getBroadcast(context, id.intValue(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		alarmMgr.cancel(alarmIntent);
 	}

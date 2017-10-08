@@ -30,6 +30,7 @@ import com.poncholay.bigbrother.controller.adapters.FriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.controller.adapters.IconRecyclerViewAdapter;
 import com.poncholay.bigbrother.controller.adapters.SelectFriendRecyclerViewAdapter;
 import com.poncholay.bigbrother.model.Friend;
+import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.model.Meeting;
 import com.poncholay.bigbrother.utils.BundleUtils;
 import com.poncholay.bigbrother.utils.DateUtils;
@@ -77,12 +78,15 @@ public class EditMeetingActivity extends AppCompatActivity implements DatePicker
 			mMeeting = new Meeting();
 		}
 
-		Friend friend = (Friend) BundleUtils.retrieveParcelable(savedInstanceState, getIntent().getExtras(), "friend");
-		if (friend != null) {
+		FriendDistance friendDistance = (FriendDistance) BundleUtils.retrieveParcelable(savedInstanceState, getIntent().getExtras(), "friendDistance");
+		if (friendDistance != null) {
+			Friend friend = friendDistance.getFriend();
 			mMeeting.getFriends().add(friend);
-			if (mMode == Constants.NEW_MEETING) {
-				mMeeting.setTitle("Meeting with " + friend.getFirstname() + " " + friend.getLastname());
-			}
+			mMeeting.setTitle("Meeting with " + friend.getFirstname() + " " + friend.getLastname());
+			mMeeting.setLatitude(friendDistance.getMidPoint().latitude);
+			mMeeting.setLongitude(friendDistance.getMidPoint().longitude);
+			mMeeting.setStart(new Date(new Date().getTime() + (long) friendDistance.getUserDuration() * 1000 ));
+			mMeeting.setEnd(new Date(mMeeting.getStart().getTime() + 1000 * 60 * 60));
 		}
 
 		setupToolbar();

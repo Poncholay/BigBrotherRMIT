@@ -182,6 +182,14 @@ public class FriendDistance implements Parcelable {
         this._userTextDuration = _userTextDuration;
     }
 
+    public void setMidPoint(LatLng _midPoint) {
+        this._midPoint = _midPoint;
+    }
+
+    public void setUserDuration(Double _userDuration) {
+        this._userDuration = _userDuration;
+    }
+
     //__________
     //Parcelable
 
@@ -189,12 +197,21 @@ public class FriendDistance implements Parcelable {
     public FriendDistance(Parcel in) {
         this.setFriend((Friend) in.readParcelable(Friend.class.getClassLoader()));
         this.setUserTextDuration(in.readString());
+        double lat = in.readDouble();
+        double lon = in.readDouble();
+        this.setMidPoint(new LatLng(lat, lon));
+        this.setUserDuration(in.readDouble());
+        this.setFriend((Friend) in.readParcelable(Friend.class.getClassLoader()));
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(_friend, 0);
         dest.writeString(_userTextDuration);
+        dest.writeDouble(_midPoint.latitude);
+        dest.writeDouble(_midPoint.longitude);
+        dest.writeDouble(_userDuration);
+        dest.writeParcelable(_friend, 0);
     }
 
     @Override

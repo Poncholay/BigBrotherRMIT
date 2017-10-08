@@ -21,7 +21,7 @@ import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
 import com.poncholay.bigbrother.controller.receivers.SuggestionsReceiver;
 import com.poncholay.bigbrother.model.FriendDistance;
-import com.poncholay.bigbrother.services.LocationTrackingService;
+import com.poncholay.bigbrother.controller.services.LocationTrackingService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,27 +29,26 @@ import java.util.List;
 
 import static com.poncholay.bigbrother.utils.database.DatabaseHelper.DatabaseContext.context;
 
-public class MeetingSuggestion {
+public class MeetingSuggestionService {
 
-    private static MeetingSuggestion instance = null;
+    private static MeetingSuggestionService instance = null;
 
     private static String TAG = "MeetingSuggestion";
     private Intent          _trackingIntent     = null;
     private AlarmManager    _suggestionsAlarm   = null;
-    private PendingIntent _operation            = null;
+    private PendingIntent   _operation          = null;
 
-    private MeetingSuggestion() {
+    private MeetingSuggestionService() {
     }
 
-    public static MeetingSuggestion getInstance() {
+    public static MeetingSuggestionService getInstance() {
         if (instance == null) {
-            instance = new MeetingSuggestion();
+            instance = new MeetingSuggestionService();
         }
         return instance;
     }
 
     public void start() {
-
         // Start tracking service
         Log.i(TAG, "Starting tracking service.");
         _trackingIntent = new Intent(context, LocationTrackingService.class);
@@ -57,8 +56,8 @@ public class MeetingSuggestion {
 
         SharedPreferences sharedPref;
         sharedPref 	 = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        Log.i(TAG, "start: Meeting interval : " + sharedPref.getFloat("suggestionInterval", 5));
-        int interval = (int) (sharedPref.getFloat("suggestionInterval", 5) * 60f * 1000f);
+        Log.i(TAG, "start: Meeting interval : " + sharedPref.getFloat("suggestionInterval", 5.0f));
+        int interval = (int) (sharedPref.getFloat("suggestionInterval", 5.0f) * 60f * 1000f);
         Date when = new Date(System.currentTimeMillis() + interval);
 
         try {
@@ -91,7 +90,7 @@ public class MeetingSuggestion {
         }
     }
 
-    public static void launchMeetingDiscovery(final Context context) {
+    public void launchMeetingDiscovery(final Context context) {
         new FindPossibleFriends(context, LocationTrackingService.getUserLocation(), new FindPossibleFriends.FindPossibleFriendsCallback() {
             @Override
             public void onSuccess(List<FriendDistance> friendDistances) {

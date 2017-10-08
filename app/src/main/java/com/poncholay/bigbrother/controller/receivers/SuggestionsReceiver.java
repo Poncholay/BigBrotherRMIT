@@ -11,7 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.poncholay.bigbrother.utils.meetings.MeetingSuggestion;
+import com.poncholay.bigbrother.utils.meetings.MeetingSuggestionService;
 
 public class SuggestionsReceiver extends BroadcastReceiver {
 
@@ -20,7 +20,7 @@ public class SuggestionsReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     Log.i(TAG, "onReceive: launching a meeting discovery.");
-    MeetingSuggestion.launchMeetingDiscovery(context);
+    MeetingSuggestionService.getInstance().launchMeetingDiscovery(context);
   }
 
 }

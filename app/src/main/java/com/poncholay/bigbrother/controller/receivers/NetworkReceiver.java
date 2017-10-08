@@ -8,8 +8,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.poncholay.bigbrother.services.LocationTrackingService;
-import com.poncholay.bigbrother.utils.meetings.MeetingSuggestion;
+import com.poncholay.bigbrother.utils.meetings.MeetingSuggestionService;
 
 /**
  * Created by Poncholay on 05/10/17.
@@ -25,7 +24,6 @@ public class NetworkReceiver extends BroadcastReceiver {
 	public static void init(Activity activity) {
 		if (receiver == null) {
 			receiver = getInstance();
-//			receiver.onReceive(activity, new Intent(ConnectivityManager.CONNECTIVITY_ACTION));
 			final IntentFilter intentFilter = new IntentFilter();
 			intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 			activity.registerReceiver(receiver, intentFilter);
@@ -48,7 +46,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 				boolean previouslyConnected = connected;
 				connected = networkInfo != null && networkInfo.isConnected();
 				if (connected && !previouslyConnected) {
-					MeetingSuggestion.launchMeetingDiscovery(context);
+					MeetingSuggestionService.getInstance().launchMeetingDiscovery(context);
 				}
 			}
 		} catch (IllegalArgumentException ignored) {

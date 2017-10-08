@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.poncholay.bigbrother.services.DummyLocationService;
+import com.poncholay.bigbrother.controller.services.DummyLocationService;
 import com.poncholay.bigbrother.utils.database.DatabaseContract;
 import com.poncholay.bigbrother.utils.database.SQLiteObject;
 

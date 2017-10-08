@@ -1,4 +1,4 @@
-package com.poncholay.bigbrother.services;
+package com.poncholay.bigbrother.controller.services;
 
 /*
  * BigBrotherRMIT

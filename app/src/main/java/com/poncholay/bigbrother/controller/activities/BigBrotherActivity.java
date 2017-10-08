@@ -23,7 +23,7 @@ import com.poncholay.bigbrother.controller.fragments.MeetingListFragment;
 import com.poncholay.bigbrother.controller.receivers.NetworkReceiver;
 import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.utils.BundleUtils;
-import com.poncholay.bigbrother.utils.meetings.MeetingSuggestion;
+import com.poncholay.bigbrother.utils.meetings.MeetingSuggestionService;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
 			requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Constants.REQUEST_ACCESS_COARSE_LOCATION);
 		} else {
-			MeetingSuggestion.getInstance().start();
+			MeetingSuggestionService.getInstance().start();
 		}
 
 		NetworkReceiver.init(this);
@@ -62,7 +62,7 @@ public class BigBrotherActivity extends AppCompatActivity {
 		switch (requestCode) {
 			case Constants.REQUEST_ACCESS_COARSE_LOCATION: {
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					MeetingSuggestion.getInstance().start();
+					MeetingSuggestionService.getInstance().start();
 				}
 			}
 		}
