@@ -58,6 +58,17 @@ public class FindPossibleFriends {
             for (DummyLocationService.FriendLocation friendLocation : matched) {
                 if (friendLocation.id.equals(friend.getId().toString())) {
 
+                    boolean ctn = false;
+                    for (FriendDistance fd : friendDistances) {
+                        if (fd.getFriend().getId().equals(friend.getId())) {
+                            ctn = true;
+                            break;
+                        }
+                    }
+                    if (ctn) {
+                        break;
+                    }
+
                     // Store friend current position
                     LatLng friendLatLng = new LatLng(friendLocation.latitude, friendLocation.longitude);
 
