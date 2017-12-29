@@ -20,8 +20,8 @@ import com.poncholay.bigbrother.Constants;
 import com.poncholay.bigbrother.R;
 import com.poncholay.bigbrother.controller.activities.BigBrotherActivity;
 import com.poncholay.bigbrother.controller.receivers.SuggestionsReceiver;
-import com.poncholay.bigbrother.model.FriendDistance;
 import com.poncholay.bigbrother.controller.services.LocationTrackingService;
+import com.poncholay.bigbrother.model.FriendDistance;
 
 import java.util.ArrayList;
 import java.util.Date;

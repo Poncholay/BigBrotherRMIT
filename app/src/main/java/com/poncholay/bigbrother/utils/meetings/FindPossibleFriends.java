@@ -10,9 +10,9 @@ import android.content.Context;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.poncholay.bigbrother.controller.services.DummyLocationService;
 import com.poncholay.bigbrother.model.Friend;
 import com.poncholay.bigbrother.model.FriendDistance;
-import com.poncholay.bigbrother.controller.services.DummyLocationService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
